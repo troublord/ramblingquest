@@ -1,49 +1,220 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import '../styles/homepage.css';
+
+const posts = (await getCollection('blog'))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 5);
+
+const roomLabel: Record<string, string> = {
+  study: '書房',
+  bar: '吧台',
+  workshop: '工坊',
+  court: '場邊',
+};
+const roomType: Record<string, string> = {
+  study: 'essay',
+  bar: 'short',
+  workshop: 'build log',
+  court: 'observation',
+};
 ---
 
 <!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This template
-				serves as a lightweight, minimally-styled starting point for anyone looking to build a personal
-				website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
-		</main>
-		<Footer />
-	</body>
+<html lang="zh-Hant">
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} viewport="width=1280" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Noto+Serif+TC:wght@400;500;600;700&family=DotGothic16&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  </head>
+
+  <body data-mood="night" data-flicker="on" data-paper="cream" data-bg="street">
+
+    <!-- ───────── NAVBAR ───────── -->
+    <nav class="rq-nav">
+      <a href="/" class="rq-brand" aria-label="Rambling Quest 首頁">
+        <span class="rq-lamp" aria-hidden="true">
+          <span class="rq-lamp__post"></span>
+          <span class="rq-lamp__head"></span>
+          <span class="rq-lamp__glow"></span>
+        </span>
+        <span class="rq-brand__text">
+          <span class="rq-brand__name">Rambling Quest</span>
+          <span class="rq-brand__sub">漫步的房間 · est. 2024</span>
+        </span>
+      </a>
+      <ul class="rq-nav__links">
+        <li><a href="/blog">全部文章 <span class="rq-mono">/ archive</span></a></li>
+        <li><a href="/about">關於這裡 <span class="rq-mono">/ about</span></a></li>
+      </ul>
+    </nav>
+
+    <!-- ───────── HERO ───────── -->
+    <section class="rq-hero">
+      <div class="rq-city" aria-hidden="true"></div>
+      <div class="rq-city__sheen" aria-hidden="true"></div>
+
+      <div class="rq-entry">
+        <div class="rq-entry__kicker">
+          <span class="rq-tick"></span>
+          <span>tonight · 22:47</span>
+          <span class="rq-tick"></span>
+        </div>
+        <h1 class="rq-title">Rambling<span class="rq-title__amp"> </span>Quest</h1>
+        <p class="rq-tagline">
+          白天像書房，夜裡像酒館。這裡放一些我走路時撿到的想法。
+        </p>
+      </div>
+
+      <ul class="rq-signs">
+
+        <!-- 書房 -->
+        <li class="rq-sign-card" data-room="study" style="--accent: 38 95% 64%; --accent2: 28 75% 50%;">
+          <a href="/blog">
+            <span class="rq-sign-card__bracket" aria-hidden="true"></span>
+            <span class="rq-sign-card__bulb" aria-hidden="true"></span>
+            <div class="rq-sign-card__board">
+              <span class="rq-sign-card__cjk">書房</span>
+              <span class="rq-sign-card__en">Reading · Notes · Essays</span>
+            </div>
+            <div class="rq-sign-card__plate">
+              <span class="rq-sign-card__hint">推門進來 →</span>
+              <span class="rq-mono">// 閱讀、書摘、思考、長文</span>
+            </div>
+          </a>
+        </li>
+
+        <!-- 吧台 -->
+        <li class="rq-sign-card" data-room="bar" style="--accent: 332 92% 66%; --accent2: 286 88% 60%;">
+          <a href="/blog">
+            <span class="rq-sign-card__bracket" aria-hidden="true"></span>
+            <span class="rq-sign-card__bulb" aria-hidden="true"></span>
+            <div class="rq-sign-card__board rq-sign-card__board--neon">
+              <span class="rq-sign-card__cjk">吧台</span>
+              <span class="rq-sign-card__en">Talks · Fragments · Moods</span>
+            </div>
+            <div class="rq-sign-card__plate">
+              <span class="rq-sign-card__hint">推門進來 →</span>
+              <span class="rq-mono">// 短文、近況、閒聊、情緒</span>
+            </div>
+          </a>
+        </li>
+
+        <!-- 工坊 -->
+        <li class="rq-sign-card" data-room="workshop" style="--accent: 192 92% 62%; --accent2: 210 78% 55%;">
+          <a href="/blog">
+            <span class="rq-sign-card__bracket" aria-hidden="true"></span>
+            <span class="rq-sign-card__bulb" aria-hidden="true"></span>
+            <div class="rq-sign-card__board rq-sign-card__board--screen">
+              <span class="rq-sign-card__cjk">工坊</span>
+              <span class="rq-sign-card__en">Build · Code · Projects</span>
+            </div>
+            <div class="rq-sign-card__plate">
+              <span class="rq-sign-card__hint">推門進來 →</span>
+              <span class="rq-mono">// 技術、架站、side project</span>
+            </div>
+          </a>
+        </li>
+
+        <!-- 場邊 -->
+        <li class="rq-sign-card" data-room="court" style="--accent: 78 80% 60%; --accent2: 50 90% 60%;">
+          <a href="/blog">
+            <span class="rq-sign-card__bracket" aria-hidden="true"></span>
+            <span class="rq-sign-card__bulb" aria-hidden="true"></span>
+            <div class="rq-sign-card__board rq-sign-card__board--flood">
+              <span class="rq-sign-card__cjk">場邊</span>
+              <span class="rq-sign-card__en">Court · Body · Games</span>
+            </div>
+            <div class="rq-sign-card__plate">
+              <span class="rq-sign-card__hint">推門進來 →</span>
+              <span class="rq-mono">// 籃球、身體、比賽、觀察</span>
+            </div>
+          </a>
+        </li>
+
+      </ul>
+    </section>
+
+    <!-- ───────── LATEST: paper card ───────── -->
+    <section class="rq-paper-wrap" id="latest">
+      <div class="rq-paper">
+        <span class="rq-tape rq-tape--tl"></span>
+        <span class="rq-tape rq-tape--tr"></span>
+        <span class="rq-tape rq-tape--bl"></span>
+        <span class="rq-pin" aria-hidden="true"></span>
+
+        <header class="rq-paper__head">
+          <div class="rq-paper__title">
+            <span class="rq-paper__bar"></span>
+            <h2>最近留下的紙條</h2>
+            <span class="rq-paper__sub rq-mono">recent notes · last 30d</span>
+          </div>
+          <div class="rq-paper__meta rq-mono">
+            <span>No. {String(posts.length).padStart(4, '0')}</span>
+            <span class="rq-dot"></span>
+            <span>{posts.length} entries</span>
+          </div>
+        </header>
+
+        <ol class="rq-notes">
+          {posts.map((post) => {
+            const room = post.data.room ?? 'study';
+            const date = post.data.pubDate;
+            const day = date.getDate().toString();
+            const yearMonth = `${date.getFullYear()} / ${String(date.getMonth() + 1).padStart(2, '0')}`;
+            return (
+              <li class="rq-note">
+                <a class="rq-note__link" href={`/blog/${post.id}`} aria-label={post.data.title}></a>
+                <div class="rq-note__date rq-mono">
+                  <span class="rq-note__day">{day}</span>
+                  <span class="rq-note__month">{yearMonth}</span>
+                </div>
+                <div class="rq-note__body">
+                  <div class="rq-note__cat" data-room={room}>
+                    <span class="rq-cat__dot"></span>{roomLabel[room]}
+                    <span class="rq-cat__sep">·</span>
+                    <span class="rq-mono">{roomType[room]}</span>
+                  </div>
+                  <h3 class="rq-note__title">{post.data.title}</h3>
+                  <p class="rq-note__excerpt">{post.data.description}</p>
+                </div>
+                <span class="rq-note__chev">→</span>
+              </li>
+            );
+          })}
+        </ol>
+
+        <footer class="rq-paper__foot rq-mono">
+          <span>「慢慢走，慢慢寫。」</span>
+          <a href="/blog">全部文章 →</a>
+        </footer>
+      </div>
+    </section>
+
+    <!-- ───────── FOOTER ───────── -->
+    <footer class="rq-foot">
+      <div class="rq-foot__lamp" aria-hidden="true">
+        <span class="rq-lamp__post"></span>
+        <span class="rq-lamp__head"></span>
+        <span class="rq-lamp__glow"></span>
+      </div>
+      <div class="rq-foot__col rq-foot__col--note">
+        <p>夜深了。記得關門。<br /><span class="rq-mono">good night, traveller.</span></p>
+      </div>
+      <div class="rq-foot__col rq-foot__col--links">
+        <a href="/rss.xml">RSS</a>
+        <span class="rq-dot"></span>
+        <a href="https://github.com/troublord" target="_blank" rel="noopener">GitHub</a>
+        <span class="rq-dot"></span>
+        <a href="mailto:yeelm1487@gmail.com">Email</a>
+      </div>
+      <div class="rq-foot__col rq-foot__col--copy rq-mono">
+        © {new Date().getFullYear()} Rambling Quest · 漫步的房間 · all rambles reserved
+      </div>
+    </footer>
+
+  </body>
 </html>

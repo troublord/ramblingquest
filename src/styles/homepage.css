@@ -1,0 +1,709 @@
+/* ============================================================
+   Rambling Quest — homepage styles  (city-first redesign)
+   ============================================================ */
+
+:root{
+  /* Deep blue night palette (matches reference imagery) */
+  --night-deep: #050b18;
+  --night:      #0a1226;
+  --night-soft: #0f1a30;
+  --sky-blue-1: #102542;
+  --sky-blue-2: #1a3358;
+
+  /* Warm light palette */
+  --amber:      #f5b870;
+  --amber-deep: #c47a2f;
+  --paper:      #efe6cf;
+  --paper-line: #c9b98a;
+  --ink:        #2b2618;
+  --ink-soft:   #5a4f38;
+
+  /* Text on dark */
+  --text:       #e6efff;
+  --text-soft:  rgba(230, 239, 255, .78);
+  --text-mute:  rgba(230, 239, 255, .52);
+
+  /* Lamp halo color */
+  --halo:       255 200 120;
+}
+
+/* Mood tweaks (only subtle filter shifts now) */
+[data-mood="dusk"]      .rq-city{ filter: brightness(1.05) saturate(1.05) hue-rotate(-12deg); }
+[data-mood="midnight"]  .rq-city{ filter: brightness(.88) saturate(1.1)  hue-rotate(6deg); }
+
+/* Background swap */
+[data-bg="skyline"] .rq-city{ background-image: url("/city-skyline.png"); }
+[data-bg="street"]  .rq-city{ background-image: url("/city-street.png"); }
+
+/* Paper tone variants */
+[data-paper="cream"]   { --paper: #efe6cf; --paper-line:#c9b98a; }
+[data-paper="manila"]  { --paper: #e6d4a8; --paper-line:#b59b62; }
+[data-paper="kraft"]   { --paper: #c9a978; --paper-line:#8e6f44; --ink:#2a200d; --ink-soft:#5a4724; }
+[data-paper="onion"]   { --paper: #f5efdc; --paper-line:#d6c79a; }
+
+*{ box-sizing: border-box; }
+html, body{ margin:0; padding:0; }
+body{
+  background: var(--night-deep);
+  color: var(--text);
+  font-family: "Noto Serif TC", "Songti TC", Georgia, serif;
+  font-feature-settings: "palt";
+  -webkit-font-smoothing: antialiased;
+  min-width: 1280px;
+  overflow-x: hidden;
+}
+
+a{ color: inherit; text-decoration: none; }
+ul, ol{ list-style: none; margin:0; padding:0; }
+h1, h2, h3, p{ margin:0; }
+
+.rq-mono{
+  font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: .78em;
+  letter-spacing: .04em;
+  color: var(--text-mute);
+  text-transform: lowercase;
+}
+
+/* ============================================================
+   NAVBAR  (overlays the city, very low key)
+   ============================================================ */
+.rq-nav{
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 56px 18px;
+  background: linear-gradient(to bottom, rgba(5,10,24,.55), rgba(5,10,24,0));
+}
+
+.rq-brand{
+  display: flex; align-items: center; gap: 14px;
+  white-space: nowrap;
+}
+.rq-brand__text{ display: flex; flex-direction: column; line-height: 1.1; white-space: nowrap; }
+.rq-brand__name{
+  font-family: "Special Elite", "Courier New", monospace;
+  font-size: 18px;
+  color: var(--text);
+  letter-spacing: .01em;
+  text-shadow: 0 1px 4px rgba(0,0,0,.6);
+}
+.rq-brand__sub{
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  color: var(--text-mute);
+  letter-spacing: .14em;
+  margin-top: 3px;
+}
+
+.rq-nav__links{
+  display:flex; align-items:center; gap: 38px;
+}
+.rq-nav__links a{
+  font-family: "Noto Serif TC", serif;
+  font-size: 14.5px;
+  color: var(--text-soft);
+  position: relative;
+  padding-bottom: 4px;
+  text-shadow: 0 1px 4px rgba(0,0,0,.7);
+  transition: color .25s ease;
+}
+.rq-nav__links a .rq-mono{ margin-left: 6px; color: var(--text-mute); }
+.rq-nav__links a::after{
+  content:"";
+  position: absolute; left: 0; right: 100%;
+  bottom: 0; height: 1px;
+  background: rgb(var(--halo) / .9);
+  transition: right .35s ease;
+}
+.rq-nav__links a:hover{ color: var(--text); }
+.rq-nav__links a:hover::after{ right: 0; }
+
+/* Lamp icon ----------------------------------------- */
+.rq-lamp{
+  position: relative;
+  width: 28px; height: 36px;
+  display: inline-block;
+}
+.rq-lamp__post{
+  position:absolute; left: 13px; top: 6px;
+  width: 2px; height: 30px;
+  background: linear-gradient(to bottom, #6b5a3e, #2b2418);
+}
+.rq-lamp__head{
+  position:absolute; left: 7px; top: 4px;
+  width: 14px; height: 9px;
+  background: linear-gradient(to bottom, #4a3a25 0 30%, #d49a48 30% 100%);
+  border-radius: 2px 2px 1px 1px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.35);
+}
+.rq-lamp__glow{
+  position:absolute; left:-12px; top:-6px;
+  width: 52px; height: 32px;
+  background: radial-gradient(ellipse at center,
+    rgb(var(--halo) / .55) 0%,
+    rgb(var(--halo) / .15) 35%,
+    transparent 65%);
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+/* ============================================================
+   HERO  — city image is the main visual
+   ============================================================ */
+.rq-hero{
+  position: relative;
+  height: 100vh;
+  min-height: 760px;
+  max-height: 1080px;
+  overflow: hidden;
+  background: var(--night-deep);
+}
+
+.rq-city{
+  position: absolute; inset: 0;
+  background-image: url("/city-street.png");
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: cover;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+}
+/* very light wash, NOT a heavy dark overlay */
+.rq-city__sheen{
+  position: absolute; inset: 0;
+  background:
+    /* soft top fade behind nav */
+    linear-gradient(to bottom, rgba(5,10,24,.55) 0%, rgba(5,10,24,0) 18%),
+    /* tiny readability tint behind the title */
+    radial-gradient(ellipse 55% 30% at 50% 32%, rgba(5,10,24,.45) 0%, transparent 70%),
+    /* gentle bottom fade so paper section blends */
+    linear-gradient(to bottom, transparent 78%, var(--night-deep) 100%);
+  pointer-events: none;
+}
+
+/* ─── Central note ───────────────────────────── */
+.rq-entry{
+  position: absolute;
+  top: 16%;
+  left: 50%; transform: translateX(-50%);
+  z-index: 5;
+  text-align: center;
+  width: max-content;
+  max-width: 720px;
+}
+.rq-entry__kicker{
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10.5px;
+  letter-spacing: .28em;
+  color: var(--text-mute);
+  text-transform: uppercase;
+  text-shadow: 0 1px 6px rgba(0,0,0,.7);
+}
+.rq-tick{ width: 18px; height: 1px; background: rgb(var(--halo) / .55); }
+
+.rq-title{
+  font-family: "Special Elite", "Courier New", monospace;
+  font-weight: 400;
+  font-size: 56px;
+  letter-spacing: .005em;
+  line-height: 1;
+  margin: 14px 0 12px;
+  color: #f4f1e1;
+  text-shadow:
+    0 0 1px rgba(255,220,170,.5),
+    0 0 18px rgba(120, 170, 240, .25),
+    0 2px 6px rgba(0,0,0,.7);
+}
+.rq-title__amp{ display: inline-block; width: .22em; }
+
+.rq-tagline{
+  font-size: 15.5px;
+  line-height: 1.85;
+  color: var(--text-soft);
+  letter-spacing: .04em;
+  margin-top: 8px;
+  text-shadow: 0 1px 4px rgba(0,0,0,.8);
+}
+
+/* ============================================================
+   FOUR NEON SHOP SIGNS  — small, embedded in the city scene
+   ============================================================ */
+.rq-signs{
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 8%;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  padding: 0 80px;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.rq-sign-card{ position: relative; }
+.rq-sign-card > a{
+  display: block;
+  position: relative;
+  isolation: isolate;
+  cursor: pointer;
+  padding-top: 18px; /* room for bracket */
+}
+
+/* hanging bracket (wire + bar) ----------------------- */
+.rq-sign-card__bracket{
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 60%; height: 18px;
+  pointer-events: none;
+}
+.rq-sign-card__bracket::before{
+  /* horizontal bar */
+  content:"";
+  position:absolute; left: 0; right: 0; top: 0;
+  height: 2px;
+  background: linear-gradient(to right, #1a2236, #2a3450, #1a2236);
+  box-shadow: 0 1px 0 rgba(0,0,0,.6);
+}
+.rq-sign-card__bracket::after{
+  /* hooks */
+  content:"";
+  position:absolute; left: 12%; right: 12%; top: 2px;
+  height: 8px;
+  border-left: 2px solid #1a2236;
+  border-right: 2px solid #1a2236;
+}
+
+.rq-sign-card__bulb{
+  /* tiny hanging lamp bulb near the sign */
+  position: absolute;
+  top: -4px; left: 50%; transform: translateX(-50%);
+  width: 6px; height: 6px; border-radius: 50%;
+  background: radial-gradient(circle, #fff5d0 0%, hsl(var(--accent) / .9) 60%, transparent 80%);
+  box-shadow:
+    0 0 12px hsl(var(--accent) / .8),
+    0 0 28px hsl(var(--accent) / .35);
+}
+
+/* the actual lit board --------------------------------- */
+.rq-sign-card__board{
+  position: relative;
+  background:
+    /* subtle dark metal */
+    linear-gradient(180deg, #0c1424 0%, #0a1020 100%);
+  border: 1px solid #000;
+  border-radius: 3px;
+  padding: 22px 18px 20px;
+  text-align: center;
+  box-shadow:
+    inset 0 1px 0 hsl(var(--accent) / .35),
+    inset 0 -1px 0 rgba(0,0,0,.7),
+    inset 0 0 0 1px hsl(var(--accent) / .25),
+    0 0 0 1px rgba(0,0,0,.6),
+    0 6px 18px rgba(0,0,0,.6),
+    0 0 38px hsl(var(--accent) / .25);
+  transition: transform .35s ease, box-shadow .35s ease;
+}
+/* tiny corner studs */
+.rq-sign-card__board::before,
+.rq-sign-card__board::after{
+  content:"";
+  position: absolute;
+  top: 4px; width: 3px; height: 3px;
+  background: rgba(255,255,255,.25);
+  border-radius: 50%;
+}
+.rq-sign-card__board::before{ left: 4px; }
+.rq-sign-card__board::after { right: 4px; }
+
+.rq-sign-card__cjk{
+  display: block;
+  font-family: "DotGothic16", "Noto Serif TC", monospace;
+  font-size: 30px;
+  letter-spacing: .28em;
+  padding-left: .28em;
+  line-height: 1;
+  color: hsl(var(--accent));
+  text-shadow:
+    0 0 4px hsl(var(--accent) / .75),
+    0 0 14px hsl(var(--accent) / .5),
+    0 0 28px hsl(var(--accent) / .35);
+}
+.rq-sign-card__en{
+  display: block;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: .22em;
+  color: hsl(var(--accent) / .8);
+  margin-top: 9px;
+  text-transform: uppercase;
+  text-shadow: 0 0 6px hsl(var(--accent) / .35);
+}
+
+/* variant tints */
+.rq-sign-card__board--neon{
+  background: linear-gradient(180deg, #170920 0%, #0e0518 100%);
+}
+.rq-sign-card__board--screen{
+  background: linear-gradient(180deg, #061820 0%, #02101a 100%);
+}
+.rq-sign-card__board--flood{
+  background: linear-gradient(180deg, #0a1808 0%, #050f04 100%);
+}
+
+/* Plate below the board (description) ---------------- */
+.rq-sign-card__plate{
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px 7px;
+  background: rgba(5, 10, 24, .65);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 2px;
+}
+.rq-sign-card__hint{
+  font-family: "Noto Serif TC", serif;
+  font-size: 13px;
+  color: var(--text);
+  letter-spacing: .08em;
+}
+.rq-sign-card__plate .rq-mono{
+  color: hsl(var(--accent) / .65);
+  font-size: 10.5px;
+}
+
+/* Neon flicker */
+[data-flicker="on"] .rq-sign-card[data-room="bar"] .rq-sign-card__cjk{
+  animation: rq-flicker 5s infinite;
+}
+[data-flicker="on"] .rq-sign-card[data-room="workshop"] .rq-sign-card__cjk{
+  animation: rq-flicker 7.3s infinite;
+}
+@keyframes rq-flicker{
+  0%, 19%, 22%, 62%, 64%, 100%{ opacity: 1; }
+  20%, 21%{ opacity: .55; }
+  63%{ opacity: .4; }
+}
+
+/* Hover: board glows brighter, lifts slightly */
+.rq-sign-card > a:hover .rq-sign-card__board{
+  transform: translateY(-3px);
+  box-shadow:
+    inset 0 1px 0 hsl(var(--accent) / .55),
+    inset 0 -1px 0 rgba(0,0,0,.7),
+    inset 0 0 0 1px hsl(var(--accent) / .45),
+    0 0 0 1px rgba(0,0,0,.6),
+    0 12px 24px rgba(0,0,0,.7),
+    0 0 60px hsl(var(--accent) / .55);
+}
+.rq-sign-card > a:hover .rq-sign-card__cjk{
+  text-shadow:
+    0 0 6px hsl(var(--accent) / 1),
+    0 0 20px hsl(var(--accent) / .7),
+    0 0 40px hsl(var(--accent) / .5);
+}
+.rq-sign-card > a:hover .rq-sign-card__bulb{
+  box-shadow:
+    0 0 16px hsl(var(--accent)),
+    0 0 36px hsl(var(--accent) / .6);
+}
+.rq-sign-card > a:hover .rq-sign-card__plate{
+  border-color: hsl(var(--accent) / .35);
+}
+
+/* ============================================================
+   LATEST: paper card
+   ============================================================ */
+.rq-paper-wrap{
+  position: relative;
+  background: var(--night-deep);
+  padding: 90px 56px 80px;
+}
+
+.rq-paper{
+  position: relative;
+  max-width: 1180px;
+  margin: 0 auto;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(0,0,0,.04), transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(0,0,0,.06), transparent 60%),
+    repeating-linear-gradient(0deg,
+      transparent 0 28px,
+      rgba(150, 120, 60, .07) 28px 29px),
+    var(--paper);
+  color: var(--ink);
+  border-radius: 2px;
+  padding: 52px 60px 44px;
+  box-shadow:
+    0 30px 60px rgba(0,0,0,.55),
+    0 8px 18px rgba(0,0,0,.35),
+    inset 0 0 0 1px rgba(150,120,60,.18);
+  transform: rotate(-.25deg);
+}
+.rq-paper::before, .rq-paper::after{
+  content:"";
+  position: absolute;
+  left: 0; right: 0;
+  height: 14px;
+  background:
+    radial-gradient(circle 6px at 6px -2px, transparent 5px, var(--paper) 6px),
+    radial-gradient(circle 4px at 16px -2px, transparent 3px, var(--paper) 4px);
+  background-size: 28px 14px, 28px 14px;
+  background-repeat: repeat-x;
+}
+.rq-paper::before{ top:-1px; background-position: 0 -8px, 14px -8px; }
+.rq-paper::after { bottom:-1px; transform: scaleY(-1); background-position: 0 -8px, 14px -8px; }
+
+/* Tape strips */
+.rq-tape{
+  position: absolute;
+  width: 86px; height: 22px;
+  background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(220,200,150,.55));
+  box-shadow: 0 2px 4px rgba(0,0,0,.25);
+  z-index: 3;
+}
+.rq-tape::before{
+  content:"";
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(90deg, rgba(255,255,255,.4), transparent 30%),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.04) 0 1px, transparent 1px 4px);
+  mix-blend-mode: overlay;
+}
+.rq-tape--tl{ top: -10px; left: 70px;  transform: rotate(-6deg); }
+.rq-tape--tr{ top: -10px; right: 80px; transform: rotate(4deg); }
+.rq-tape--bl{ bottom: -10px; left: 220px; transform: rotate(-3deg); }
+
+.rq-pin{
+  position: absolute;
+  top: -8px; right: 38px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 30%, #ff8a6e, #c93a2a 70%, #4a0f08 100%);
+  box-shadow: 0 4px 6px rgba(0,0,0,.45), inset 0 1px 1px rgba(255,255,255,.4);
+  z-index: 4;
+}
+.rq-pin::after{
+  content:"";
+  position: absolute; left: 5px; top: 5px;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,.7), transparent 60%);
+}
+
+.rq-paper__head{
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--paper-line);
+  margin-bottom: 8px;
+}
+.rq-paper__title{ display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.rq-paper__bar{
+  width: 4px; height: 22px;
+  background: var(--ink);
+  display: inline-block;
+  transform: translateY(3px);
+}
+.rq-paper__head h2{
+  font-family: "Noto Serif TC", serif;
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: .04em;
+  color: var(--ink);
+}
+.rq-paper__sub{ color: var(--ink-soft); }
+.rq-paper__meta{
+  display: flex; align-items: center; gap: 10px;
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+.rq-dot{
+  width: 3px; height: 3px;
+  background: currentColor;
+  border-radius: 50%;
+  display: inline-block;
+  opacity: .5;
+}
+
+.rq-notes{ display: flex; flex-direction: column; }
+.rq-note{
+  display: grid;
+  grid-template-columns: 96px 1fr 28px;
+  gap: 28px;
+  align-items: start;
+  padding: 22px 4px 22px;
+  border-bottom: 1px dashed var(--paper-line);
+  position: relative;
+  cursor: pointer;
+  transition: background .25s ease;
+}
+.rq-note:last-child{ border-bottom: 0; }
+.rq-note:hover{ background: rgba(255,255,255,.18); }
+.rq-note:hover .rq-note__chev{ transform: translateX(4px); opacity: 1; }
+
+/* stretched link — makes the whole row clickable */
+.rq-note__link::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.rq-note__date{
+  display: flex; flex-direction: column;
+  align-items: flex-start;
+  padding-top: 4px;
+}
+.rq-note__day{
+  font-size: 38px;
+  line-height: 1;
+  color: var(--ink);
+  font-weight: 500;
+  font-family: "Special Elite", "Courier New", monospace;
+  letter-spacing: -.02em;
+}
+.rq-note__month{
+  margin-top: 4px;
+  font-size: 10px;
+  letter-spacing: .18em;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+}
+
+.rq-note__body{ min-width: 0; }
+.rq-note__cat{
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: "Noto Serif TC", serif;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: .12em;
+  color: var(--ink-soft);
+}
+.rq-cat__dot{
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+.rq-cat__sep{ color: var(--paper-line); }
+.rq-note__cat .rq-mono{ font-size: 11px; color: var(--ink-soft); }
+
+.rq-note__cat[data-room="study"]    .rq-cat__dot{ background: #c47a2f; box-shadow: 0 0 0 2px rgba(196,122,47,.18); }
+.rq-note__cat[data-room="bar"]      .rq-cat__dot{ background: #c4337a; box-shadow: 0 0 0 2px rgba(196,51,122,.18); }
+.rq-note__cat[data-room="workshop"] .rq-cat__dot{ background: #2f8ac4; box-shadow: 0 0 0 2px rgba(47,138,196,.18); }
+.rq-note__cat[data-room="court"]    .rq-cat__dot{ background: #6ea83a; box-shadow: 0 0 0 2px rgba(110,168,58,.18); }
+
+.rq-note__title{
+  font-family: "Noto Serif TC", serif;
+  font-weight: 600;
+  font-size: 21px;
+  line-height: 1.45;
+  letter-spacing: .02em;
+  color: var(--ink);
+  margin-top: 6px;
+  text-wrap: pretty;
+}
+.rq-note__excerpt{
+  margin-top: 8px;
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--ink-soft);
+  letter-spacing: .02em;
+  max-width: 720px;
+}
+.rq-note__tags{
+  display: flex; gap: 14px;
+  margin-top: 10px;
+  font-family: "Noto Serif TC", serif;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  opacity: .8;
+}
+
+.rq-note__chev{
+  font-family: "JetBrains Mono", monospace;
+  font-size: 18px;
+  color: var(--ink-soft);
+  align-self: center;
+  opacity: .35;
+  transition: transform .3s ease, opacity .3s ease;
+}
+
+.rq-paper__foot{
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--paper-line);
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+.rq-paper__foot a{
+  color: var(--ink);
+  border-bottom: 1px solid var(--ink-soft);
+  padding-bottom: 1px;
+}
+.rq-paper__foot a:hover{ border-color: var(--ink); }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.rq-foot{
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 32px;
+  padding: 28px 56px 38px;
+  color: var(--text-soft);
+  font-size: 13px;
+  border-top: 1px solid rgba(255,255,255,.05);
+}
+.rq-foot::before{
+  content:"";
+  position:absolute; left:0; right:0; top:-1px;
+  height: 1px;
+  background:
+    linear-gradient(90deg,
+      transparent,
+      rgba(255,200,140,.25) 30%,
+      rgba(255,200,140,.25) 70%,
+      transparent);
+}
+.rq-foot__lamp{
+  position: relative;
+  width: 30px; height: 40px;
+}
+.rq-foot__col--note p{
+  font-family: "Noto Serif TC", serif;
+  line-height: 1.6;
+  letter-spacing: .04em;
+}
+.rq-foot__col--links{
+  display: flex; align-items: center; gap: 14px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.rq-foot__col--links a{
+  color: var(--text-soft);
+  transition: color .2s ease;
+  position: relative;
+}
+.rq-foot__col--links a:hover{ color: var(--text); }
+.rq-foot__col--copy{
+  font-size: 11px;
+  letter-spacing: .12em;
+  color: var(--text-mute);
+}
