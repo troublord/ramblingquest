@@ -138,59 +138,73 @@ const roomType: Record<string, string> = {
       </ul>
     </section>
 
-    <!-- ───────── LATEST: paper card ───────── -->
-    <section class="rq-paper-wrap" id="latest">
-      <div class="rq-paper">
-        <span class="rq-tape rq-tape--tl"></span>
-        <span class="rq-tape rq-tape--tr"></span>
-        <span class="rq-tape rq-tape--bl"></span>
-        <span class="rq-pin" aria-hidden="true"></span>
+    <!-- ───────── LATEST: photo wall on dark room background ───────── -->
+    <section class="rq-wall-wrap" id="latest">
+      <div class="rq-wall__scene" aria-hidden="true"></div>
+      <div class="rq-wall__warm"  aria-hidden="true"></div>
 
-        <header class="rq-paper__head">
-          <div class="rq-paper__title">
-            <span class="rq-paper__bar"></span>
-            <h2>最近留下的紙條</h2>
-            <span class="rq-paper__sub rq-mono">recent notes · last 30d</span>
-          </div>
-          <div class="rq-paper__meta rq-mono">
-            <span>No. {String(posts.length).padStart(4, '0')}</span>
-            <span class="rq-dot"></span>
-            <span>{posts.length} entries</span>
+      <div class="rq-wall__inner">
+        <header class="rq-wall__head">
+          <span class="rq-wall__rule" aria-hidden="true"></span>
+          <div class="rq-wall__head-text">
+            <h2 class="rq-wall__title">最新文章 <span class="rq-mono">/ recent</span></h2>
+            <p class="rq-wall__sub">把想法釘起來，讓它們慢慢發酵。</p>
           </div>
         </header>
 
-        <ol class="rq-notes">
-          {posts.map((post) => {
+        <ul class="rq-wall__cards">
+          {posts.map((post, i) => {
             const room = post.data.room ?? 'study';
             const date = post.data.pubDate;
-            const day = date.getDate().toString();
-            const yearMonth = `${date.getFullYear()} / ${String(date.getMonth() + 1).padStart(2, '0')}`;
+            const dateStr = `${String(date.getMonth() + 1).padStart(2, '0')} / ${String(date.getDate()).padStart(2, '0')}`;
+            const rots = ["-1.5deg", "1.2deg", "-.8deg", "1.6deg", "-1.1deg"];
+            const rot = rots[i] ?? "0deg";
+            const heroType = (i === 4 && room === 'study') ? 'study2' : room;
             return (
-              <li class="rq-note">
-                <a class="rq-note__link" href={`/blog/${post.id}`} aria-label={post.data.title}></a>
-                <div class="rq-note__date rq-mono">
-                  <span class="rq-note__day">{day}</span>
-                  <span class="rq-note__month">{yearMonth}</span>
-                </div>
-                <div class="rq-note__body">
-                  <div class="rq-note__cat" data-room={room}>
-                    <span class="rq-cat__dot"></span>{roomLabel[room]}
-                    <span class="rq-cat__sep">·</span>
-                    <span class="rq-mono">{roomType[room]}</span>
+              <li class="rq-photo" data-room={room} style={`--rot:${rot};`}>
+                <a href={`/blog/${post.id}`}>
+                  {i === 0 || i === 2 || i === 4 ? (
+                    <span class="rq-photo__pin" aria-hidden="true"></span>
+                  ) : i === 1 ? (
+                    <>
+                      <span class="rq-photo__tape rq-photo__tape--tl" aria-hidden="true"></span>
+                      <span class="rq-photo__tape rq-photo__tape--tr" aria-hidden="true"></span>
+                    </>
+                  ) : (
+                    <span class="rq-photo__tape rq-photo__tape--top" aria-hidden="true"></span>
+                  )}
+                  <div class="rq-photo__img" data-hero={heroType}>
+                    <span class="rq-photo__hero">
+                      {heroType === 'study'    && <><span class="rq-hero__lamp"></span><span class="rq-hero__pages"></span></>}
+                      {heroType === 'study2'   && <span class="rq-hero__books"></span>}
+                      {heroType === 'bar'      && <><span class="rq-hero__neon"></span><span class="rq-hero__glass"></span></>}
+                      {heroType === 'workshop' && <><span class="rq-hero__screen"></span><span class="rq-hero__cable"></span></>}
+                      {heroType === 'court'    && <><span class="rq-hero__hoop"></span><span class="rq-hero__court"></span></>}
+                    </span>
                   </div>
-                  <h3 class="rq-note__title">{post.data.title}</h3>
-                  <p class="rq-note__excerpt">{post.data.description}</p>
-                </div>
-                <span class="rq-note__chev">→</span>
+                  <div class="rq-photo__cap">
+                    <div class="rq-photo__meta">
+                      <span class="rq-photo__cat">{roomLabel[room]}</span>
+                      <span class="rq-photo__sep">·</span>
+                      <span class="rq-photo__date">{dateStr}</span>
+                    </div>
+                    <h3 class="rq-photo__title">{post.data.title}</h3>
+                    <p class="rq-photo__desc">{post.data.description}</p>
+                    <span class="rq-photo__more">閱讀全文 →</span>
+                  </div>
+                </a>
               </li>
             );
           })}
-        </ol>
+        </ul>
 
-        <footer class="rq-paper__foot rq-mono">
-          <span>「慢慢走，慢慢寫。」</span>
-          <a href="/blog">全部文章 →</a>
-        </footer>
+        <div class="rq-wall__foot">
+          <span class="rq-wall__foot-line"></span>
+          <a class="rq-wall__archive" href="/blog">
+            <span>瀏覽全部文章</span>
+            <span class="rq-mono">→ archive</span>
+          </a>
+        </div>
       </div>
     </section>
 
