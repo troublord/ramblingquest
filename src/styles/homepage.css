@@ -167,7 +167,7 @@ h1, h2, h3, p{ margin:0; }
   position: absolute; inset: 0;
   background-image: url("/city-street.png");
   background-repeat: no-repeat;
-  background-position: center bottom;
+  background-position: center 30%;
   background-size: cover;
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
@@ -555,10 +555,10 @@ h1, h2, h3, p{ margin:0; }
 .rq-note:hover .rq-note__chev{ transform: translateX(4px); opacity: 1; }
 
 /* stretched link — makes the whole row clickable */
-.rq-note__link::after{
-  content: "";
+.rq-note__link{
   position: absolute;
   inset: 0;
+  z-index: 1;
 }
 
 .rq-note__date{
@@ -638,6 +638,28 @@ h1, h2, h3, p{ margin:0; }
   align-self: center;
   opacity: .35;
   transition: transform .3s ease, opacity .3s ease;
+}
+
+.rq-note__thumb{
+  align-self: center;
+  width: 100px;
+  height: 68px;
+  border-radius: 3px;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,.18);
+}
+.rq-note__thumb img{
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .35s ease;
+}
+.rq-note:hover .rq-note__thumb img{
+  transform: scale(1.05);
+}
+.rq-note--has-img{
+  grid-template-columns: 96px 1fr 100px;
 }
 
 .rq-paper__foot{
