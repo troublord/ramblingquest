@@ -37,38 +37,64 @@ allPosts.forEach((p, _) => {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Noto+Serif+TC:wght@400;500;600;700&family=DotGothic16&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <style>
-      /* ── Archive page ── */
-      .ar-page {
+      /* ── Sky section ── */
+      .ar-sky {
         position: relative;
-        min-height: 100vh;
+        height: 50vh;
+        min-height: 380px;
+        overflow: hidden;
         background:
-          url("/bg-board.png") center top / 1440px auto no-repeat,
-          linear-gradient(180deg,
-            #060c20 0%, #081226 8%, #0c1730 22%,
-            #0e1a2e 50%, #0d1828 85%, #08111e 92%,
-            #050810 96%, #03060c 100%);
-        padding-bottom: 80px;
+          linear-gradient(to bottom, #060c20 0%, #060c20 35%, transparent 75%),
+          url("/bg-board-sky.png") center bottom / 100% auto no-repeat,
+          #060c20;
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
       }
-      .ar-page::before {
-        content: "";
-        position: absolute; inset: 0;
-        background: radial-gradient(ellipse 70% 60% at 50% 55%, transparent 0%, rgba(0,0,0,.32) 100%);
-        pointer-events: none;
-        z-index: 0;
-      }
-
-      .ar-inner {
+      .ar-sky__inner {
         position: relative;
         z-index: 2;
+        height: 100%;
         max-width: 1240px;
         margin: 0 auto;
         padding: 0 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      /* ── Room section (CSS grid overlay) ── */
+      .ar-room {
+        display: grid;
+        grid-template-areas: "main";
+        background: linear-gradient(180deg,
+          #060c20 0%, #081226 8%, #0c1730 22%,
+          #0e1a2e 50%, #0d1828 85%, #08111e 92%,
+          #050810 96%, #03060c 100%);
+        overflow: hidden;
+      }
+      .ar-room__bg {
+        grid-area: main;
+        width: 100%;
+        display: block;
+        align-self: start;
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+      }
+      .ar-room__inner {
+        grid-area: main;
+        align-self: start;
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 80px 40px 100px;
       }
 
       /* ── Title ── */
       .ar-title {
         text-align: center;
-        padding: 100px 0 0;
+        padding: 0;
       }
       .ar-title__rule {
         display: flex; align-items: center; justify-content: center;
@@ -117,7 +143,7 @@ allPosts.forEach((p, _) => {
         align-items: center;
         justify-content: center;
         gap: 14px;
-        margin: 36px 0 40px;
+        margin: 28px 0 0;
       }
       .ar-filter {
         position: relative;
@@ -498,9 +524,9 @@ allPosts.forEach((p, _) => {
       </ul>
     </nav>
 
-    <!-- ── ARCHIVE PAGE ── -->
-    <div class="ar-page">
-      <div class="ar-inner">
+    <!-- ── ARCHIVE: Section 1 城市看臺 ── -->
+    <section class="ar-sky">
+      <div class="ar-sky__inner">
 
         <!-- Title -->
         <header class="ar-title">
@@ -534,7 +560,14 @@ allPosts.forEach((p, _) => {
           </button>
         </div>
 
-        <!-- Cards grid -->
+      </div>
+    </section>
+
+    <!-- ── ARCHIVE: Section 2 室內黑板 ── -->
+    <section class="ar-room">
+      <img class="ar-room__bg" src="/bg-board-room.png" alt="" aria-hidden="true" />
+      <div class="ar-room__inner">
+
         <div class="ar-grid" id="ar-grid">
           {allPosts.map((post, i) => {
             const room = post.data.room ?? 'study';
@@ -562,7 +595,7 @@ allPosts.forEach((p, _) => {
         </div>
 
       </div>
-    </div>
+    </section>
 
     <!-- ── FOOTER ── -->
     <footer class="rq-foot">
