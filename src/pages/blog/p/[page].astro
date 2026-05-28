@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import ArchiveLayout from '../../../layouts/ArchiveLayout.astro';
+
+export async function getStaticPaths() {
+  const PAGE_SIZE = 6;
+  const allPosts = (await getCollection('blog'))
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+  const counts: Record<string, number> = { study: 0, bar: 0, workshop: 0, court: 0 };
+  allPosts.forEach(p => {
+    const r = p.data.room ?? 'study';
+    if (r in counts) counts[r]++;
+  });
+
+  const lastPage = Math.ceil(allPosts.length / PAGE_SIZE);
+  const paths = [];
+
+  for (let page = 2; page <= lastPage; page++) {
+    const start = (page - 1) * PAGE_SIZE;
+    paths.push({
+      params: { page: String(page) },
+      props: {
+        posts: allPosts.slice(start, start + PAGE_SIZE),
+        counts,
+        totalPosts: allPosts.length,
+        currentPage: page,
+        lastPage,
+        prevUrl: page === 2 ? '/blog' : `/blog/p/${page - 1}`,
+        nextUrl: page < lastPage ? `/blog/p/${page + 1}` : undefined,
+      },
+    });
+  }
+
+  return paths;
+}
+
+const { posts, counts, totalPosts, currentPage, lastPage, prevUrl, nextUrl } = Astro.props;
+---
+
+<ArchiveLayout
+  currentRoom="all"
+  posts={posts}
+  counts={counts}
+  totalPosts={totalPosts}
+  pagination={{ prevUrl, nextUrl, currentPage, lastPage }}
+/>
