@@ -2,7 +2,7 @@
 
 > 這份文件給「未來的我」和「AI 助手」看。  
 > 目的：改任何功能或畫面之前，先看這裡，快速定位要動哪些檔案。  
-> 最後更新：2026-06-02
+> 最後更新：2026-06-03
 
 ---
 
@@ -17,7 +17,8 @@
 - **部署**：Netlify，push 自動觸發 rebuild
 - **域名**：ramblingquest.com（轉移中），目前預設網址 `gleaming-capybara-572b22.netlify.app`
 
-**目前主要目標**：首頁與列表頁（Archive）設計已完成，下一步是設計文章頁（BlogPost layout）。
+**目前主要目標**：設計 v1 完成（首頁、Archive 頁、文章頁、PostCard 元件）。v2 方向：各房間獨立文章頁排版、搜尋、標籤頁。
+最後更新：2026-06-03
 
 ---
 
@@ -118,6 +119,7 @@ C:\ramblingquest\
 | `HeaderLink` | `src/components/HeaderLink.astro` | Header 裡有 active 狀態的導覽連結 | `Header.astro` |
 | `Footer` | `src/components/Footer.astro` | 其他頁面的 Footer（灰色漸層，含社群連結） | `/about`、`/blog/[slug]` |
 | `FormattedDate` | `src/components/FormattedDate.astro` | 日期格式化（Jul 08, 2022）輸出 `<time>` 元素 | `BlogPost.astro` |
+| `PostCard` | `src/components/PostCard.astro` | 文章卡片（拍立得風格：heroImage、圖釘、房間徽章、標題、虛線分隔、摘要）。無 heroImage 時 fallback 為 `/default-card-photo.jpg` | `ArchiveLayout.astro`、`index.astro` |
 
 ### 首頁區塊（目前寫在 `index.astro`，尚未拆成元件）
 

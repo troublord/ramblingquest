@@ -1,31 +1,19 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
+import PostCard from '../components/PostCard.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import '../styles/homepage.css';
 
 const posts = (await getCollection('blog'))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-  .slice(0, 5);
-
-const roomLabel: Record<string, string> = {
-  study: '書房',
-  bar: '吧台',
-  workshop: '工坊',
-  court: '場邊',
-};
-const roomType: Record<string, string> = {
-  study: 'essay',
-  bar: 'short',
-  workshop: 'build log',
-  court: 'observation',
-};
+  .slice(0, 6);
 ---
 
 <!doctype html>
 <html lang="zh-Hant">
   <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} viewport="width=1280" />
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Noto+Serif+TC:wght@400;500;600;700&family=DotGothic16&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -46,6 +34,9 @@ const roomType: Record<string, string> = {
         <li><a href="/blog">全部文章 <span class="rq-mono">/ archive</span></a></li>
         <li><a href="/about">關於這裡 <span class="rq-mono">/ about</span></a></li>
       </ul>
+      <button class="rq-nav__burger" aria-label="開啟選單" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </nav>
 
     <!-- ───────── HERO ───────── -->
@@ -132,51 +123,9 @@ const roomType: Record<string, string> = {
           </div>
         </header>
 
-        <ul class="rq-wall__cards">
-          {posts.map((post, i) => {
-            const room = post.data.room ?? 'study';
-            const date = post.data.pubDate;
-            const dateStr = `${String(date.getMonth() + 1).padStart(2, '0')} / ${String(date.getDate()).padStart(2, '0')}`;
-            const rots = ["-1.5deg", "1.2deg", "-.8deg", "1.6deg", "-1.1deg"];
-            const rot = rots[i] ?? "0deg";
-            const heroType = (i === 4 && room === 'study') ? 'study2' : room;
-            return (
-              <li class="rq-photo" data-room={room} style={`--rot:${rot};`}>
-                <a href={`/blog/${post.id}`}>
-                  {i === 0 || i === 2 || i === 4 ? (
-                    <span class="rq-photo__pin" aria-hidden="true"></span>
-                  ) : i === 1 ? (
-                    <>
-                      <span class="rq-photo__tape rq-photo__tape--tl" aria-hidden="true"></span>
-                      <span class="rq-photo__tape rq-photo__tape--tr" aria-hidden="true"></span>
-                    </>
-                  ) : (
-                    <span class="rq-photo__tape rq-photo__tape--top" aria-hidden="true"></span>
-                  )}
-                  <div class="rq-photo__img" data-hero={heroType}>
-                    <span class="rq-photo__hero">
-                      {heroType === 'study'    && <><span class="rq-hero__lamp"></span><span class="rq-hero__pages"></span></>}
-                      {heroType === 'study2'   && <span class="rq-hero__books"></span>}
-                      {heroType === 'bar'      && <><span class="rq-hero__neon"></span><span class="rq-hero__glass"></span></>}
-                      {heroType === 'workshop' && <><span class="rq-hero__screen"></span><span class="rq-hero__cable"></span></>}
-                      {heroType === 'court'    && <><span class="rq-hero__hoop"></span><span class="rq-hero__court"></span></>}
-                    </span>
-                  </div>
-                  <div class="rq-photo__cap">
-                    <div class="rq-photo__meta">
-                      <span class="rq-photo__cat">{roomLabel[room]}</span>
-                      <span class="rq-photo__sep">·</span>
-                      <span class="rq-photo__date">{dateStr}</span>
-                    </div>
-                    <h3 class="rq-photo__title">{post.data.title}</h3>
-                    <p class="rq-photo__desc">{post.data.description}</p>
-                    <span class="rq-photo__more">閱讀全文 →</span>
-                  </div>
-                </a>
-              </li>
-            );
-          })}
-        </ul>
+        <div class="rq-wall__cards">
+          {posts.map((post) => <PostCard post={post} />)}
+        </div>
 
         <div class="rq-wall__foot">
           <span class="rq-wall__foot-line"></span>
@@ -203,5 +152,13 @@ const roomType: Record<string, string> = {
       </div>
     </footer>
 
+  <script>
+    const burger = document.querySelector('.rq-nav__burger') as HTMLButtonElement;
+    const nav = document.querySelector('.rq-nav') as HTMLElement;
+    burger?.addEventListener('click', () => {
+      const open = nav.classList.toggle('rq-nav--open');
+      burger.setAttribute('aria-expanded', String(open));
+    });
+  </script>
   </body>
 </html>

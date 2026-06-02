@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
+import PostCard from '../components/PostCard.astro';
 import { SITE_TITLE } from '../consts';
 import '../styles/homepage.css';
 
@@ -20,19 +21,6 @@ interface Props {
 }
 
 const { currentRoom, posts, counts, totalPosts, pagination } = Astro.props;
-
-const roomLabel: Record<string, string> = {
-  study: '書房', bar: '吧台', workshop: '工坊', court: '場邊',
-};
-const roomToCat: Record<string, string> = {
-  study: 'study', bar: 'bar', workshop: 'shop', court: 'court',
-};
-const photoThemes: Record<string, string[]> = {
-  study:    ['ph-study', 'ph-books', 'ph-notes', 'ph-paper', 'ph-bulb'],
-  bar:      ['ph-bar', 'ph-neon', 'ph-rain'],
-  workshop: ['ph-terminal', 'ph-git', 'ph-todo'],
-  court:    ['ph-court', 'ph-park'],
-};
 
 const pageTitle = currentRoom === 'all'
   ? `全部文章 · ${SITE_TITLE}`
@@ -239,280 +227,6 @@ const pageTitle = currentRoom === 'all'
         gap: 32px 22px;
       }
 
-      /* ── Card ── */
-      .ar-card {
-        position: relative;
-        background: linear-gradient(180deg, #f5ecd6 0%, #ede2c4 100%);
-        padding: 8px 9px 14px;
-        display: flex;
-        flex-direction: column;
-        box-shadow:
-          0 1px 0 rgba(255,255,255,.5) inset,
-          0 2px 4px rgba(0,0,0,.4),
-          0 10px 24px rgba(0,0,0,.45),
-          0 18px 36px rgba(0,0,0,.25);
-        transition: transform .25s ease, box-shadow .25s ease;
-        cursor: pointer;
-      }
-      .ar-card::before {
-        content: "";
-        position: absolute; inset: 0;
-        background:
-          repeating-linear-gradient(0deg, rgba(140,110,60,.04) 0 1px, transparent 1px 3px),
-          radial-gradient(circle at 20% 0%, rgba(255,235,180,.4), transparent 60%),
-          radial-gradient(circle at 100% 100%, rgba(120,90,40,.18), transparent 50%);
-        pointer-events: none;
-        mix-blend-mode: multiply;
-      }
-      .ar-card:hover {
-        transform: translateY(-5px) rotate(0deg) !important;
-        box-shadow:
-          0 1px 0 rgba(255,255,255,.5) inset,
-          0 4px 8px rgba(0,0,0,.4),
-          0 18px 32px rgba(0,0,0,.5),
-          0 0 30px rgba(244,192,98,.18);
-        z-index: 10;
-      }
-      .ar-card:nth-child(5n+1) { transform: rotate(-1.2deg); }
-      .ar-card:nth-child(5n+2) { transform: rotate(0.8deg); }
-      .ar-card:nth-child(5n+3) { transform: rotate(-0.4deg); }
-      .ar-card:nth-child(5n+4) { transform: rotate(1.4deg); }
-      .ar-card:nth-child(5n+5) { transform: rotate(-0.9deg); }
-
-      /* tape / pin */
-      .ar-card__tape {
-        position: absolute;
-        top: -9px; left: 50%;
-        transform: translateX(-50%) rotate(-3deg);
-        width: 54px; height: 18px;
-        background: rgba(245,225,165,.55);
-        box-shadow: inset 0 0 0 1px rgba(255,240,180,.3), 0 2px 4px rgba(0,0,0,.25);
-        border-left: 1px dashed rgba(120,90,40,.15);
-        border-right: 1px dashed rgba(120,90,40,.15);
-        z-index: 3;
-      }
-      .ar-card:nth-child(2n) .ar-card__tape {
-        transform: translateX(-50%) rotate(4deg);
-        background: rgba(220,200,150,.45);
-        left: 30%; width: 38px;
-      }
-      .ar-card:nth-child(3n) .ar-card__tape {
-        transform: translateX(-50%) rotate(-6deg);
-        left: 68%; width: 42px;
-      }
-      .ar-card:nth-child(7n+3) .ar-card__tape { display: none; }
-      .ar-card:nth-child(7n+3)::after {
-        content: "";
-        position: absolute;
-        top: -3px; left: 50%;
-        transform: translateX(-50%);
-        width: 9px; height: 9px;
-        border-radius: 50%;
-        background: radial-gradient(circle at 35% 30%, #ffd87a 0%, #c87a1a 50%, #6e3f0a 100%);
-        box-shadow: 0 1px 2px rgba(0,0,0,.5), 0 0 8px rgba(244,192,98,.4);
-        z-index: 3;
-      }
-
-      /* photo area */
-      .ar-card__photo {
-        position: relative;
-        width: 100%;
-        aspect-ratio: 16 / 9;
-        background: #0d1426;
-        overflow: hidden;
-        box-shadow: inset 0 0 0 1px rgba(0,0,0,.4);
-        image-rendering: pixelated;
-      }
-      .ar-card__photo::after {
-        content: "";
-        position: absolute; inset: 0;
-        background:
-          repeating-linear-gradient(0deg, rgba(0,0,0,.08) 0 1px, transparent 1px 3px),
-          repeating-linear-gradient(90deg, rgba(0,0,0,.08) 0 1px, transparent 1px 3px),
-          radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,.35) 100%);
-        pointer-events: none;
-      }
-      .ar-card__date-stamp {
-        position: absolute; top: 6px; left: 6px;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 9px;
-        color: #f0e6d2;
-        background: rgba(0,0,0,.55);
-        padding: 2px 5px;
-        letter-spacing: .05em;
-        z-index: 2;
-        border: 1px solid rgba(255,255,255,.08);
-      }
-
-      /* photo themes */
-      .ph-terminal { background: linear-gradient(180deg, #0a1018 0%, #0d1828 100%); }
-      .ph-terminal::before {
-        content:""; position:absolute; left:8%; right:30%; top:25%; height:6px;
-        background: #5fdc8a;
-        box-shadow: 0 -10px 0 #5fdc8a, 0 12px 0 #6acbff, 0 22px 0 #ffba5a, 0 34px 0 #5fdc8a;
-        opacity:.85;
-      }
-      .ph-study {
-        background:
-          radial-gradient(ellipse at 30% 55%, #f4c062 0%, #d98a2a 12%, transparent 35%),
-          radial-gradient(ellipse at 30% 55%, rgba(244,192,98,.35) 0%, transparent 55%),
-          linear-gradient(180deg, #1a1208 0%, #0e0a05 100%);
-      }
-      .ph-study::before {
-        content:""; position:absolute; left:55%; right:8%; top:28%; bottom:18%;
-        background: linear-gradient(90deg, #6e4a26 0 18%, #432a14 18% 22%, #845a2e 22% 38%, #432a14 38% 42%, #5e3f20 42% 60%, #432a14 60% 64%, #7a5028 64% 82%, #432a14 82% 86%, #6a4524 86% 100%);
-        box-shadow: inset 0 0 14px rgba(0,0,0,.5);
-      }
-      .ph-bar { background: linear-gradient(180deg, #1a0d1a 0%, #2a141f 55%, #5a2030 100%); }
-      .ph-bar::before {
-        content:""; position:absolute; left:0; right:0; top:58%; height:2px;
-        background: #ff7aa0;
-        box-shadow: 0 -22px 0 #ff7aa0, 0 -22px 14px rgba(255,122,160,.6), 0 8px 30px rgba(255,122,160,.4);
-        opacity:.8;
-      }
-      .ph-court { background: linear-gradient(180deg, #0a1828 0%, #142d20 100%); }
-      .ph-court::before {
-        content:""; position:absolute; left:50%; top:55%; width:36px; height:36px;
-        border-radius:50%; border:2px solid #d4a05a;
-        transform:translate(-50%,-50%);
-        box-shadow: 0 0 0 3px rgba(212,160,90,.1), 0 -18px 0 -16px #d4a05a;
-      }
-      .ph-paper { background: linear-gradient(180deg, #1a1308 0%, #0f0a05 100%); }
-      .ph-paper::before {
-        content:""; position:absolute; inset:18% 12% 12% 8%;
-        background:
-          repeating-linear-gradient(180deg, transparent 0 7px, rgba(0,0,0,.18) 7px 8px),
-          linear-gradient(180deg, #e8d8a8, #c8b078);
-        transform:rotate(-3deg);
-        box-shadow:0 6px 14px rgba(0,0,0,.5);
-      }
-      .ph-neon { background: linear-gradient(180deg, #1a0820 0%, #2a0d2a 100%); }
-      .ph-neon::before {
-        content:"OPEN"; position:absolute; top:30%; left:50%;
-        transform:translateX(-50%);
-        font-family:"DotGothic16", monospace; font-size:11px;
-        color:#ffea5a;
-        text-shadow:0 0 5px #ffea5a, 0 0 12px rgba(255,234,90,.7);
-        letter-spacing:.08em;
-      }
-      .ph-books {
-        background:
-          radial-gradient(ellipse at 65% 60%, rgba(244,192,98,.3) 0%, transparent 45%),
-          linear-gradient(180deg, #1a1208 0%, #0e0a05 100%);
-      }
-      .ph-books::before {
-        content:""; position:absolute; left:8%; right:35%; bottom:18%; height:36%;
-        background:linear-gradient(0deg, #8a5828 0 20%, #6a3e1a 20% 40%, #a06038 40% 60%, #5a3818 60% 80%, #8a5828 80% 100%);
-        transform:rotate(-2deg);
-        box-shadow:0 4px 8px rgba(0,0,0,.5);
-      }
-      .ph-todo { background: linear-gradient(180deg, #0a1828 0%, #0d2240 100%); }
-      .ph-todo::before {
-        content:""; position:absolute; left:14%; right:14%; top:22%; bottom:18%;
-        background:repeating-linear-gradient(180deg, transparent 0 6px, #6acbff 6px 8px, transparent 8px 18px);
-        opacity:.7;
-      }
-      .ph-notes { background: linear-gradient(180deg, #1f1808 0%, #120c04 100%); }
-      .ph-notes::before {
-        content:""; position:absolute; left:8%; right:8%; top:14%; bottom:14%;
-        background:
-          repeating-linear-gradient(90deg, transparent 0 14px, rgba(0,0,0,.2) 14px 15px),
-          repeating-linear-gradient(180deg, transparent 0 8px, rgba(180,140,80,.3) 8px 9px),
-          linear-gradient(180deg, #f4e3b3, #d4b878);
-        transform:rotate(1deg);
-        box-shadow:0 6px 14px rgba(0,0,0,.5);
-      }
-      .ph-git { background: linear-gradient(180deg, #050a14 0%, #0a141e 100%); }
-      .ph-git::before {
-        content:""; position:absolute; left:8%; right:8%; top:20%; bottom:20%;
-        background:repeating-linear-gradient(180deg,
-          transparent 0 10px, #ff7aa0 10px 12px, transparent 12px 20px,
-          #6acbff 20px 22px, transparent 22px 30px, #5fdc8a 30px 32px, transparent 32px 42px);
-        opacity:.75;
-      }
-      .ph-park {
-        background:
-          radial-gradient(ellipse at 50% 65%, rgba(244,192,98,.25) 0%, transparent 30%),
-          linear-gradient(180deg, #0a0d20 0%, #142028 100%);
-      }
-      .ph-park::before {
-        content:""; position:absolute; left:48%; top:30%; bottom:18%; width:3px;
-        background:#5c4530;
-        transform:translateX(-50%);
-        box-shadow: 0 0 14px rgba(244,192,98,.5), -1px 12px 0 #d4a05a, 1px 12px 0 #d4a05a;
-      }
-      .ph-bulb {
-        background:
-          radial-gradient(circle at 50% 50%, #f4c062 0%, rgba(244,192,98,.5) 8%, rgba(244,192,98,.15) 22%, transparent 45%),
-          linear-gradient(180deg, #1a1208 0%, #0a0805 100%);
-      }
-      .ph-bulb::before {
-        content:"idea."; position:absolute; left:50%; top:60%;
-        transform:translateX(-50%);
-        font-family:"JetBrains Mono", monospace; font-size:11px;
-        color:#1a1208;
-        background:rgba(244,220,160,.85);
-        padding:2px 6px; letter-spacing:.05em;
-      }
-
-      /* card text area */
-      .ar-card__meta {
-        display: flex; align-items: center; gap: 6px;
-        margin-top: 7px; margin-bottom: 2px;
-      }
-      .ar-card__badge {
-        font-family: "Noto Serif TC", serif;
-        font-size: 10px;
-        font-weight: 600;
-        color: #fff;
-        padding: 2px 7px;
-        letter-spacing: .08em;
-        border-radius: 1px;
-        box-shadow: 0 1px 0 rgba(0,0,0,.2);
-      }
-      .ar-card__badge.study   { background: #d4a05a; }
-      .ar-card__badge.bar     { background: #c45a7a; }
-      .ar-card__badge.shop    { background: #4a8fb3; }
-      .ar-card__badge.court   { background: #6a9b5e; }
-
-      .ar-card h3 {
-        font-family: "Noto Serif TC", serif;
-        font-weight: 600;
-        font-size: 13px;
-        color: #2b2418;
-        line-height: 1.3;
-        letter-spacing: .02em;
-        margin-bottom: 3px;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-      .ar-card__excerpt {
-        font-size: 10.5px;
-        line-height: 1.45;
-        color: #5b4f3c;
-        letter-spacing: .01em;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-      .ar-card__more {
-        margin-top: auto;
-        padding-top: 6px;
-        font-family: "JetBrains Mono", monospace;
-        font-size: 10px;
-        color: #8b7d63;
-        letter-spacing: .08em;
-      }
-      .ar-card:hover .ar-card__more { color: #8a5828; }
-
-      /* card link overlay */
-      .ar-card__link {
-        position: absolute; inset: 0; z-index: 2;
-      }
-
       /* ── Pagination ── */
       .ar-pagination {
         display: flex;
@@ -560,6 +274,7 @@ const pageTitle = currentRoom === 'all'
         .ar-title h1 { font-size: 26px; }
         .ar-filters { flex-wrap: wrap; justify-content: center; }
         .ar-filter { min-width: 0; flex: 0 1 calc(50% - 8px); }
+        .ar-grid { grid-template-columns: 1fr; }
         .rq-nav__links a { font-size: 12px; }
         .rq-nav__links { gap: 14px; }
       }
@@ -623,29 +338,7 @@ const pageTitle = currentRoom === 'all'
       <img class="ar-room__bg" src="/bg-board-room.png" alt="" aria-hidden="true" />
       <div class="ar-room__inner">
         <div class="ar-grid">
-          {posts.map((post, i) => {
-            const room = post.data.room ?? 'study';
-            const cat = roomToCat[room] ?? 'study';
-            const themes = photoThemes[room] ?? photoThemes.study;
-            const theme = themes[i % themes.length];
-            const date = post.data.pubDate;
-            const dateStr = `${date.getFullYear()} / ${String(date.getMonth()+1).padStart(2,'0')} / ${String(date.getDate()).padStart(2,'0')}`;
-            return (
-              <article class="ar-card">
-                <a class="ar-card__link" href={`/blog/${post.id}/`} aria-label={post.data.title}></a>
-                <div class="ar-card__tape"></div>
-                <div class={`ar-card__photo ${theme}`}>
-                  <span class="ar-card__date-stamp">{dateStr}</span>
-                </div>
-                <div class="ar-card__meta">
-                  <span class={`ar-card__badge ${cat}`}>{roomLabel[room]}</span>
-                </div>
-                <h3>{post.data.title}</h3>
-                <p class="ar-card__excerpt">{post.data.description}</p>
-                <div class="ar-card__more">閱讀全文 →</div>
-              </article>
-            );
-          })}
+          {posts.map((post) => <PostCard post={post} />)}
         </div>
 
         {pagination.lastPage > 1 && (
