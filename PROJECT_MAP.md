@@ -2,7 +2,7 @@
 
 > 這份文件給「未來的我」和「AI 助手」看。  
 > 目的：改任何功能或畫面之前，先看這裡，快速定位要動哪些檔案。  
-> 最後更新：2026-05-23
+> 最後更新：2026-06-02
 
 ---
 
@@ -17,7 +17,7 @@
 - **部署**：Netlify，push 自動觸發 rebuild
 - **域名**：ramblingquest.com（轉移中），目前預設網址 `gleaming-capybara-572b22.netlify.app`
 
-**目前主要目標**：首頁設計已完成，下一步是設計文章頁（BlogPost layout）和列表頁。
+**目前主要目標**：首頁與列表頁（Archive）設計已完成，下一步是設計文章頁（BlogPost layout）。
 
 ---
 
@@ -31,9 +31,15 @@ C:\ramblingquest\
 ├── PROJECT_MAP.md            ← 本文件
 │
 ├── public/                   靜態資源，直接對應網站根路徑
-│   ├── favicon.ico / .svg    網站圖標
-│   ├── city-street.png       首頁城市背景圖（預設）
-│   └── city-skyline.png      首頁城市背景圖（天際線版，可切換）
+│   ├── favicon.ico / .svg      網站圖標
+│   ├── city-street.png         首頁城市背景圖（預設）
+│   ├── city-skyline.png        首頁城市背景圖（天際線版，可切換）
+│   ├── bg-board-sky.png        Archive 頁 sky section 背景
+│   ├── bg-board-room.png       Archive 頁卡牌 section 背景
+│   ├── bg-board.png            舊版背景，保留備用
+│   ├── room-wall.png           用途待確認
+│   └── images/
+│       └── hokkaido-shrine.png  文章用圖片
 │
 └── src/
     ├── consts.ts             全域常數：SITE_TITLE、SITE_DESCRIPTION
@@ -51,15 +57,23 @@ C:\ramblingquest\
     │   └── FormattedDate.astro  日期格式化元件（en-us，Jul 08 2022）
     │
     ├── layouts/
-    │   └── BlogPost.astro    文章頁 Layout（Header + prose + Footer）
+    │   ├── BlogPost.astro       文章頁 Layout（Header + prose + Footer）
+    │   └── ArchiveLayout.astro  列表頁 Layout（Archive 頁設計：sky section、房間 filter tab、卡牌格、分頁）
     │
     ├── pages/                路由由此決定
     │   ├── index.astro       首頁 / （完整自訂設計，不用 Header/Footer 元件）
     │   ├── about.astro       關於頁 /about（使用 BlogPost layout）
     │   ├── rss.xml.js        RSS feed /rss.xml
     │   └── blog/
-    │       ├── index.astro   全部文章列表 /blog
-    │       └── [...slug].astro  動態文章路由 /blog/[slug]
+    │       ├── index.astro             全部文章列表 /blog（第 1 頁），使用 ArchiveLayout
+    │       ├── [...slug].astro         動態文章路由 /blog/[slug]
+    │       ├── p/
+    │       │   └── [page].astro        全部文章分頁 /blog/p/[n]，使用 ArchiveLayout
+    │       └── room/
+    │           ├── [room].astro        房間篩選頁 /blog/room/[room]（第 1 頁），使用 ArchiveLayout
+    │           └── [room]/
+    │               └── p/
+    │                   └── [page].astro  房間篩選分頁 /blog/room/[room]/p/[n]，使用 ArchiveLayout
     │
     ├── styles/
     │   ├── global.css        全域基礎樣式（供 BaseHead 注入到所有頁面）
@@ -76,7 +90,10 @@ C:\ramblingquest\
 | 頁面 | URL | 對應檔案 | 說明 |
 |---|---|---|---|
 | 首頁 | `/` | `src/pages/index.astro` | 完整自訂設計，不使用 Header/Footer 元件，載入 homepage.css |
-| 全部文章 | `/blog` | `src/pages/blog/index.astro` | 使用 Header/Footer 元件，格狀文章列表 |
+| 全部文章（第 1 頁） | `/blog` | `src/pages/blog/index.astro` | 使用 ArchiveLayout，Archive 設計 |
+| 全部文章（分頁） | `/blog/p/[n]` | `src/pages/blog/p/[page].astro` | 使用 ArchiveLayout，每頁 6 篇 |
+| 房間篩選（第 1 頁） | `/blog/room/[room]` | `src/pages/blog/room/[room].astro` | 使用 ArchiveLayout，依 room 欄位篩選 |
+| 房間篩選（分頁） | `/blog/room/[room]/p/[n]` | `src/pages/blog/room/[room]/p/[page].astro` | 使用 ArchiveLayout |
 | 單篇文章 | `/blog/[slug]` | `src/pages/blog/[...slug].astro` | 動態路由，對應 `src/content/blog/` 裡的 md/mdx 檔名 |
 | 關於頁 | `/about` | `src/pages/about.astro` | 使用 BlogPost layout，目前內容是 Lorem ipsum |
 | RSS | `/rss.xml` | `src/pages/rss.xml.js` | 自動產生 RSS feed |
@@ -85,15 +102,22 @@ C:\ramblingquest\
 
 ## 4. 主要元件對照表
 
+### 目前存在的 Layout
+
+| Layout | 檔案 | 用途 |
+|---|---|---|
+| `BlogPost` | `src/layouts/BlogPost.astro` | 文章頁 Layout（Header + prose + Footer） |
+| `ArchiveLayout` | `src/layouts/ArchiveLayout.astro` | 列表頁 Layout（sky section、房間 filter tab、3 欄卡牌格、分頁）。供 `/blog`、`/blog/p/[n]`、`/blog/room/[room]`、`/blog/room/[room]/p/[n]` 使用 |
+
 ### 目前存在的元件
 
 | 元件 | 檔案 | 用途 | 使用於 |
 |---|---|---|---|
 | `BaseHead` | `src/components/BaseHead.astro` | `<head>` 的所有內容：charset、viewport、SEO meta、OG、字體、global.css | 所有頁面（含首頁） |
-| `Header` | `src/components/Header.astro` | 其他頁面的 Navbar（白底，含 Home/Blog/About 連結） | `/blog`、`/about`、`/blog/[slug]` |
+| `Header` | `src/components/Header.astro` | 其他頁面的 Navbar（白底，含 Home/Blog/About 連結） | `/about`、`/blog/[slug]` |
 | `HeaderLink` | `src/components/HeaderLink.astro` | Header 裡有 active 狀態的導覽連結 | `Header.astro` |
-| `Footer` | `src/components/Footer.astro` | 其他頁面的 Footer（灰色漸層，含社群連結） | `/blog`、`/about`、`/blog/[slug]` |
-| `FormattedDate` | `src/components/FormattedDate.astro` | 日期格式化（Jul 08, 2022）輸出 `<time>` 元素 | `BlogPost.astro`、`/blog/index.astro` |
+| `Footer` | `src/components/Footer.astro` | 其他頁面的 Footer（灰色漸層，含社群連結） | `/about`、`/blog/[slug]` |
+| `FormattedDate` | `src/components/FormattedDate.astro` | 日期格式化（Jul 08, 2022）輸出 `<time>` 元素 | `BlogPost.astro` |
 
 ### 首頁區塊（目前寫在 `index.astro`，尚未拆成元件）
 
@@ -278,7 +302,7 @@ room: 'study'              # 選填，預設 'study'，可選值：study | bar |
 | 修改其他頁面 Footer | `src/components/Footer.astro` | 目前社群連結指向 Astro 官方，需要換成自己的 |
 | 新增一篇文章 | `src/content/blog/新文章.md` | 參考第 6 節「新增步驟」 |
 | 修改文章頁樣式 | `src/layouts/BlogPost.astro` 的 `<style>` | `.prose` class 控制正文寬度與排版 |
-| 修改文章列表頁（/blog）樣式 | `src/pages/blog/index.astro` 的 `<style>` | 目前是兩欄格局，第一篇全寬 |
+| 修改文章列表頁（/blog）樣式 | `src/layouts/ArchiveLayout.astro` 的 `<style>` 區塊 | 3 欄卡牌格局，含 sky section、房間 filter tab、分頁；`blog/index.astro` 只是資料層，樣式全在 ArchiveLayout |
 | 新增分類或房間 | `src/content.config.ts` + `index.astro` roomLabel/roomType + `homepage.css` | 新增 `z.enum` 選項、首頁 label 對應表、`rq-note__cat[data-room="新房間"]` 顏色 |
 | 修改網站主色調（其他頁面） | `src/styles/global.css` `--accent` 變數 | 首頁色彩走 `--accent` CSS 變數（每個招牌獨立設定，不受此影響） |
 | 修改網站主色調（首頁） | `homepage.css` `:root` 區塊，或各 `<li style="--accent: ...">` | 每個招牌有獨立 `--accent`，`--halo` 控制燈光暖色 |
@@ -326,7 +350,6 @@ room: 'study'              # 選填，預設 'study'，可選值：study | bar |
 
 | 功能 | 說明 |
 |---|---|
-| 各房間獨立頁面 | `/blog?room=study` 或 `/study` 等，目前四個招牌都指向 `/blog` |
 | 文章頁各房間獨立排版 | 書房像書桌、吧台像菜單紙，目前統一用 `BlogPost.astro` |
 | 搜尋 | 目前尚未實作，未來考慮語意搜尋（參考專案筆記） |
 | 文章系列（series） | 多篇文章串成系列，目前 schema 無此欄位 |

@@ -1,85 +1,490 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+type Props = CollectionEntry<'blog'>['data'] & {
+	prevPost?: CollectionEntry<'blog'> | null;
+	nextPost?: CollectionEntry<'blog'> | null;
+};
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, room = 'study', prevPost, nextPost } = Astro.props;
+
+const roomLabel: Record<string, string> = {
+	study: '書房',
+	bar: '吧台',
+	workshop: '工坊',
+	court: '場邊',
+};
 ---
 
-<html lang="en">
+<html lang="zh-Hant">
 	<head>
 		<BaseHead title={title} description={description} />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Noto+Serif+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
+			:global(body) {
+				background-color: #3d1e08;
+				background-image: url('/desktop-no-paper.png');
+				background-size: cover;
+				background-position: center;
+				background-attachment: fixed;
+				color: #2c1f14;
+				font-family: "Noto Serif TC", Georgia, serif;
+				font-size: 18px;
+				line-height: 1.85;
+				-webkit-font-smoothing: antialiased;
 				margin: 0;
+				padding: 0;
 			}
+
+			/* ── Nav ── */
+			.rq-mono {
+				font-family: "JetBrains Mono", ui-monospace, monospace;
+				font-size: .78em;
+				letter-spacing: .04em;
+				color: rgba(230, 239, 255, .52);
+				text-transform: lowercase;
+			}
+			.rq-nav {
+				--text:      #e6efff;
+				--text-soft: rgba(230, 239, 255, .78);
+				--text-mute: rgba(230, 239, 255, .52);
+				--halo:      255 200 120;
+
+				position: sticky;
+				top: 0;
+				z-index: 50;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 14px 56px;
+				background: rgba(5, 11, 24, 0.95);
+				backdrop-filter: blur(10px);
+				-webkit-backdrop-filter: blur(10px);
+				border-bottom: 1px solid rgba(230, 239, 255, .07);
+			}
+			.rq-brand {
+				display: flex;
+				align-items: center;
+				gap: 14px;
+				white-space: nowrap;
+				text-decoration: none;
+			}
+			.rq-brand__text {
+				display: flex;
+				flex-direction: column;
+				line-height: 1.1;
+				white-space: nowrap;
+			}
+			.rq-brand__name {
+				font-family: "Special Elite", "Courier New", monospace;
+				font-size: 18px;
+				color: var(--text);
+				letter-spacing: .01em;
+				text-shadow: 0 1px 4px rgba(0,0,0,.6);
+			}
+			.rq-brand__sub {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 10px;
+				color: var(--text-mute);
+				letter-spacing: .14em;
+				margin-top: 3px;
+			}
+			.rq-nav__links {
+				display: flex;
+				align-items: center;
+				gap: 38px;
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+			.rq-nav__links a {
+				font-family: "Noto Serif TC", serif;
+				font-size: 14.5px;
+				color: var(--text-soft);
+				position: relative;
+				padding-bottom: 4px;
+				text-shadow: 0 1px 4px rgba(0,0,0,.7);
+				text-decoration: none;
+				transition: color .25s ease;
+			}
+			.rq-nav__links a .rq-mono { margin-left: 6px; color: var(--text-mute); }
+			.rq-nav__links a::after {
+				content: "";
+				position: absolute;
+				left: 0; right: 100%;
+				bottom: 0; height: 1px;
+				background: rgb(var(--halo) / .9);
+				transition: right .35s ease;
+			}
+			.rq-nav__links a:hover { color: var(--text); }
+			.rq-nav__links a:hover::after { right: 0; }
+
+			/* Lamp icon */
+			.rq-lamp {
+				position: relative;
+				width: 28px; height: 36px;
+				display: inline-block;
+			}
+			.rq-lamp__post {
+				position: absolute;
+				left: 13px; top: 6px;
+				width: 2px; height: 30px;
+				background: linear-gradient(to bottom, #6b5a3e, #2b2418);
+			}
+			.rq-lamp__head {
+				position: absolute;
+				left: 7px; top: 4px;
+				width: 14px; height: 9px;
+				background: linear-gradient(to bottom, #4a3a25 0 30%, #d49a48 30% 100%);
+				border-radius: 2px 2px 1px 1px;
+				box-shadow: 0 0 0 1px rgba(0,0,0,.35);
+			}
+			.rq-lamp__glow {
+				position: absolute;
+				left: -12px; top: -6px;
+				width: 52px; height: 32px;
+				background: radial-gradient(ellipse at center,
+					rgb(var(--halo) / .55) 0%,
+					rgb(var(--halo) / .15) 35%,
+					transparent 65%);
+				filter: blur(2px);
+				pointer-events: none;
+			}
+
+			/* ── Paper container ── */
+			.paper-wrap {
+				padding: 1.5rem 1.5rem 6rem;
+			}
+			.paper {
+				max-width: 760px;
+				margin: 0 auto;
+				background: #f4e8c8;
+				padding: 3.5rem 4.5rem 4rem;
+				box-shadow:
+					0 2px 4px rgba(60, 30, 0, 0.10),
+					0 10px 28px rgba(60, 30, 0, 0.18),
+					0 40px 90px rgba(60, 30, 0, 0.20);
+			}
+			@media (max-width: 820px) {
+				.paper-wrap { padding: 1rem 0.75rem 4rem; }
+				.paper { padding: 2.5rem 2rem 3rem; }
+			}
+			@media (max-width: 480px) {
+				.paper-wrap { padding: 0.5rem 0 3rem; }
+				.paper { padding: 2rem 1.25rem 2.5rem; }
+			}
+
+			/* ── Article header ── */
+			.post-header {
+				margin: 0 0 2rem;
+			}
+			.post-meta {
+				display: flex;
+				align-items: center;
+				gap: 0.75rem;
+				margin-bottom: 1.25rem;
+				color: rgba(44, 31, 20, 0.55);
+				font-size: 0.875rem;
+				font-family: "Noto Serif TC", sans-serif;
+			}
+			.post-meta time {
+				letter-spacing: 0.02em;
+			}
+			.room-badge {
+				padding: 0.2em 0.8em;
+				border: 1px solid rgba(245, 184, 112, .4);
+				border-radius: 2rem;
+				color: #f5b870;
+				text-decoration: none;
+				font-size: 0.8rem;
+				transition: border-color 0.2s, background 0.2s;
+			}
+			.room-badge:hover {
+				border-color: #f5b870;
+				background: rgba(245, 184, 112, .08);
+			}
+			.room-badge[data-room="study"]       { color: hsl(38, 70%, 38%);   border-color: hsl(38deg 70% 38% / 0.4); }
+			.room-badge[data-room="bar"]          { color: hsl(332, 60%, 46%); border-color: hsl(332deg 60% 46% / 0.4); }
+			.room-badge[data-room="workshop"]     { color: hsl(192, 70%, 33%); border-color: hsl(192deg 70% 33% / 0.4); }
+			.room-badge[data-room="court"]        { color: hsl(78, 55%, 33%);  border-color: hsl(78deg 55% 33% / 0.4); }
+			.room-badge[data-room="study"]:hover    { border-color: hsl(38, 70%, 38%);   background: hsl(38deg 70% 38% / 0.08); }
+			.room-badge[data-room="bar"]:hover      { border-color: hsl(332, 60%, 46%);  background: hsl(332deg 60% 46% / 0.08); }
+			.room-badge[data-room="workshop"]:hover { border-color: hsl(192, 70%, 33%);  background: hsl(192deg 70% 33% / 0.08); }
+			.room-badge[data-room="court"]:hover    { border-color: hsl(78, 55%, 33%);   background: hsl(78deg 55% 33% / 0.08); }
+			.post-header h1 {
+				font-size: 2.1rem;
+				font-weight: 700;
+				line-height: 1.35;
+				color: #1a0f08;
+				margin: 0 0 0.5rem;
+				letter-spacing: -0.01em;
+			}
+			.last-updated {
+				font-size: 0.8rem;
+				color: rgba(44, 31, 20, 0.45);
+				font-style: italic;
+				margin-top: 0.5rem;
+			}
+
+			/* ── Hero image ── */
 			.hero-image {
-				width: 100%;
+				margin: 0 0 2rem;
 			}
 			.hero-image img {
+				width: 100%;
+				border-radius: 8px;
 				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
 			}
+
+			/* ── Prose ── */
 			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
+				padding: 0;
 			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
+			.prose :global(p) {
+				color: #2c1f14;
+				margin-bottom: 1.5rem;
 			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
+			.prose :global(h2) {
+				font-size: 1.45rem;
+				font-weight: 700;
+				color: #1a0f08;
+				line-height: 1.4;
+				margin: 2.5rem 0 1rem;
 			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
+			.prose :global(h3) {
+				font-size: 1.2rem;
+				font-weight: 600;
+				color: #1a0f08;
+				line-height: 1.4;
+				margin: 2rem 0 0.75rem;
 			}
-			.last-updated-on {
+			.prose :global(h4) {
+				font-size: 1rem;
+				font-weight: 600;
+				color: rgba(44, 31, 20, 0.75);
+				margin: 1.5rem 0 0.5rem;
+			}
+			.prose :global(a) {
+				color: #7c3e0e;
+				text-decoration: underline;
+				text-underline-offset: 3px;
+				text-decoration-color: rgba(124, 62, 14, 0.5);
+				transition: text-decoration-color 0.2s;
+			}
+			.prose :global(a:hover) {
+				text-decoration-color: #7c3e0e;
+			}
+			.prose :global(blockquote) {
+				border-left: 3px solid #c9a26a;
+				padding: 0.25rem 0 0.25rem 1.25rem;
+				margin: 1.75rem 0;
+				color: rgba(44, 31, 20, 0.55);
 				font-style: italic;
+			}
+			.prose :global(code) {
+				font-family: "JetBrains Mono", "Fira Code", monospace;
+				font-size: 0.875em;
+				background: rgba(44, 31, 20, 0.08);
+				padding: 0.15em 0.45em;
+				border-radius: 4px;
+				color: #2c1f14;
+			}
+			.prose :global(pre) {
+				background: #0d1525;
+				border: 1px solid rgba(230, 239, 255, .09);
+				border-radius: 8px;
+				padding: 1.25rem 1.5rem;
+				overflow-x: auto;
+				margin: 1.75rem 0;
+				line-height: 1.65;
+			}
+			.prose :global(pre code) {
+				background: none;
+				padding: 0;
+				font-size: 0.875rem;
+				border-radius: 0;
+				color: rgba(230, 239, 255, .85);
+			}
+			.prose :global(img) {
+				max-width: 100%;
+				border-radius: 8px;
+				display: block;
+				margin: 1.75rem auto;
+			}
+			.prose :global(hr) {
+				border: none;
+				border-top: 1px solid rgba(44, 31, 20, 0.15);
+				margin: 2.5rem 0;
+			}
+			.prose :global(ul),
+			.prose :global(ol) {
+				color: #2c1f14;
+				padding-left: 1.5rem;
+				margin-bottom: 1.5rem;
+			}
+			.prose :global(li) {
+				margin-bottom: 0.4rem;
+			}
+			.prose :global(strong) {
+				color: #1a0f08;
+				font-weight: 600;
+			}
+			.prose :global(table) {
+				width: 100%;
+				border-collapse: collapse;
+				margin: 1.75rem 0;
+				font-size: 0.9rem;
+			}
+			.prose :global(th) {
+				text-align: left;
+				padding: 0.6rem 1rem;
+				border-bottom: 1px solid rgba(44, 31, 20, 0.2);
+				color: rgba(44, 31, 20, 0.55);
+				font-weight: 500;
+			}
+			.prose :global(td) {
+				padding: 0.6rem 1rem;
+				border-bottom: 1px solid rgba(44, 31, 20, 0.07);
+				color: #2c1f14;
+			}
+
+			/* ── Post navigation ── */
+			.post-nav {
+				margin-top: 2.5rem;
+				padding-top: 1.75rem;
+				border-top: 1px solid rgba(44, 31, 20, 0.15);
+			}
+			.post-nav__back {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.4rem;
+				color: rgba(44, 31, 20, 0.45);
+				text-decoration: none;
+				font-size: 0.875rem;
+				margin-bottom: 1.75rem;
+				transition: color 0.2s;
+			}
+			.post-nav__back:hover {
+				color: #7c3e0e;
+			}
+			.post-nav__siblings {
+				display: flex;
+				gap: 1.5rem;
+			}
+			.post-nav__prev,
+			.post-nav__next {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				gap: 0.3rem;
+				text-decoration: none;
+				transition: color 0.2s;
+			}
+			.post-nav__next {
+				align-items: flex-end;
+				text-align: right;
+			}
+			.post-nav__label {
+				font-size: 0.75rem;
+				color: rgba(44, 31, 20, 0.35);
+				letter-spacing: 0.04em;
+			}
+			.post-nav__title {
+				font-size: 0.9rem;
+				color: rgba(44, 31, 20, 0.65);
+				line-height: 1.4;
+				transition: color 0.2s;
+			}
+			.post-nav__prev:hover .post-nav__title,
+			.post-nav__next:hover .post-nav__title {
+				color: #1a0f08;
+			}
+
+			/* ── Site footer ── */
+			.site-footer {
+				text-align: center;
+				padding: 1.5rem 0 0;
+				margin-top: 2rem;
+				color: rgba(44, 31, 20, 0.35);
+				font-size: 0.8rem;
+				border-top: 1px solid rgba(44, 31, 20, 0.1);
+				font-family: "Noto Serif TC", sans-serif;
 			}
 		</style>
 	</head>
 
 	<body>
-		<Header />
-		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <img src={heroImage} alt="" style="width:100%;border-radius:12px;" />}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
+		<nav class="rq-nav">
+			<a href="/" class="rq-brand" aria-label="Rambling Quest 首頁">
+				<img src="/feet-golden-blue.png" alt="" aria-hidden="true" style="height:36px;width:auto;" />
+				<span class="rq-brand__text">
+					<span class="rq-brand__name">Rambling Quest</span>
+					<span class="rq-brand__sub">漫步的房間 · est. 2024</span>
+				</span>
+			</a>
+			<ul class="rq-nav__links">
+				<li><a href="/blog">全部文章 <span class="rq-mono">/ archive</span></a></li>
+				<li><a href="/about">關於這裡 <span class="rq-mono">/ about</span></a></li>
+			</ul>
+		</nav>
+
+		<div class="paper-wrap">
+			<div class="paper">
+				<main>
+					<article>
+						<header class="post-header">
+							<div class="post-meta">
+								<FormattedDate date={pubDate} />
+								<a href={`/blog/room/${room}`} class="room-badge" data-room={room}>{roomLabel[room] ?? room}</a>
+							</div>
+							<h1>{title}</h1>
+							{updatedDate && (
+								<p class="last-updated">最後更新於 <FormattedDate date={updatedDate} /></p>
+							)}
+						</header>
+
+						{heroImage && (
+							<div class="hero-image">
+								<img src={heroImage} alt="" />
+							</div>
+						)}
+
+						<div class="prose">
+							<slot />
 						</div>
-						<h1>{title}</h1>
-						<hr />
-					</div>
-					<slot />
-				</div>
-			</article>
-		</main>
-		<Footer />
+
+						<footer class="post-nav">
+							<a href={`/blog/room/${room}`} class="post-nav__back">
+								← 返回{roomLabel[room] ?? '分類'}
+							</a>
+							{(prevPost || nextPost) && (
+								<div class="post-nav__siblings">
+									{prevPost ? (
+										<a href={`/blog/${prevPost.id}`} class="post-nav__prev">
+											<span class="post-nav__label">← 上一篇</span>
+											<span class="post-nav__title">{prevPost.data.title}</span>
+										</a>
+									) : <span />}
+									{nextPost ? (
+										<a href={`/blog/${nextPost.id}`} class="post-nav__next">
+											<span class="post-nav__label">下一篇 →</span>
+											<span class="post-nav__title">{nextPost.data.title}</span>
+										</a>
+									) : <span />}
+								</div>
+							)}
+						</footer>
+					</article>
+				</main>
+
+				<footer class="site-footer">
+					© {new Date().getFullYear()} 毓文 · Rambling Quest
+				</footer>
+			</div>
+		</div>
 	</body>
 </html>
