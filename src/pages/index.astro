@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
+import HomeFooter from '../components/HomeFooter.astro';
 import PostCard from '../components/PostCard.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import '../styles/homepage.css';
@@ -24,7 +25,7 @@ const posts = (await getCollection('blog'))
     <!-- ───────── NAVBAR ───────── -->
     <nav class="rq-nav">
       <a href="/" class="rq-brand" aria-label="Rambling Quest 首頁">
-        <img src="/feet-golden-blue.png" alt="" aria-hidden="true" style="height:36px;width:auto;" />
+        <img src="/feet-golden-blue.webp" alt="" aria-hidden="true" style="height:36px;width:auto;" />
         <span class="rq-brand__text">
           <span class="rq-brand__name">Rambling Quest</span>
           <span class="rq-brand__sub">漫步的房間 · est. 2024</span>
@@ -45,11 +46,6 @@ const posts = (await getCollection('blog'))
       <div class="rq-city__sheen" aria-hidden="true"></div>
 
       <div class="rq-entry">
-        <div class="rq-entry__kicker">
-          <span class="rq-tick"></span>
-          <span>tonight · 22:47</span>
-          <span class="rq-tick"></span>
-        </div>
         <h1 class="rq-title">Rambling<span class="rq-title__amp"> </span>Quest</h1>
         <p class="rq-tagline">
           白天像書房，夜裡像酒館。這裡放一些我走路時撿到的想法。
@@ -138,19 +134,7 @@ const posts = (await getCollection('blog'))
     </section>
 
     <!-- ───────── FOOTER ───────── -->
-    <footer class="rq-foot">
-      <img src="/feet-golden-blue.png" alt="" aria-hidden="true" style="height:40px;width:auto;" />
-      <div class="rq-foot__col rq-foot__col--note">
-        <p>夜深了。記得關門。<br /><span class="rq-mono">good night, traveller.</span></p>
-      </div>
-      <div class="rq-foot__col rq-foot__col--links">
-        <span class="rq-dot"></span>
-        <a href="https://github.com/troublord" target="_blank" rel="noopener">GitHub</a>
-      </div>
-      <div class="rq-foot__col rq-foot__col--copy rq-mono">
-        © {new Date().getFullYear()} Rambling Quest · 漫步的房間 · all rambles reserved
-      </div>
-    </footer>
+    <HomeFooter />
 
   <script>
     const burger = document.querySelector('.rq-nav__burger') as HTMLButtonElement;

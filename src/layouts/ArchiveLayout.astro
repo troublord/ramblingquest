@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
+import HomeFooter from '../components/HomeFooter.astro';
 import PostCard from '../components/PostCard.astro';
 import { SITE_TITLE } from '../consts';
 import '../styles/homepage.css';
@@ -72,10 +73,6 @@ const pageTitle = currentRoom === 'all'
       .ar-room {
         display: grid;
         grid-template-areas: "main";
-        background: linear-gradient(180deg,
-          #060c20 0%, #081226 8%, #0c1730 22%,
-          #0e1a2e 50%, #0d1828 85%, #08111e 92%,
-          #050810 96%, #03060c 100%);
         overflow: hidden;
       }
       .ar-room__bg {
@@ -294,7 +291,7 @@ const pageTitle = currentRoom === 'all'
     <!-- ── NAV ── -->
     <nav class="rq-nav" style="position:fixed; z-index:50;">
       <a href="/" class="rq-brand" aria-label="Rambling Quest 首頁">
-        <img src="/feet-golden-blue.png" alt="" aria-hidden="true" style="height:36px;width:auto;" />
+        <img src="/feet-golden-blue.webp" alt="" aria-hidden="true" style="height:36px;width:auto;" />
         <span class="rq-brand__text">
           <span class="rq-brand__name">Rambling Quest</span>
           <span class="rq-brand__sub">漫步的房間 · est. 2024</span>
@@ -313,7 +310,7 @@ const pageTitle = currentRoom === 'all'
           <div class="ar-title__rule"><span class="star">✦</span></div>
           <h1>全部文章</h1>
           <p class="ar-title__en">archive</p>
-          <p class="ar-title__desc">把夜裡的低語，一篇篇收好。歡迎翻閱這些走路時撿到的想法。</p>
+          <p class="ar-title__desc">無限期收留值得品味的瞬間</p>
         </header>
 
         <div class="ar-filters">
@@ -366,19 +363,7 @@ const pageTitle = currentRoom === 'all'
     </section>
 
     <!-- ── Footer ── -->
-    <footer class="rq-foot">
-      <img src="/feet-golden-blue.png" alt="" aria-hidden="true" style="height:40px;width:auto;" />
-      <div class="rq-foot__col rq-foot__col--note">
-        <p>夜深了。記得關門。<br /><span class="rq-mono">good night, traveller.</span></p>
-      </div>
-      <div class="rq-foot__col rq-foot__col--links">
-        <span class="rq-dot"></span>
-        <a href="https://github.com/troublord" target="_blank" rel="noopener">GitHub</a>
-      </div>
-      <div class="rq-foot__col rq-foot__col--copy rq-mono">
-        © {new Date().getFullYear()} Rambling Quest · 漫步的房間 · all rambles reserved
-      </div>
-    </footer>
+    <HomeFooter />
 
   </body>
 </html>

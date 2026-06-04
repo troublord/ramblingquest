@@ -120,6 +120,7 @@ C:\ramblingquest\
 | `Footer` | `src/components/Footer.astro` | 其他頁面的 Footer（灰色漸層，含社群連結） | `/about`、`/blog/[slug]` |
 | `FormattedDate` | `src/components/FormattedDate.astro` | 日期格式化（Jul 08, 2022）輸出 `<time>` 元素 | `BlogPost.astro` |
 | `PostCard` | `src/components/PostCard.astro` | 文章卡片（拍立得風格：heroImage、圖釘、房間徽章、標題、虛線分隔、摘要）。無 heroImage 時 fallback 為 `/default-card-photo.jpg` | `ArchiveLayout.astro`、`index.astro` |
+| `HomeFooter` | `src/components/HomeFooter.astro` | 首頁暗色主題 Footer（腳圖、標語、GitHub 連結、版權）。樣式來自 `homepage.css` | `index.astro`、`ArchiveLayout.astro` |
 
 ### 首頁區塊（目前寫在 `index.astro`，尚未拆成元件）
 
