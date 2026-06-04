@@ -22,6 +22,14 @@ interface Props {
 
 const { currentRoom, posts, counts, totalPosts, pagination } = Astro.props;
 
+const roomLabel: Record<RoomKey, string> = {
+  all: '全部文章',
+  study: '書房',
+  bar: '吧台',
+  workshop: '工坊',
+  court: '場邊',
+};
+
 const pageTitle = currentRoom === 'all'
   ? `全部文章 · ${SITE_TITLE}`
   : `${roomLabel[currentRoom]} · ${SITE_TITLE}`;
