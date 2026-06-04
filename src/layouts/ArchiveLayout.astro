@@ -22,6 +22,14 @@ interface Props {
 
 const { currentRoom, posts, counts, totalPosts, pagination } = Astro.props;
 
+const roomLabel: Record<RoomKey, string> = {
+  all: '全部文章',
+  study: '書房',
+  bar: '吧台',
+  workshop: '工坊',
+  court: '場邊',
+};
+
 const pageTitle = currentRoom === 'all'
   ? `全部文章 · ${SITE_TITLE}`
   : `${roomLabel[currentRoom]} · ${SITE_TITLE}`;
@@ -286,7 +294,7 @@ const pageTitle = currentRoom === 'all'
     <!-- ── NAV ── -->
     <nav class="rq-nav" style="position:fixed; z-index:50;">
       <a href="/" class="rq-brand" aria-label="Rambling Quest 首頁">
-        <img src="/feet-golden-blue.png" alt="" aria-hidden="true" style="height:36px;width:auto;" />
+        <img src="/feet-golden-blue.webp" alt="" aria-hidden="true" style="height:36px;width:auto;" />
         <span class="rq-brand__text">
           <span class="rq-brand__name">Rambling Quest</span>
           <span class="rq-brand__sub">漫步的房間 · est. 2024</span>
@@ -359,7 +367,7 @@ const pageTitle = currentRoom === 'all'
 
     <!-- ── Footer ── -->
     <footer class="rq-foot">
-      <img src="/feet-golden-blue.png" alt="" aria-hidden="true" style="height:40px;width:auto;" />
+      <img src="/feet-golden-blue.webp" alt="" aria-hidden="true" style="height:40px;width:auto;" />
       <div class="rq-foot__col rq-foot__col--note">
         <p>夜深了。記得關門。<br /><span class="rq-mono">good night, traveller.</span></p>
       </div>
