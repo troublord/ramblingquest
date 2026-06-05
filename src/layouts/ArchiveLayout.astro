@@ -1,0 +1,369 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import HomeFooter from '../components/HomeFooter.astro';
+import PostCard from '../components/PostCard.astro';
+import { SITE_TITLE } from '../consts';
+import '../styles/homepage.css';
+
+type RoomKey = 'all' | 'study' | 'bar' | 'workshop' | 'court';
+
+interface Props {
+  currentRoom: RoomKey;
+  posts: CollectionEntry<'blog'>[];
+  counts: Record<string, number>;
+  totalPosts: number;
+  pagination: {
+    prevUrl?: string;
+    nextUrl?: string;
+    currentPage: number;
+    lastPage: number;
+  };
+}
+
+const { currentRoom, posts, counts, totalPosts, pagination } = Astro.props;
+
+const roomLabel: Record<RoomKey, string> = {
+  all: '全部文章',
+  study: '書房',
+  bar: '吧台',
+  workshop: '工坊',
+  court: '場邊',
+};
+
+const pageTitle = currentRoom === 'all'
+  ? `全部文章 · ${SITE_TITLE}`
+  : `${roomLabel[currentRoom]} · ${SITE_TITLE}`;
+---
+
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <BaseHead title={pageTitle} description="把夜裡的低語，一篇篇收好。" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Noto+Serif+TC:wght@400;500;600;700&family=DotGothic16&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+      /* ── Sky section ── */
+      .ar-sky {
+        position: relative;
+        height: 50vh;
+        min-height: 380px;
+        overflow: hidden;
+        background:
+          linear-gradient(to bottom, #060c20 0%, #060c20 35%, transparent 75%),
+          url("/bg-board-sky.png") center bottom / 100% auto no-repeat,
+          #060c20;
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+      }
+      .ar-sky__inner {
+        position: relative;
+        z-index: 2;
+        height: 100%;
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 0 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      /* ── Room section ── */
+      .ar-room {
+        display: grid;
+        grid-template-areas: "main";
+        overflow: hidden;
+      }
+      .ar-room__bg {
+        grid-area: main;
+        align-self: start;
+        width: 100%;
+        height: auto;
+        display: block;
+        object-position: top;
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+      }
+      .ar-room__inner {
+        grid-area: main;
+        align-self: start;
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width:1180px;
+        margin: 0 auto;
+        padding: 80px 40px 100px;
+      }
+
+      /* ── Title ── */
+      .ar-title {
+        text-align: center;
+        padding: 0;
+      }
+      .ar-title__rule {
+        display: flex; align-items: center; justify-content: center;
+        gap: 14px;
+        color: #7a6f55;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        letter-spacing: .3em;
+        margin-bottom: 14px;
+      }
+      .ar-title__rule::before, .ar-title__rule::after {
+        content: "";
+        width: 96px; height: 1px;
+        background: linear-gradient(90deg, transparent, #6e5e3c, transparent);
+      }
+      .ar-title__rule .star { color: #d9b56a; font-size: 10px; }
+      .ar-title h1 {
+        font-family: "Noto Serif TC", serif;
+        font-weight: 600;
+        font-size: 48px;
+        letter-spacing: .32em;
+        padding-left: .32em;
+        color: #f0e6d2;
+        text-shadow: 0 0 22px rgba(244,192,98,.2), 0 2px 0 rgba(0,0,0,.4);
+      }
+      .ar-title__en {
+        margin-top: 8px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 13px;
+        letter-spacing: .5em;
+        color: #a99a78;
+        text-transform: lowercase;
+        padding-left: .5em;
+      }
+      .ar-title__desc {
+        margin-top: 16px;
+        font-family: "Noto Serif TC", serif;
+        font-size: 15px;
+        color: #cfc4a5;
+        letter-spacing: .16em;
+      }
+
+      /* ── Filters ── */
+      .ar-filters {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        margin: 28px 0 0;
+      }
+      .ar-filter {
+        position: relative;
+        display: block;
+        min-width: 116px;
+        padding: 11px 18px 9px;
+        background: linear-gradient(180deg, rgba(15,20,35,.85), rgba(10,16,28,.92));
+        border: 1px solid rgba(255,255,255,.06);
+        border-top: 3px solid var(--fc, #b9a888);
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        transition: all .25s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.04);
+        backdrop-filter: blur(6px);
+      }
+      .ar-filter::before {
+        content: "";
+        position: absolute;
+        top: -5.5px; left: 50%;
+        width: 7px; height: 7px;
+        background: var(--fc, #b9a888);
+        transform: translateX(-50%);
+        box-shadow: 0 0 8px var(--fc-glow, rgba(185,168,136,.5));
+        border-radius: 50%;
+      }
+      .ar-filter .fz {
+        font-family: "Noto Serif TC", serif;
+        font-size: 15px;
+        font-weight: 500;
+        letter-spacing: .18em;
+        color: var(--fc, #d8cdb0);
+        display: block;
+        text-shadow: 0 0 14px var(--fc-glow, rgba(185,168,136,.25));
+      }
+      .ar-filter .fe {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 8.5px;
+        letter-spacing: .18em;
+        color: #6e6650;
+        margin-top: 3px;
+        text-transform: uppercase;
+        display: block;
+      }
+      .ar-filter .cnt {
+        display: inline-block;
+        margin-left: 6px;
+        padding: 1px 5px 0;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        color: var(--fc, #b9a888);
+        background: rgba(255,255,255,.04);
+        border: 1px solid var(--fc, #b9a888);
+        border-radius: 8px;
+        opacity: .75;
+        vertical-align: middle;
+        transform: translateY(-1px);
+      }
+      .ar-filter:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px rgba(0,0,0,.55), 0 0 16px var(--fc-glow, rgba(185,168,136,.25));
+      }
+      .ar-filter.is-active {
+        background: linear-gradient(180deg, var(--fc-soft, rgba(185,168,136,.18)), rgba(10,16,28,.95));
+        border-color: var(--fc, #b9a888);
+        box-shadow: 0 6px 18px rgba(0,0,0,.55), 0 0 24px var(--fc-glow, rgba(185,168,136,.5));
+      }
+      .ar-filter.is-active .fz { color: var(--fc-text, #f4c062); }
+      .ar-filter.is-active .cnt { opacity: 1; }
+
+      .ar-filter[data-cat="all"]      { --fc:#b9a888; --fc-glow:rgba(185,168,136,.45); --fc-soft:rgba(185,168,136,.18); --fc-text:#e8dfc0; }
+      .ar-filter[data-cat="study"]    { --fc:#d4a05a; --fc-glow:rgba(212,160,90,.5);   --fc-soft:rgba(212,160,90,.20);  --fc-text:#f4c062; }
+      .ar-filter[data-cat="bar"]      { --fc:#c45a7a; --fc-glow:rgba(196,90,122,.5);   --fc-soft:rgba(196,90,122,.20);  --fc-text:#f08aa6; }
+      .ar-filter[data-cat="shop"]     { --fc:#4a8fb3; --fc-glow:rgba(74,143,179,.5);   --fc-soft:rgba(74,143,179,.22);  --fc-text:#7ec0e6; }
+      .ar-filter[data-cat="court"]    { --fc:#6a9b5e; --fc-glow:rgba(106,155,94,.5);   --fc-soft:rgba(106,155,94,.20);  --fc-text:#8fc88a; }
+
+      /* ── Grid ── */
+      .ar-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 32px 22px;
+      }
+
+      /* ── Pagination ── */
+      .ar-pagination {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 28px;
+        padding: 56px 0 8px;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .ar-pagination__link {
+        color: #f4c062;
+        text-decoration: none;
+        font-size: 12px;
+        letter-spacing: .1em;
+        padding: 8px 18px;
+        border: 1px solid rgba(244,192,98,.3);
+        transition: all .2s ease;
+      }
+      .ar-pagination__link:hover {
+        border-color: rgba(244,192,98,.8);
+        box-shadow: 0 0 12px rgba(244,192,98,.25);
+      }
+      .ar-pagination__info {
+        font-size: 11px;
+        color: #7a6f55;
+        letter-spacing: .2em;
+      }
+
+      /* ── RWD ── */
+      @media (max-width: 768px) {
+        .ar-sky__inner { padding: 0 20px; }
+        .ar-room__inner { padding: 60px 20px 80px; }
+        .ar-title h1 { font-size: 36px; }
+        .ar-title__desc { font-size: 13px; }
+        .ar-filters { gap: 8px; }
+        .ar-filter { min-width: 80px; padding: 9px 12px 7px; }
+        .ar-filter .fz { font-size: 13px; }
+        .ar-filter .fe { display: none; }
+        .ar-grid { grid-template-columns: repeat(2, 1fr); }
+        .rq-nav { padding: 0 20px !important; }
+        .rq-brand__sub { display: none; }
+        .rq-nav__links { gap: 20px; }
+      }
+      @media (max-width: 480px) {
+        .ar-title h1 { font-size: 26px; }
+        .ar-filters { flex-wrap: wrap; justify-content: center; }
+        .ar-filter { min-width: 0; flex: 0 1 calc(50% - 8px); }
+        .ar-grid { grid-template-columns: 1fr; }
+        .rq-nav__links a { font-size: 12px; }
+        .rq-nav__links { gap: 14px; }
+      }
+    </style>
+  </head>
+
+  <body data-mood="night" data-flicker="on" data-paper="cream" data-bg="street">
+
+    <!-- ── NAV ── -->
+    <nav class="rq-nav" style="position:fixed; z-index:50;">
+      <a href="/" class="rq-brand" aria-label="Rambling Quest 首頁">
+        <img src="/feet-golden-blue.webp" alt="" aria-hidden="true" style="height:36px;width:auto;" />
+        <span class="rq-brand__text">
+          <span class="rq-brand__name">Rambling Quest</span>
+          <span class="rq-brand__sub">漫步的房間 · est. 2024</span>
+        </span>
+      </a>
+      <ul class="rq-nav__links">
+        <li><a href="/blog" style="color:var(--text);">全部文章 <span class="rq-mono">/ archive</span></a></li>
+        <li><a href="/about">關於這裡 <span class="rq-mono">/ about</span></a></li>
+      </ul>
+    </nav>
+
+    <!-- ── Sky section ── -->
+    <section class="ar-sky">
+      <div class="ar-sky__inner">
+        <header class="ar-title">
+          <div class="ar-title__rule"><span class="star">✦</span></div>
+          <h1>全部文章</h1>
+          <p class="ar-title__en">archive</p>
+          <p class="ar-title__desc">無限期收留值得品味的瞬間</p>
+        </header>
+
+        <div class="ar-filters">
+          <a class={`ar-filter${currentRoom === 'all' ? ' is-active' : ''}`} href="/blog" data-cat="all">
+            <span class="fz">全部<span class="cnt">{totalPosts}</span></span>
+            <span class="fe">all</span>
+          </a>
+          <a class={`ar-filter${currentRoom === 'study' ? ' is-active' : ''}`} href="/blog/room/study" data-cat="study">
+            <span class="fz">書房<span class="cnt">{counts.study}</span></span>
+            <span class="fe">reading · notes</span>
+          </a>
+          <a class={`ar-filter${currentRoom === 'bar' ? ' is-active' : ''}`} href="/blog/room/bar" data-cat="bar">
+            <span class="fz">吧台<span class="cnt">{counts.bar}</span></span>
+            <span class="fe">talks · moods</span>
+          </a>
+          <a class={`ar-filter${currentRoom === 'workshop' ? ' is-active' : ''}`} href="/blog/room/workshop" data-cat="shop">
+            <span class="fz">工坊<span class="cnt">{counts.workshop}</span></span>
+            <span class="fe">build · code</span>
+          </a>
+          <a class={`ar-filter${currentRoom === 'court' ? ' is-active' : ''}`} href="/blog/room/court" data-cat="court">
+            <span class="fz">場邊<span class="cnt">{counts.court}</span></span>
+            <span class="fe">court · body</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Room section ── -->
+    <section class="ar-room">
+      <img class="ar-room__bg" src="/bg-board-room.png" alt="" aria-hidden="true" />
+      <div class="ar-room__inner">
+        <div class="ar-grid">
+          {posts.map((post) => <PostCard post={post} />)}
+        </div>
+
+        {pagination.lastPage > 1 && (
+          <nav class="ar-pagination">
+            {pagination.prevUrl
+              ? <a class="ar-pagination__link" href={pagination.prevUrl}>← 上一頁</a>
+              : <span style="width:90px;"></span>
+            }
+            <span class="ar-pagination__info">{pagination.currentPage} / {pagination.lastPage}</span>
+            {pagination.nextUrl
+              ? <a class="ar-pagination__link" href={pagination.nextUrl}>下一頁 →</a>
+              : <span style="width:90px;"></span>
+            }
+          </nav>
+        )}
+      </div>
+    </section>
+
+    <!-- ── Footer ── -->
+    <HomeFooter />
+
+  </body>
+</html>

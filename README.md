@@ -127,11 +127,15 @@ C:\ramblingquest\
 title: '文章標題'
 description: '文章摘要'
 pubDate: 'YYYY-MM-DD'
-heroImage: '/blog-placeholder-1.jpg'
+room: 'study'
 ---
 
 文章內容...
 ```
+
+`room` 可選值：`study`（書房）、`bar`（吧台）、`workshop`（工坊）、`court`（場邊），預設 `study`。
+
+封面圖（選填）：圖片放 `src/assets/`，用相對路徑引用：`heroImage: '../../assets/my-image.jpg'`。
 
 ---
 
