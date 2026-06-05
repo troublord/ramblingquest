@@ -2,7 +2,7 @@
 
 > 這份文件給「未來的我」和「AI 助手」看。  
 > 目的：改任何功能或畫面之前，先看這裡，快速定位要動哪些檔案。  
-> 最後更新：2026-06-03
+> 最後更新：2026-06-05
 
 ---
 
@@ -18,7 +18,7 @@
 - **域名**：ramblingquest.com（轉移中），目前預設網址 `gleaming-capybara-572b22.netlify.app`
 
 **目前主要目標**：設計 v1 完成（首頁、Archive 頁、文章頁、PostCard 元件）。v2 方向：各房間獨立文章頁排版、搜尋、標籤頁。
-最後更新：2026-06-03
+最後更新：2026-06-05
 
 ---
 
@@ -107,7 +107,7 @@ C:\ramblingquest\
 
 | Layout | 檔案 | 用途 |
 |---|---|---|
-| `BlogPost` | `src/layouts/BlogPost.astro` | 文章頁 Layout（Header + prose + Footer） |
+| `BlogPost` | `src/layouts/BlogPost.astro` | 文章頁 Layout（Header + prose + Footer + 浮動 TOC 目錄）。接受 `headings` prop，有 h2/h3 時右側顯示漢堡按鈕與可收合目錄面板 |
 | `ArchiveLayout` | `src/layouts/ArchiveLayout.astro` | 列表頁 Layout（sky section、房間 filter tab、3 欄卡牌格、分頁）。供 `/blog`、`/blog/p/[n]`、`/blog/room/[room]`、`/blog/room/[room]/p/[n]` 使用 |
 
 ### 目前存在的元件
@@ -305,6 +305,7 @@ room: 'study'              # 選填，預設 'study'，可選值：study | bar |
 | 修改其他頁面 Footer | `src/components/Footer.astro` | 目前社群連結指向 Astro 官方，需要換成自己的 |
 | 新增一篇文章 | `src/content/blog/新文章.md` | 參考第 6 節「新增步驟」 |
 | 修改文章頁樣式 | `src/layouts/BlogPost.astro` 的 `<style>` | `.prose` class 控制正文寬度與排版 |
+| 調整／關閉文章頁 TOC 目錄 | `src/layouts/BlogPost.astro` | CSS：`.toc-btn`、`.toc-panel`；JS：頁尾 `<script>`；透明度：`rgba(5,11,24,0.52)`；`scroll-margin-top: 84px` 控制跳轉偏移 |
 | 修改文章列表頁（/blog）樣式 | `src/layouts/ArchiveLayout.astro` 的 `<style>` 區塊 | 3 欄卡牌格局，含 sky section、房間 filter tab、分頁；`blog/index.astro` 只是資料層，樣式全在 ArchiveLayout |
 | 新增分類或房間 | `src/content.config.ts` + `index.astro` roomLabel/roomType + `homepage.css` | 新增 `z.enum` 選項、首頁 label 對應表、`rq-note__cat[data-room="新房間"]` 顏色 |
 | 修改網站主色調（其他頁面） | `src/styles/global.css` `--accent` 變數 | 首頁色彩走 `--accent` CSS 變數（每個招牌獨立設定，不受此影響） |
