@@ -100,7 +100,7 @@ room: 'study'
 
 <figure>
 
-![](https://ramblingquest.com/wp-content/uploads/2025/08/image-819x1024.png)
+![](/images/eagle-head-MIB.webp)
 
 <figcaption>
 

@@ -56,4 +56,4 @@ room: 'bar'
 
 也許從此時此刻做起？
 
-![](https://ramblingquest.com/wp-content/uploads/2026/04/LINE_ALBUM_2025124_250130_53-1024x768.jpg)
+![](/images/busan-peace-beach.webp)
