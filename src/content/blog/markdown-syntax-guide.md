@@ -273,3 +273,7 @@ Markdown 的魅力在於簡潔。
 只需要記住少量語法，就能完成大部分文件排版需求。對於寫作者、工程師、學生或部落客來說，都是相當值得熟悉的工具。
 
 與其花時間調整格式，不如把更多精力放在內容本身。
+
+---
+
+**參考來源**：[Markdown Style Guide — roebi halter in blog](https://roebi.github.io/roebi-halter-in-blog/blog/markdown-style-guide/)
