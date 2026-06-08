@@ -52,7 +52,7 @@ const pageTitle = currentRoom === 'all'
         overflow: hidden;
         background:
           linear-gradient(to bottom, #060c20 0%, #060c20 35%, transparent 75%),
-          url("/bg-board-sky.png") center bottom / 100% auto no-repeat,
+          url("/bg-board-sky.webp") center bottom / 100% auto no-repeat,
           #060c20;
         image-rendering: pixelated;
         image-rendering: -moz-crisp-edges;
@@ -340,7 +340,7 @@ const pageTitle = currentRoom === 'all'
 
     <!-- ── Room section ── -->
     <section class="ar-room">
-      <img class="ar-room__bg" src="/bg-board-room.png" alt="" aria-hidden="true" />
+      <img class="ar-room__bg" src="/bg-board-room.webp" alt="" aria-hidden="true" />
       <div class="ar-room__inner">
         <div class="ar-grid">
           {posts.map((post) => <PostCard post={post} />)}

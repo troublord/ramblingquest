@@ -32,8 +32,8 @@
 [data-mood="midnight"]  .rq-city{ filter: brightness(.88) saturate(1.1)  hue-rotate(6deg); }
 
 /* Background swap */
-[data-bg="skyline"] .rq-city{ background-image: url("/city-skyline.png"); }
-[data-bg="street"]  .rq-city{ background-image: url("/city-street.png"); }
+[data-bg="skyline"] .rq-city{ background-image: url("/city-skyline.webp"); }
+[data-bg="street"]  .rq-city{ background-image: url("/city-street.webp"); }
 
 /* Paper tone variants */
 [data-paper="cream"]   { --paper: #efe6cf; --paper-line:#c9b98a; }
@@ -163,7 +163,7 @@ h1, h2, h3, p{ margin:0; }
 
 .rq-city{
   position: absolute; inset: 0;
-  background-image: url("/city-street.png");
+  background-image: url("/city-street.webp");
   background-repeat: no-repeat;
   background-position: center 90%;
   background-size: cover;
@@ -436,7 +436,7 @@ h1, h2, h3, p{ margin:0; }
 .rq-wall__scene{
   position: absolute; inset: 0;
   z-index: 0;
-  background-image: url("/room-wall.png");
+  background-image: url("/room-wall.webp");
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
