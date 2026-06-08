@@ -32,7 +32,7 @@ C:\ramblingquest\
 ├── PROJECT_MAP.md            ← 本文件
 │
 ├── scripts/
-│   └── convert-webp.mjs      圖片壓縮工具：掃描 public/ 下 PNG/JPG，輸出 WebP（quality 85），已有 .webp 則跳過
+│   └── convert-webp.mjs      圖片壓縮工具：遞迴掃描 public/ 下所有子目錄的 PNG/JPG，輸出 WebP（quality 85），已有 .webp 則跳過
 │                             執行方式：npm run optimize
 │
 ├── public/                   靜態資源，直接對應網站根路徑

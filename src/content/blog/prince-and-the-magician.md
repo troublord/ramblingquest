@@ -2,7 +2,7 @@
 title: '〈王子與巫師〉'
 description: '翻譯自 John Fowles 小說《The Magus》的寓言短文，關於島嶼、公主，與巫術之外的真相。'
 pubDate: '2025-08-17'
-heroImage: 'https://ramblingquest.com/wp-content/uploads/2025/08/image-819x1024.png'
+heroImage: '/images/prince-island.webp'
 room: 'study'
 ---
 
@@ -100,11 +100,11 @@ room: 'study'
 
 <figure>
 
-![](/images/eagle-head-MIB.webp)
+![](/images/prince-island.webp)
 
 <figcaption>
 
-https://unsplash.com/photos/green-and-brown-mountain-beside-body-of-water-under-cloudy-sky-during-daytime-jyd9meM9728
+Photo by <a href="https://unsplash.com/@markuslaanisto?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Markus Laanisto</a> on <a href="https://unsplash.com/photos/green-and-brown-mountain-beside-body-of-water-under-cloudy-sky-during-daytime-jyd9meM9728?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
 
 </figcaption>
 
