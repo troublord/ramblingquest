@@ -2,7 +2,7 @@
 title: '同樣的問題，要問幾遍都可以'
 description: '關於職場壓力、犯錯的恐懼，以及那句讓人放心的話。'
 pubDate: '2026-04-23'
-heroImage: 'https://ramblingquest.com/wp-content/uploads/2026/04/LINE_ALBUM_2025124_250130_53-1024x768.jpg'
+heroImage: '/images/busan-peace-beach.webp'
 room: 'bar'
 ---
 
