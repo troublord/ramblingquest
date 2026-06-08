@@ -2,7 +2,7 @@
 
 > 這份文件給「未來的我」和「AI 助手」看。  
 > 目的：改任何功能或畫面之前，先看這裡，快速定位要動哪些檔案。  
-> 最後更新：2026-06-05
+> 最後更新：2026-06-08
 
 ---
 
@@ -27,18 +27,26 @@
 ```
 C:\ramblingquest\
 ├── astro.config.mjs          Astro 設定：site URL、整合（mdx、sitemap）、本地字體
-├── package.json              依賴：astro、@astrojs/mdx、@astrojs/rss、@astrojs/sitemap、sharp
+├── package.json              依賴：astro、@astrojs/mdx、@astrojs/rss、@astrojs/sitemap、sharp；scripts: dev/build/preview/optimize
 ├── tsconfig.json             TypeScript 設定
 ├── PROJECT_MAP.md            ← 本文件
 │
+├── scripts/
+│   └── convert-webp.mjs      圖片壓縮工具：掃描 public/ 下 PNG/JPG，輸出 WebP（quality 85），已有 .webp 則跳過
+│                             執行方式：npm run optimize
+│
 ├── public/                   靜態資源，直接對應網站根路徑
 │   ├── favicon.ico / .svg      網站圖標
-│   ├── city-street.png         首頁城市背景圖（預設）
-│   ├── city-skyline.png        首頁城市背景圖（天際線版，可切換）
-│   ├── bg-board-sky.png        Archive 頁 sky section 背景
-│   ├── bg-board-room.png       Archive 頁卡牌 section 背景
-│   ├── bg-board.png            舊版背景，保留備用
-│   ├── room-wall.png           用途待確認
+│   ├── feet-pixel.png          favicon 用（PNG，不轉 WebP，瀏覽器相容性限制）
+│   ├── city-street.webp        首頁城市背景圖（預設）← CSS 引用 .webp
+│   ├── city-skyline.webp       首頁城市背景圖（天際線版，可切換）← CSS 引用 .webp
+│   ├── bg-board-sky.webp       Archive 頁 sky section 背景
+│   ├── bg-board-room.webp      Archive 頁卡牌 section 背景
+│   ├── bg-board.webp           舊版背景，保留備用
+│   ├── desktop-no-paper.webp   文章頁背景（BlogPost layout）
+│   ├── room-wall.webp          首頁 wall scene 背景
+│   ├── default-card-photo.webp PostCard fallback 圖（無 heroImage 時使用）
+│   ├── *.png                   原始 PNG 保留（未被引用，可手動刪除）
 │   └── images/
 │       └── hokkaido-shrine.png  文章用圖片
 │
@@ -294,7 +302,8 @@ room: 'study'              # 選填，預設 'study'，可選值：study | bar |
 
 | 我想做什麼 | 要改的檔案 | 注意事項 |
 |---|---|---|
-| 修改首頁背景城市圖 | 替換 `public/city-street.png` 或 `public/city-skyline.png` | 圖片尺寸建議 2560px 寬以上；CSS 用 `cover` 填滿 |
+| 加新圖片到 public/ | 放入圖片後執行 `npm run optimize` | 自動轉 WebP，已存在則跳過；CSS/HTML 引用時用 `.webp` 副檔名 |
+| 修改首頁背景城市圖 | 替換 `public/city-street.webp` 或 `public/city-skyline.webp` | 圖片尺寸建議 2560px 寬以上；CSS 用 `cover` 填滿；替換後跑 `npm run optimize` |
 | 切換背景（街道/天際線） | `index.astro` 第 34 行 `data-bg` 屬性 | 改為 `street` 或 `skyline` |
 | 修改 Hero 文案（標題/副標語） | `index.astro` 第 63–70 行 | 修改 `.rq-entry__kicker`、`.rq-title`、`.rq-tagline` 內文 |
 | 修改四個入口名稱或連結 | `index.astro` 第 75–131 行，每個 `rq-sign-card` 區塊 | 修改 `.rq-sign-card__cjk`（中文）、`.rq-sign-card__en`（英文）、`<a href>` |
