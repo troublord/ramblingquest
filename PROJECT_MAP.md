@@ -27,13 +27,15 @@
 ```
 C:\ramblingquest\
 ├── astro.config.mjs          Astro 設定：site URL、整合（mdx、sitemap）、本地字體
-├── package.json              依賴：astro、@astrojs/mdx、@astrojs/rss、@astrojs/sitemap、sharp；scripts: dev/build/preview/optimize
+├── package.json              依賴：astro、@astrojs/mdx、@astrojs/rss、@astrojs/sitemap、sharp；scripts: dev/build/preview/optimize/optimize:clean
 ├── tsconfig.json             TypeScript 設定
 ├── PROJECT_MAP.md            ← 本文件
+├── optimize-images.bat       一鍵圖片壓縮執行檔（Windows）：雙擊即執行 optimize:clean，視窗停留顯示結果
 │
 ├── scripts/
 │   └── convert-webp.mjs      圖片壓縮工具：遞迴掃描 public/ 下所有子目錄的 PNG/JPG，輸出 WebP（quality 85），已有 .webp 則跳過
-│                             執行方式：npm run optimize
+│                             npm run optimize        — 轉換，保留原檔
+│                             npm run optimize:clean  — 轉換，刪除原始 PNG/JPG（--clean flag）
 │
 ├── public/                   靜態資源，直接對應網站根路徑
 │   ├── favicon.ico / .svg      網站圖標
@@ -302,7 +304,7 @@ room: 'study'              # 選填，預設 'study'，可選值：study | bar |
 
 | 我想做什麼 | 要改的檔案 | 注意事項 |
 |---|---|---|
-| 加新圖片到 public/ | 放入圖片後執行 `npm run optimize` | 自動轉 WebP，已存在則跳過；CSS/HTML 引用時用 `.webp` 副檔名 |
+| 加新圖片到 public/ | 雙擊 `optimize-images.bat`（或 `npm run optimize:clean`） | 自動轉 WebP 並刪原檔；只轉不刪用 `npm run optimize`；引用時用 `.webp` 副檔名 |
 | 修改首頁背景城市圖 | 替換 `public/city-street.webp` 或 `public/city-skyline.webp` | 圖片尺寸建議 2560px 寬以上；CSS 用 `cover` 填滿；替換後跑 `npm run optimize` |
 | 切換背景（街道/天際線） | `index.astro` 第 34 行 `data-bg` 屬性 | 改為 `street` 或 `skyline` |
 | 修改 Hero 文案（標題/副標語） | `index.astro` 第 63–70 行 | 修改 `.rq-entry__kicker`、`.rq-title`、`.rq-tagline` 內文 |

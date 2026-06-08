@@ -96,6 +96,8 @@ gh auth login
 | `npm run dev` | 啟動本地開發伺服器（localhost:4321） |
 | `npm run build` | 建立正式版本到 `./dist/` |
 | `npm run preview` | 本地預覽正式版本 |
+| `npm run optimize` | 轉換 public/ 下所有 PNG/JPG → WebP，已有 .webp 則跳過 |
+| `npm run optimize:clean` | 同上，轉換後自動刪除原始 PNG/JPG |
 
 ---
 
@@ -115,6 +117,21 @@ C:\ramblingquest\
 ├── src/consts.ts     網站標題、描述等全域設定
 └── tsconfig.json     TypeScript 設定
 ```
+
+---
+
+## 加入圖片
+
+所有網站用圖片放在 `public/images/`，一律使用 WebP 格式。
+
+**流程：**
+
+1. 把圖片（PNG 或 JPG）放進 `public/images/`
+2. 雙擊根目錄的 `optimize-images.bat`（自動轉 WebP 並刪原檔）
+3. 在文章或 CSS 裡用 `.webp` 副檔名引用：`/images/檔名.webp`
+4. commit
+
+> **注意**：`public/feet-pixel.png` 是 favicon，不可轉 WebP。其餘 PNG/JPG 轉換後可刪除。
 
 ---
 
