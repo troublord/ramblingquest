@@ -10,7 +10,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "optimize": "node scripts/convert-webp.mjs"
+    "optimize": "node scripts/convert-webp.mjs",
+    "optimize:clean": "node scripts/convert-webp.mjs --clean"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.6",

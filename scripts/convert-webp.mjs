@@ -1,9 +1,10 @@
 import sharp from 'sharp';
-import { readdir, stat } from 'fs/promises';
+import { readdir, stat, unlink } from 'fs/promises';
 import { join, extname, basename } from 'path';
 
 const publicDir = './public';
 const SOURCE_EXTS = ['.png', '.jpg', '.jpeg'];
+const clean = process.argv.includes('--clean');
 
 async function collectImages(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -50,6 +51,7 @@ for (const input of images) {
   const after = (await stat(output)).size;
   const saved = Math.round((1 - after / before) * 100);
   console.log(`轉換 ${relInput.padEnd(40)} ${(before / 1024).toFixed(0).padStart(6)} KB → ${(after / 1024).toFixed(0).padStart(6)} KB  (-${saved}%)`);
+  if (clean) await unlink(input);
   converted++;
 }
 
