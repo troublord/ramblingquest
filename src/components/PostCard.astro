@@ -24,7 +24,7 @@ const dateStr = `${date.getFullYear()} / ${String(date.getMonth()+1).padStart(2,
   <a class="post-card__link" href={`/blog/${post.id}/`} aria-label={post.data.title}></a>
   <div class="post-card__pin"></div>
   <div class="post-card__photo">
-    <img src={post.data.heroImage ?? '/default-card-photo.jpg'} alt="" loading="lazy" />
+    <img src={post.data.heroImage ?? '/default-card-photo.webp'} alt="" loading="lazy" />
     <span class="post-card__date-stamp">{dateStr}</span>
   </div>
   <div class="post-card__meta">
