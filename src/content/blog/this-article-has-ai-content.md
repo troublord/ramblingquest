@@ -3,7 +3,7 @@ title: "這篇文章有 AI 生成內容"
 description: "開始了三次，放棄了兩次，第三次用一篇很骯髒的文章起頭。"
 pubDate: "Jan 11 2026"
 room: "bar"
-heroImage: "/images/hokkaido-shrine.png"
+heroImage: "/images/hokkaido-shrine.webp"
 ---
 
 > 我真正看不下去的，其實不是 AI，而是那種「看起來已經想過」的偷懶。段落很完整、語氣很安全、結論很圓滑，像一場不會得罪任何人的簡報。但你仔細一看，裡面沒有取捨，沒有判斷，也沒有一個人站在句子後面。它不會錯，因為它什麼都沒押；它不會負責，因為它只是排列過的語言。這種內容最讓人不舒服的地方在於：它假裝付出過思考，卻要求讀者付出注意力。
@@ -57,7 +57,7 @@ heroImage: "/images/hokkaido-shrine.png"
 
 用 AI 寫文章的人，你很棒！ 繼續保持！
 
-![](/images/hokkaido-shrine.png)
+![](/images/hokkaido-shrine.webp)
 
 2026年1/1日，北海道神社
 
