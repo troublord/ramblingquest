@@ -57,6 +57,8 @@ const pageTitle = currentRoom === 'all'
         min-height: 100vh;
         background: #060c1a;
         position: relative;
+        display: flex;
+        flex-direction: column;
       }
       .ar-page::before {
         content: '';
@@ -196,6 +198,7 @@ const pageTitle = currentRoom === 'all'
       .ar-main {
         position: relative;
         z-index: 1;
+        flex: 1;
       }
       .ar-inner {
         padding: 40px 40px 100px;
