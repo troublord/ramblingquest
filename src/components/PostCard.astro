@@ -25,22 +25,21 @@ const dateStr = `${date.getFullYear()} / ${String(date.getMonth()+1).padStart(2,
   <div class="post-card__pin"></div>
   <div class="post-card__photo">
     <img src={post.data.heroImage ?? '/default-card-photo.webp'} alt="" loading="lazy" />
-    <span class="post-card__date-stamp">{dateStr}</span>
-  </div>
-  <div class="post-card__meta">
-    <span class={`post-card__badge ${cat}`}>{roomLabel[room]}</span>
+    <div class="post-card__meta-row">
+      <span class="post-card__date-stamp">{dateStr}</span>
+      <span class={`post-card__badge ${cat}`}>{roomLabel[room]}</span>
+    </div>
   </div>
   <h3>{post.data.title}</h3>
   <hr class="post-card__divider" />
   <p class="post-card__excerpt">{post.data.description}</p>
-  <div class="post-card__more">閱讀全文 →</div>
 </article>
 
 <style>
   .post-card {
     position: relative;
     background: linear-gradient(180deg, #f5ecd6 0%, #ede2c4 100%);
-    padding: 8px 9px 14px;
+    padding: 7px 8px 12px;
     display: flex;
     flex-direction: column;
     box-shadow:
@@ -97,31 +96,29 @@ const dateStr = `${date.getFullYear()} / ${String(date.getMonth()+1).padStart(2,
     object-fit: cover;
     display: block;
   }
-  .post-card__date-stamp {
+  .post-card__meta-row {
     position: absolute; top: 6px; left: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 2;
+  }
+  .post-card__date-stamp {
     font-family: "JetBrains Mono", monospace;
     font-size: 9px;
     color: #f0e6d2;
     background: rgba(0,0,0,.55);
     padding: 2px 5px;
     letter-spacing: .05em;
-    z-index: 2;
     border: 1px solid rgba(255,255,255,.08);
-  }
-
-  /* text */
-  .post-card__meta {
-    display: flex; align-items: center; gap: 6px;
-    margin-top: 7px; margin-bottom: 2px;
   }
   .post-card__badge {
     font-family: "Noto Serif TC", serif;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     color: #fff;
-    padding: 3px 10px;
+    padding: 2px 8px;
     letter-spacing: .08em;
-    border-radius: 3px;
     box-shadow: 0 1px 0 rgba(0,0,0,.2);
   }
   .post-card__badge.study   { background: #d4a05a; }
@@ -129,13 +126,15 @@ const dateStr = `${date.getFullYear()} / ${String(date.getMonth()+1).padStart(2,
   .post-card__badge.shop    { background: #4a8fb3; }
   .post-card__badge.court   { background: #6a9b5e; }
 
+  /* text */
   .post-card h3 {
     font-family: "Noto Serif TC", serif;
     font-weight: 600;
-    font-size: 20px;
+    font-size: 17px;
     color: #2b2418;
     line-height: 1.4;
     letter-spacing: .02em;
+    margin-top: 8px;
     margin-bottom: 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -145,7 +144,7 @@ const dateStr = `${date.getFullYear()} / ${String(date.getMonth()+1).padStart(2,
   .post-card__divider {
     border: none;
     border-top: 1px dashed rgba(120,90,40,.3);
-    margin: 10px 0;
+    margin: 8px 0;
   }
   .post-card__excerpt {
     font-size: 12px;
@@ -153,19 +152,10 @@ const dateStr = `${date.getFullYear()} / ${String(date.getMonth()+1).padStart(2,
     color: #5b4f3c;
     letter-spacing: .01em;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  .post-card__more {
-    margin-top: auto;
-    padding-top: 8px;
-    font-family: "Noto Serif TC", serif;
-    font-size: 13px;
-    color: #c49a3a;
-    letter-spacing: .05em;
-  }
-  .post-card:hover .post-card__more { color: #d4a05a; }
 
   /* link overlay */
   .post-card__link {

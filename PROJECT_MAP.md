@@ -118,7 +118,7 @@ C:\ramblingquest\
 | Layout | 檔案 | 用途 |
 |---|---|---|
 | `BlogPost` | `src/layouts/BlogPost.astro` | 文章頁 Layout（Header + prose + Footer + 浮動 TOC 目錄）。接受 `headings` prop，有 h2/h3 時右側顯示漢堡按鈕與可收合目錄面板 |
-| `ArchiveLayout` | `src/layouts/ArchiveLayout.astro` | 列表頁 Layout（sky section、房間 filter tab、3 欄卡牌格、分頁）。供 `/blog`、`/blog/p/[n]`、`/blog/room/[room]`、`/blog/room/[room]/p/[n]` 使用 |
+| `ArchiveLayout` | `src/layouts/ArchiveLayout.astro` | 列表頁 Layout（薄標題區置中、房間 filter tab 置中、4 欄卡牌格、分頁）。背景：`night-room.webp`（`::before` position:fixed）+ 深色遮罩 0.1。供 `/blog`、`/blog/p/[n]`、`/blog/room/[room]`、`/blog/room/[room]/p/[n]` 使用 |
 
 ### 目前存在的元件
 
@@ -129,7 +129,7 @@ C:\ramblingquest\
 | `HeaderLink` | `src/components/HeaderLink.astro` | Header 裡有 active 狀態的導覽連結 | `Header.astro` |
 | `Footer` | `src/components/Footer.astro` | 其他頁面的 Footer（灰色漸層，含社群連結） | `/about`、`/blog/[slug]` |
 | `FormattedDate` | `src/components/FormattedDate.astro` | 日期格式化（Jul 08, 2022）輸出 `<time>` 元素 | `BlogPost.astro` |
-| `PostCard` | `src/components/PostCard.astro` | 文章卡片（拍立得風格：heroImage、圖釘、房間徽章、標題、虛線分隔、摘要）。無 heroImage 時 fallback 為 `/default-card-photo.jpg` | `ArchiveLayout.astro`、`index.astro` |
+| `PostCard` | `src/components/PostCard.astro` | 文章卡片（拍立得風格：heroImage、圖釘、日期戳 + 房間徽章並排於縮圖左上角、標題、虛線分隔、摘要）。無 heroImage 時 fallback 為 `/default-card-photo.webp` | `ArchiveLayout.astro`、`index.astro` |
 | `HomeFooter` | `src/components/HomeFooter.astro` | 首頁暗色主題 Footer（腳圖、標語、GitHub 連結、版權）。樣式來自 `homepage.css` | `index.astro`、`ArchiveLayout.astro` |
 
 ### 首頁區塊（目前寫在 `index.astro`，尚未拆成元件）

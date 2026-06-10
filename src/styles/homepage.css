@@ -436,19 +436,11 @@ h1, h2, h3, p{ margin:0; }
 .rq-wall__scene{
   position: absolute; inset: 0;
   z-index: 0;
-  background-image: url("/room-wall.webp");
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
+  background:
+    linear-gradient(rgba(5,11,24,0.1), rgba(5,11,24,0.1)),
+    url("/room-side-by-window.webp") center/cover no-repeat;
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
-}
-.rq-wall__scene::after{
-  content:"";
-  position: absolute; inset: 0;
-  background:
-    linear-gradient(to bottom, rgba(8,17,30,.25) 0%, rgba(8,17,30,.05) 22%, rgba(8,17,30,.35) 100%);
-  pointer-events: none;
 }
 
 .rq-wall__warm{
