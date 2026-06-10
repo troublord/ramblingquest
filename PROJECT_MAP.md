@@ -2,7 +2,7 @@
 
 > 這份文件給「未來的我」和「AI 助手」看。  
 > 目的：改任何功能或畫面之前，先看這裡，快速定位要動哪些檔案。  
-> 最後更新：2026-06-08
+> 最後更新：2026-06-10
 
 ---
 
@@ -18,7 +18,7 @@
 - **域名**：ramblingquest.com（轉移中），目前預設網址 `gleaming-capybara-572b22.netlify.app`
 
 **目前主要目標**：設計 v1 完成（首頁、Archive 頁、文章頁、PostCard 元件）。v2 方向：各房間獨立文章頁排版、搜尋、標籤頁。
-最後更新：2026-06-05
+最後更新：2026-06-10
 
 ---
 
@@ -38,19 +38,38 @@ C:\ramblingquest\
 │                             npm run optimize:clean  — 轉換，刪除原始 PNG/JPG（--clean flag）
 │
 ├── public/                   靜態資源，直接對應網站根路徑
-│   ├── favicon.ico / .svg      網站圖標
-│   ├── feet-pixel.png          favicon 用（PNG，不轉 WebP，瀏覽器相容性限制）
-│   ├── city-street.webp        首頁城市背景圖（預設）← CSS 引用 .webp
-│   ├── city-skyline.webp       首頁城市背景圖（天際線版，可切換）← CSS 引用 .webp
-│   ├── bg-board-sky.webp       Archive 頁 sky section 背景
-│   ├── bg-board-room.webp      Archive 頁卡牌 section 背景
-│   ├── bg-board.webp           舊版背景，保留備用
-│   ├── desktop-no-paper.webp   文章頁背景（BlogPost layout）
-│   ├── room-wall.webp          首頁 wall scene 背景
-│   ├── default-card-photo.webp PostCard fallback 圖（無 heroImage 時使用）
-│   ├── *.png                   原始 PNG 保留（未被引用，可手動刪除）
-│   └── images/
-│       └── hokkaido-shrine.png  文章用圖片
+│   ├── favicon.ico / .svg          網站圖標
+│   ├── feet-pixel.png              favicon 用（PNG，不轉 WebP，瀏覽器相容性限制）
+│   ├── feet-pixel.webp             feet-pixel WebP 版
+│   ├── city-street.webp            首頁城市背景圖（預設）← CSS 引用 .webp
+│   ├── city-skyline.webp           首頁城市背景圖（天際線版，可切換）← CSS 引用 .webp
+│   ├── night-room.webp             Archive 列表頁背景（ArchiveLayout ::before）
+│   ├── bg-board-fullscreen.webp    全螢幕版黑板背景（備用）
+│   ├── bg-board-sky.webp           舊版 Archive sky section 背景（保留備用）
+│   ├── bg-board-room.webp          舊版 Archive 卡牌 section 背景（保留備用）
+│   ├── bg-board.webp               舊版背景，保留備用
+│   ├── desktop-no-paper.webp       文章頁背景（BlogPost layout）
+│   ├── desktop.webp                桌面場景圖（備用）
+│   ├── room-wall.webp              首頁 wall scene 背景
+│   ├── room-side-by-window.webp    房間窗邊場景圖（備用）
+│   ├── default-card-photo.webp     PostCard fallback 圖（無 heroImage 時使用）
+│   ├── feet-golden-blue.webp       腳圖變體（金藍色）
+│   ├── feet-light.webp             腳圖變體（淺色）
+│   ├── feet-white.webp             腳圖變體（白色）
+│   └── images/                     文章用圖片（命名對應文章 slug）
+│       ├── hokkaido-shrine.webp
+│       ├── busan-peace-beach.webp
+│       ├── prince-island.webp
+│       ├── amazing-band.webp
+│       ├── baby-cried.webp
+│       ├── eagle-head-MIB.webp
+│       ├── ec2-complete.webp
+│       ├── ec2-console.webp
+│       ├── ec2-elastic-allocatewebp.webp
+│       ├── ec2-elastic-relate.webp
+│       ├── ec2-elastic-relate2.webp
+│       ├── ec2-elasticIp-list.webp
+│       └── ec2-incase-didnseewebp.webp
 │
 └── src/
     ├── consts.ts             全域常數：SITE_TITLE、SITE_DESCRIPTION
@@ -214,7 +233,7 @@ title: '文章標題'          # 必填，string
 description: '摘要'        # 必填，string（顯示在文章列表與 meta description）
 pubDate: 'Jul 08 2022'     # 必填，日期字串（會被 z.coerce.date() 轉換）
 updatedDate: '...'         # 選填，更新日期
-heroImage: '../../assets/...' # 選填，封面圖（相對路徑，指向 src/assets/）
+heroImage: '/images/filename.webp' # 選填，封面圖（public/images/ 下的路徑，用 /images/ 開頭）
 room: 'study'              # 選填，預設 'study'，可選值：study | bar | workshop | court
 ---
 ```
@@ -244,10 +263,10 @@ room: 'study'              # 選填，預設 'study'，可選值：study | bar |
 
 ### 封面圖（heroImage）
 
-- 圖片放在 `src/assets/`（需要 Astro 最佳化時）
-- frontmatter 用相對路徑引用：`heroImage: '../../assets/my-image.jpg'`
-- 若不需要封面圖，省略此欄位即可
-- Markdown 內文的圖片：直接用 `![alt](./image.jpg)`，或放進 `public/` 後用 `/image.jpg` 引用
+- 圖片先上傳 Cloudflare Images，或放在 `public/images/`
+- frontmatter 用字串路徑：`heroImage: '/images/filename.webp'`（`/` 開頭，對應 `public/images/`）
+- 若不需要封面圖，省略此欄位即可，PostCard 會 fallback 到 `default-card-photo.webp`
+- Markdown 內文的圖片：放進 `public/images/` 後用 `![alt](/images/filename.webp)` 引用
 
 ---
 
