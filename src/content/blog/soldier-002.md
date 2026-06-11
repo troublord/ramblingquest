@@ -4,6 +4,7 @@ description: '洞洞兩 有！我叫劉毓文，我英文成績很好！'
 pubDate: '2025-05-21'
 heroImage: '/images/baby-cried.webp'
 room: 'bar'
+tags: ['回憶', '當兵']
 ---
 
 當兵時，有一次發生了這樣的事。

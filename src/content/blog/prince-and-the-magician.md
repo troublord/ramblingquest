@@ -4,6 +4,7 @@ description: '翻譯自 John Fowles 小說《The Magus》的寓言短文，關�
 pubDate: '2025-08-17'
 heroImage: '/images/prince-island.webp'
 room: 'study'
+tags: ['翻譯', '文學']
 ---
 
 以前在一個島國上有一個王子，他相信世界上的一切，除了三樣東西。

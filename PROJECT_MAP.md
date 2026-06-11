@@ -235,6 +235,7 @@ pubDate: 'Jul 08 2022'     # 必填，日期字串（會被 z.coerce.date() 轉�
 updatedDate: '...'         # 選填，更新日期
 heroImage: '/images/filename.webp' # 選填，封面圖（public/images/ 下的路徑，用 /images/ 開頭）
 room: 'study'              # 選填，預設 'study'，可選值：study | bar | workshop | court
+tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根據內容自動補上
 ---
 ```
 

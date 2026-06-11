@@ -3,6 +3,7 @@ title: 'SSH 到底在幹嘛？幫你看懂 SSH 連線與驗證流程'
 description: 'SSH 從連線到傳輸，中間到底經過了哪些步驟？本文逐一拆解五個連線階段與身分驗證機制。'
 pubDate: '2025-10-19'
 room: 'workshop'
+tags: ['SSH', '教學', '網路']
 ---
 
 本文主要參考 [https://www.cdxy.me/?p=394](https://www.cdxy.me/?p=394)

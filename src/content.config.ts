@@ -15,6 +15,7 @@ const blog = defineCollection({
 			updatedDate: z.coerce.date().optional(),
 			heroImage: z.string().optional(),
 			room: z.enum(['study', 'bar', 'workshop', 'court']).optional().default('study'),
+			tags: z.array(z.string()).optional().default([]),
 		}),
 });
 

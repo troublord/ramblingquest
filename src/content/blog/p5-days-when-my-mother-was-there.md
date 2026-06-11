@@ -4,6 +4,7 @@ description: 'Days When My Mother Was There —— 關於那些再也回不去�
 pubDate: '2025-04-19'
 heroImage: '/images/amazing-band.webp'
 room: 'study'
+tags: ['翻譯', '遊戲']
 ---
 
 很喜歡這首二創

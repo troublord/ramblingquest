@@ -3,6 +3,7 @@ title: '如何在 AWS EC2 綁定固定 IP（Elastic IP）｜完整配置步驟'
 description: '逐步說明如何在 AWS EC2 配置彈性 IP（Elastic IP）並關聯至指定實例，附截圖對照。'
 pubDate: '2025-10-25'
 room: 'workshop'
+tags: ['AWS', '教學', '雲端']
 ---
 
 這篇文章會示範如何在 AWS 平台上配置彈性 IP。

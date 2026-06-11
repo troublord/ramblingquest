@@ -4,6 +4,7 @@ description: '關於職場壓力、犯錯的恐懼，以及那句讓人放心的
 pubDate: '2026-04-23'
 heroImage: '/images/busan-peace-beach.webp'
 room: 'bar'
+tags: ['職場', '人際']
 ---
 
 出社會五年左右，加上學生時期的打工。大約也換過五六個職場，共事的同事都是好人，可能不至於彼此幫助，但從來沒有彼此相害。

@@ -3,6 +3,7 @@ title: '二元搜尋是什麼？'
 description: '介紹二元搜尋（Binary Search）的核心概念、常見卡點（邊界定義、整數溢位、邊界更新），以及 Java 閉區間實作範例。'
 pubDate: '2026-03-08'
 room: 'workshop'
+tags: ['演算法', '教學']
 ---
 
 二元搜尋（ **Binary Search**）是一種用來快速搜尋某元素的演算法。
