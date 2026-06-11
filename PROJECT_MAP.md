@@ -124,6 +124,8 @@ C:\ramblingquest\
 | 全部文章（分頁） | `/blog/p/[n]` | `src/pages/blog/p/[page].astro` | 使用 ArchiveLayout，每頁 6 篇 |
 | 房間篩選（第 1 頁） | `/blog/room/[room]` | `src/pages/blog/room/[room].astro` | 使用 ArchiveLayout，依 room 欄位篩選 |
 | 房間篩選（分頁） | `/blog/room/[room]/p/[n]` | `src/pages/blog/room/[room]/p/[page].astro` | 使用 ArchiveLayout |
+| 標籤篩選（第 1 頁） | `/blog/tag/[tag]` | `src/pages/blog/tag/[tag].astro` | 使用 ArchiveLayout，依 tags 欄位篩選；標題顯示「標籤 / #tag」，不顯示 room filter tabs |
+| 標籤篩選（分頁） | `/blog/tag/[tag]/p/[n]` | `src/pages/blog/tag/[tag]/p/[page].astro` | 使用 ArchiveLayout |
 | 單篇文章 | `/blog/[slug]` | `src/pages/blog/[...slug].astro` | 動態路由，對應 `src/content/blog/` 裡的 md/mdx 檔名 |
 | 關於頁 | `/about` | `src/pages/about.astro` | 使用 BlogPost layout，目前內容是 Lorem ipsum |
 | RSS | `/rss.xml` | `src/pages/rss.xml.js` | 自動產生 RSS feed |

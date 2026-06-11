@@ -10,6 +10,7 @@ type RoomKey = 'all' | 'study' | 'bar' | 'workshop' | 'court';
 
 interface Props {
   currentRoom: RoomKey;
+  currentTag?: string;
   posts: CollectionEntry<'blog'>[];
   counts: Record<string, number>;
   totalPosts: number;
@@ -21,7 +22,7 @@ interface Props {
   };
 }
 
-const { currentRoom, posts, counts, totalPosts, pagination } = Astro.props;
+const { currentRoom, currentTag, posts, counts, totalPosts, pagination } = Astro.props;
 
 const roomLabel: Record<RoomKey, string> = {
   all: '全部文章',
@@ -39,9 +40,11 @@ const roomEn: Record<RoomKey, string> = {
   court: 'court · body',
 };
 
-const pageTitle = currentRoom === 'all'
-  ? `全部文章 · ${SITE_TITLE}`
-  : `${roomLabel[currentRoom]} · ${SITE_TITLE}`;
+const pageTitle = currentTag
+  ? `#${currentTag} · ${SITE_TITLE}`
+  : currentRoom === 'all'
+    ? `全部文章 · ${SITE_TITLE}`
+    : `${roomLabel[currentRoom]} · ${SITE_TITLE}`;
 ---
 
 <!doctype html>
@@ -239,6 +242,27 @@ const pageTitle = currentRoom === 'all'
         letter-spacing: .2em;
       }
 
+      /* ── Tag back link ── */
+      .ar-tag-back {
+        display: flex;
+        justify-content: center;
+        padding: 12px 0;
+      }
+      .ar-tag-back a {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        letter-spacing: .15em;
+        color: #b9a888;
+        text-decoration: none;
+        padding: 8px 18px;
+        border: 1px solid rgba(185,168,136,.25);
+        transition: all .2s ease;
+      }
+      .ar-tag-back a:hover {
+        color: #f4c062;
+        border-color: rgba(244,192,98,.5);
+      }
+
       /* ── RWD ── */
       @media (max-width: 1024px) {
         .ar-grid { grid-template-columns: repeat(3, 1fr); }
@@ -287,27 +311,33 @@ const pageTitle = currentRoom === 'all'
       <header class="ar-header">
         <div class="ar-header__inner">
           <div class="ar-header__title-row">
-            <h1>{roomLabel[currentRoom]}</h1>
-            <span class="ar-header__en">/ {roomEn[currentRoom]}</span>
+            <h1>{currentTag ? '標籤' : roomLabel[currentRoom]}</h1>
+            <span class="ar-header__en">/ {currentTag ? `#${currentTag}` : roomEn[currentRoom]}</span>
           </div>
 
-          <div class="ar-filters">
-            <a class={`ar-filter${currentRoom === 'all' ? ' is-active' : ''}`} href="/blog" data-cat="all">
-              <span class="fz">全部<span class="cnt">{totalPosts}</span></span>
-            </a>
-            <a class={`ar-filter${currentRoom === 'study' ? ' is-active' : ''}`} href="/blog/room/study" data-cat="study">
-              <span class="fz">書房<span class="cnt">{counts.study}</span></span>
-            </a>
-            <a class={`ar-filter${currentRoom === 'bar' ? ' is-active' : ''}`} href="/blog/room/bar" data-cat="bar">
-              <span class="fz">吧台<span class="cnt">{counts.bar}</span></span>
-            </a>
-            <a class={`ar-filter${currentRoom === 'workshop' ? ' is-active' : ''}`} href="/blog/room/workshop" data-cat="shop">
-              <span class="fz">工坊<span class="cnt">{counts.workshop}</span></span>
-            </a>
-            <a class={`ar-filter${currentRoom === 'court' ? ' is-active' : ''}`} href="/blog/room/court" data-cat="court">
-              <span class="fz">場邊<span class="cnt">{counts.court}</span></span>
-            </a>
-          </div>
+          {currentTag ? (
+            <div class="ar-tag-back">
+              <a href="/blog">← 全部文章</a>
+            </div>
+          ) : (
+            <div class="ar-filters">
+              <a class={`ar-filter${currentRoom === 'all' ? ' is-active' : ''}`} href="/blog" data-cat="all">
+                <span class="fz">全部<span class="cnt">{totalPosts}</span></span>
+              </a>
+              <a class={`ar-filter${currentRoom === 'study' ? ' is-active' : ''}`} href="/blog/room/study" data-cat="study">
+                <span class="fz">書房<span class="cnt">{counts.study}</span></span>
+              </a>
+              <a class={`ar-filter${currentRoom === 'bar' ? ' is-active' : ''}`} href="/blog/room/bar" data-cat="bar">
+                <span class="fz">吧台<span class="cnt">{counts.bar}</span></span>
+              </a>
+              <a class={`ar-filter${currentRoom === 'workshop' ? ' is-active' : ''}`} href="/blog/room/workshop" data-cat="shop">
+                <span class="fz">工坊<span class="cnt">{counts.workshop}</span></span>
+              </a>
+              <a class={`ar-filter${currentRoom === 'court' ? ' is-active' : ''}`} href="/blog/room/court" data-cat="court">
+                <span class="fz">場邊<span class="cnt">{counts.court}</span></span>
+              </a>
+            </div>
+          )}
         </div>
       </header>
 
