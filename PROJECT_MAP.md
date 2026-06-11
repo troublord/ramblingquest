@@ -347,6 +347,9 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 | 修改字體（首頁） | `homepage.css` `body { font-family }` | Google Fonts 連結在 `index.astro` `<head>` |
 | 更新網站 URL（Sitemap/RSS） | `astro.config.mjs` `site:` 欄位 | 目前是 `https://example.com`，部署前必須改 |
 | 修改 SEO 標題/描述 | `src/consts.ts` | `SITE_TITLE`、`SITE_DESCRIPTION` |
+| 給文章加 tags | 文章 frontmatter `tags: ['tag1', 'tag2']` | tags 是 optional，新文章由 AI 自動補；點擊後連到 `/blog/tag/[tag]` |
+| 修改文章底部 tag 樣式 | `src/layouts/BlogPost.astro` `.post-tag`、`.post-tags__label` | muted amber 小方框，hover 轉棕色 |
+| 修改 tag archive 頁樣式 | `src/layouts/ArchiveLayout.astro` `.ar-tag-back` | tag 頁顯示「標籤 / #tag」標題，返回連結取代 room filter tabs |
 
 ---
 
@@ -391,7 +394,7 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 | 搜尋 | 目前尚未實作，未來考慮語意搜尋（參考專案筆記） |
 | 文章系列（series） | 多篇文章串成系列，目前 schema 無此欄位 |
 | 深色/淺色模式切換 | 目前固定深色（首頁），其他頁面固定淺色 |
-| 標籤頁（tags） | 目前 schema 無 `tags` 欄位，沒有 tag 頁面 |
+| ~~標籤頁（tags）~~ | ✅ 已實作：schema 有 `tags` 欄位，`/blog/tag/[tag]` tag archive 頁、文章底部 tag chips，點擊連結到 tag 頁 |
 | 關於頁改寫 | 目前是 Lorem ipsum 佔位內容 |
 | 域名接上 Netlify | ramblingquest.com 轉移中，接好後更新 `astro.config.mjs` 的 `site:` |
 | `Header.astro` 社群連結換成自己的 | 目前指向 Astro 官方 Mastodon/Twitter/GitHub |
