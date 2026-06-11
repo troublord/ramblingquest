@@ -9,7 +9,7 @@ type Props = CollectionEntry<'blog'>['data'] & {
 	headings?: { depth: number; slug: string; text: string }[];
 };
 
-const { title, description, pubDate, updatedDate, heroImage, room = 'study', prevPost, nextPost, headings = [] } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, room = 'study', tags = [], prevPost, nextPost, headings = [] } = Astro.props;
 
 const tocHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
 const hasToc = tocHeadings.length > 0;
@@ -358,6 +358,39 @@ const roomLabel: Record<string, string> = {
 				color: #2c1f14;
 			}
 
+			/* ── Post tags ── */
+			.post-tags {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				gap: 0.5rem;
+				margin-top: 2rem;
+				min-height: 1.5rem;
+			}
+			.post-tags__label {
+				font-family: "Noto Serif TC", serif;
+				font-size: 0.8rem;
+				color: rgba(44, 31, 20, 0.4);
+				letter-spacing: 0.04em;
+				margin-right: 0.25rem;
+			}
+			.post-tag {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.78rem;
+				color: rgba(44, 31, 20, 0.5);
+				border: 1px solid rgba(44, 31, 20, 0.2);
+				padding: 0.2em 0.65em;
+				border-radius: 3px;
+				text-decoration: none;
+				letter-spacing: 0.04em;
+				transition: color 0.2s, border-color 0.2s, background 0.2s;
+			}
+			.post-tag:hover {
+				color: #7c3e0e;
+				border-color: rgba(124, 62, 14, 0.4);
+				background: rgba(124, 62, 14, 0.05);
+			}
+
 			/* ── Post navigation ── */
 			.post-nav {
 				margin-top: 2.5rem;
@@ -581,6 +614,17 @@ const roomLabel: Record<string, string> = {
 
 						<div class="prose">
 							<slot />
+						</div>
+
+						<div class="post-tags">
+							{tags.length > 0 && (
+								<>
+									<span class="post-tags__label">標籤：</span>
+									{tags.map((tag: string) => (
+										<a href={`/blog/tag/${tag}`} class="post-tag">#{tag}</a>
+									))}
+								</>
+							)}
 						</div>
 
 						<footer class="post-nav">
