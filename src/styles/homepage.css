@@ -119,6 +119,16 @@ h1, h2, h3, p{ margin:0; }
 }
 .rq-nav__links a:hover{ color: var(--text); }
 .rq-nav__links a:hover::after{ right: 0; }
+.rq-search-btn{
+  background: none; border: none; cursor: pointer;
+  color: var(--text-soft);
+  padding: 5px 6px;
+  display: flex; align-items: center;
+  border-radius: 4px;
+  transition: color .25s ease;
+  flex-shrink: 0;
+}
+.rq-search-btn:hover{ color: rgb(var(--halo)); }
 
 /* Lamp icon ----------------------------------------- */
 .rq-lamp{

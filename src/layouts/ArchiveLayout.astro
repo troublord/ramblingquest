@@ -3,6 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import HomeFooter from '../components/HomeFooter.astro';
 import PostCard from '../components/PostCard.astro';
+import SearchModal from '../components/SearchModal.astro';
 import { SITE_TITLE } from '../consts';
 import '../styles/homepage.css';
 
@@ -288,7 +289,7 @@ const pageTitle = currentTag
     </style>
   </head>
 
-  <body data-mood="night" data-flicker="on" data-paper="cream" data-bg="street" style="background:#060c1a;">
+  <body data-mood="night" data-flicker="on" data-paper="cream" data-bg="street" style="background:#060c1a;" data-pagefind-ignore="all">
 
     <div class="ar-page">
 
@@ -302,10 +303,17 @@ const pageTitle = currentTag
           </span>
         </a>
         <ul class="rq-nav__links">
+          <li>
+            <button class="rq-search-btn" aria-label="搜尋文章">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </button>
+          </li>
           <li><a href="/blog" style="color:var(--text);">全部文章 <span class="rq-mono">/ archive</span></a></li>
           <li><a href="/about">關於這裡 <span class="rq-mono">/ about</span></a></li>
         </ul>
       </nav>
+
+      <SearchModal />
 
       <!-- ── Thin header ── -->
       <header class="ar-header">

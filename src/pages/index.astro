@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import HomeFooter from '../components/HomeFooter.astro';
 import PostCard from '../components/PostCard.astro';
+import SearchModal from '../components/SearchModal.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 import '../styles/homepage.css';
 
@@ -20,7 +21,7 @@ const posts = (await getCollection('blog'))
     <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Noto+Serif+TC:wght@400;500;600;700&family=DotGothic16&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   </head>
 
-  <body data-mood="night" data-flicker="on" data-paper="cream" data-bg="street">
+  <body data-mood="night" data-flicker="on" data-paper="cream" data-bg="street" data-pagefind-ignore="all">
 
     <!-- ───────── NAVBAR ───────── -->
     <nav class="rq-nav">
@@ -32,6 +33,11 @@ const posts = (await getCollection('blog'))
         </span>
       </a>
       <ul class="rq-nav__links">
+        <li>
+          <button class="rq-search-btn" aria-label="搜尋文章">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </button>
+        </li>
         <li><a href="/blog">全部文章 <span class="rq-mono">/ archive</span></a></li>
         <li><a href="/about">關於這裡 <span class="rq-mono">/ about</span></a></li>
       </ul>
@@ -39,6 +45,8 @@ const posts = (await getCollection('blog'))
         <span></span><span></span><span></span>
       </button>
     </nav>
+
+    <SearchModal />
 
     <!-- ───────── HERO ───────── -->
     <section class="rq-hero">
@@ -114,7 +122,7 @@ const posts = (await getCollection('blog'))
           <span class="rq-wall__rule" aria-hidden="true"></span>
           <div class="rq-wall__head-text">
             <h2 class="rq-wall__title">最新文章 <span class="rq-mono">/ recent</span></h2>
-            <p class="rq-wall__sub">把想法釘起來，讓它們慢慢發酵。</p>
+            <p class="rq-wall__sub">別急著把事情都搞懂了。</p>
           </div>
         </header>
 

@@ -8,6 +8,13 @@ import { defineConfig, fontProviders } from 'astro/config';
 export default defineConfig({
 	site: 'https://ramblingquest.com',
 	integrations: [mdx(), sitemap()],
+	vite: {
+		build: {
+			rollupOptions: {
+				external: ['/pagefind/pagefind.js'],
+			},
+		},
+	},
 	fonts: [
 		{
 			provider: fontProviders.local(),
