@@ -8,9 +8,10 @@ type Props = CollectionEntry<'blog'>['data'] & {
 	prevPost?: CollectionEntry<'blog'> | null;
 	nextPost?: CollectionEntry<'blog'> | null;
 	headings?: { depth: number; slug: string; text: string }[];
+	hideNav?: boolean;
 };
 
-const { title, description, pubDate, updatedDate, heroImage, room = 'study', tags = [], prevPost, nextPost, headings = [] } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, room, tags = [], prevPost, nextPost, headings = [], hideNav = false } = Astro.props;
 
 const tocHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
 const hasToc = tocHeadings.length > 0;
@@ -616,7 +617,9 @@ const roomLabel: Record<string, string> = {
 						<header class="post-header">
 							<div class="post-meta">
 								<FormattedDate date={pubDate} />
-								<a href={`/blog/room/${room}`} class="room-badge" data-room={room}>{roomLabel[room] ?? room}</a>
+								{room && (
+									<a href={`/blog/room/${room}`} class="room-badge" data-room={room}>{roomLabel[room] ?? room}</a>
+								)}
 							</div>
 							<h1>{title}</h1>
 							{updatedDate && (
@@ -645,27 +648,29 @@ const roomLabel: Record<string, string> = {
 							)}
 						</div>
 
-						<footer class="post-nav">
-							<a href={`/blog/room/${room}`} class="post-nav__back">
-								← 返回{roomLabel[room] ?? '分類'}
-							</a>
-							{(prevPost || nextPost) && (
-								<div class="post-nav__siblings">
-									{prevPost ? (
-										<a href={`/blog/${prevPost.id}`} class="post-nav__prev">
-											<span class="post-nav__label">← 上一篇</span>
-											<span class="post-nav__title">{prevPost.data.title}</span>
-										</a>
-									) : <span />}
-									{nextPost ? (
-										<a href={`/blog/${nextPost.id}`} class="post-nav__next">
-											<span class="post-nav__label">下一篇 →</span>
-											<span class="post-nav__title">{nextPost.data.title}</span>
-										</a>
-									) : <span />}
-								</div>
-							)}
-						</footer>
+						{!hideNav && (
+							<footer class="post-nav">
+								<a href={room ? `/blog/room/${room}` : '/blog'} class="post-nav__back">
+									← 返回{room ? (roomLabel[room] ?? '分類') : '文章列表'}
+								</a>
+								{(prevPost || nextPost) && (
+									<div class="post-nav__siblings">
+										{prevPost ? (
+											<a href={`/blog/${prevPost.id}`} class="post-nav__prev">
+												<span class="post-nav__label">← 上一篇</span>
+												<span class="post-nav__title">{prevPost.data.title}</span>
+											</a>
+										) : <span />}
+										{nextPost ? (
+											<a href={`/blog/${nextPost.id}`} class="post-nav__next">
+												<span class="post-nav__label">下一篇 →</span>
+												<span class="post-nav__title">{nextPost.data.title}</span>
+											</a>
+										) : <span />}
+									</div>
+								)}
+							</footer>
+						)}
 					</article>
 				</main>
 
