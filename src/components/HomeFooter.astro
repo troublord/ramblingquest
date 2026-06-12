@@ -9,8 +9,35 @@
   <div class="rq-foot__col rq-foot__col--links">
     <span class="rq-dot"></span>
     <a href="https://github.com/troublord" target="_blank" rel="noopener">GitHub</a>
+    <span class="rq-dot"></span>
+    <a href="https://www.linkedin.com/in/winson-liu-71151823a/" target="_blank" rel="noopener">LinkedIn</a>
+    <span class="rq-dot"></span>
+    <button class="rq-copy-email" data-email="yeelm1487@gmail.com">yeelm1487@gmail.com</button>
   </div>
   <div class="rq-foot__col rq-foot__col--copy rq-mono">
     © {new Date().getFullYear()} Rambling Quest · 漫步的房間 · all rambles reserved
   </div>
 </footer>
+
+<style>
+  .rq-copy-email {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+  }
+  .rq-copy-email:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<script>
+  document.querySelector('.rq-copy-email')?.addEventListener('click', async function () {
+    await navigator.clipboard.writeText(this.dataset.email);
+    const original = this.textContent;
+    this.textContent = '已複製！';
+    setTimeout(() => { this.textContent = original; }, 1500);
+  });
+</script>
