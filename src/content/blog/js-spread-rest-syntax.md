@@ -2,6 +2,7 @@
 title: '給前端修練家的筆記：... 語法'
 description: 'JS/TS 的 ... 符號有兩種用途：Spread 把資料展開、Rest 把剩餘資料收集起來。'
 pubDate: 'Apr 15 2026'
+heroImage: '/images/korea-building-sunset.webp'
 room: 'workshop'
 tags: ['JavaScript', 'TypeScript', '前端', 'Spread', 'Rest']
 ---

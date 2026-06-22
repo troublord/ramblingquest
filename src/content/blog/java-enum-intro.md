@@ -2,6 +2,7 @@
 title: 'Java Enum 是什麼？基佛你再搞試試看'
 description: '用一個權限系統的故事說明 Enum 的核心價值：把合法值限制在一個明確範圍內，順便介紹 EnumSet 和 EnumMap。'
 pubDate: 'Mar 30 2026'
+heroImage: '/images/korea-dirty-bun.webp'
 room: 'workshop'
 tags: ['Java', '型別設計', '重構', '後端']
 ---

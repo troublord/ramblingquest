@@ -2,6 +2,7 @@
 title: 'Markdown 語法指南'
 description: '整理常用 Markdown 語法：標題、段落、圖片、引用、表格、程式碼區塊、清單與腳註，附 HTML 補充元素。'
 pubDate: '2026-06-04'
+heroImage: '/images/hokaido-hotel.webp'
 room: 'workshop'
 tags: ['Markdown', '教學', '工具']
 ---

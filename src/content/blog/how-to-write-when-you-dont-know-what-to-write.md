@@ -2,6 +2,7 @@
 title: '寫文章。不知道要寫什麼怎麼辦？'
 description: '面對「不知道要寫什麼」的拖延與適應不良的完美主義，與其追求一次寫好，不如先寫一大坨垃圾，再從中挖出寶石。'
 pubDate: '2026-06-19'
+heroImage: '/images/hokaido-historic-building.webp'
 room: 'study'
 tags: ['寫作', '完美主義']
 ---
