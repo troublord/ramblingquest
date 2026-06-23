@@ -2,7 +2,7 @@
 
 > 這份文件給「未來的我」和「AI 助手」看。  
 > 目的：改任何功能或畫面之前，先看這裡，快速定位要動哪些檔案。  
-> 最後更新：2026-06-10
+> 最後更新：2026-06-23
 
 ---
 
@@ -27,10 +27,16 @@
 ```
 C:\ramblingquest\
 ├── astro.config.mjs          Astro 設定：site URL、整合（mdx、sitemap）、本地字體
-├── package.json              依賴：astro、@astrojs/mdx、@astrojs/rss、@astrojs/sitemap、sharp；scripts: dev/build/preview/optimize/optimize:clean
+├── package.json              依賴：astro、@astrojs/mdx、@astrojs/rss、@astrojs/sitemap、sharp、@netlify/blobs；devDeps: pagefind、netlify-cli、@astrojs/check、typescript；scripts: dev/build/preview/optimize/optimize:clean
+├── netlify.toml              Netlify build 設定：command/publish/functions 目錄（node_bundler esbuild）
 ├── tsconfig.json             TypeScript 設定
 ├── PROJECT_MAP.md            ← 本文件
 ├── optimize-images.bat       一鍵圖片壓縮執行檔（Windows）：雙擊即執行 optimize:clean，視窗停留顯示結果
+│
+├── netlify/
+│   └── functions/
+│       ├── comments.mts          `GET/POST /api/comments?slug=`：留言列表＋新增（honeypot/長度/連結數檢查＋同 IP 頻率限制），存於 Netlify Blobs
+│       └── comments-delete.mts   `DELETE /api/comments/:id?slug=`：密碼保護（header `x-admin-secret` 比對環境變數 `COMMENT_ADMIN_SECRET`）的手動清除 API
 │
 ├── scripts/
 │   └── convert-webp.mjs      圖片壓縮工具：遞迴掃描 public/ 下所有子目錄的 PNG/JPG，輸出 WebP（quality 85），已有 .webp 則跳過
@@ -353,7 +359,48 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 
 ---
 
-## 9. 設計原則
+## 9. 留言系統（Netlify Functions + Blobs）
+
+文章頁底部有暱稱＋留言、無需登入的留言區，仿照 suanming.com.tw 的開放感，用 Netlify Functions + Netlify Blobs 實作（不需要外部資料庫帳號）。
+
+**檔案**：`netlify/functions/comments.mts`（GET 列表／POST 新增）、`netlify/functions/comments-delete.mts`（DELETE，密碼保護）、`src/layouts/BlogPost.astro` 的 `.comments` 區塊（markup + scoped CSS + 獨立 `<script>` IIFE，緊接在 TOC script 之後）。
+
+**API**：
+- `GET /api/comments?slug=<slug>` → `{ comments: [...] }`，依 createdAt 由舊到新排序
+- `POST /api/comments?slug=<slug>`，body `{ name, content, website }`（`website` 是隱藏 honeypot 欄位）→ 成功 `201`；驗證失敗（缺欄位／超長／連結過多／honeypot 非空）`400`；同 IP 10 分鐘內超過 5 次 `429`
+- `DELETE /api/comments/:id?slug=<slug>`，header `x-admin-secret` 比對環境變數 `COMMENT_ADMIN_SECRET` → 成功 `200`；密碼錯誤 `401`；id 不存在 `404`
+
+**資料儲存**：兩個 Blobs store——`comments`（key 是文章 slug，value 是留言陣列）、`comment-rate-limits`（key 是 IP，value 是時間戳記陣列，手動修剪過期項目）。
+
+**如何刪除一則留言**：故意不做後台介面，刪留言要手動兩步——先 GET 列表找到 `id`，再帶密碼 DELETE。
+
+1. 先查某篇文章目前的留言，找到要刪的那則的 `id`：
+   ```
+   curl "https://<站點網址>/api/comments?slug=<文章slug>"
+   ```
+2. 用該 `id` 呼叫 DELETE，header 帶 `x-admin-secret`（本機是 `.env` 的 `COMMENT_ADMIN_SECRET`；正式站是 Netlify Dashboard 設定的值）：
+   ```
+   curl -X DELETE "https://<站點網址>/api/comments/<id>?slug=<文章slug>" -H "x-admin-secret: <secret>"
+   ```
+   PowerShell 版本：
+   ```powershell
+   Invoke-WebRequest -Uri "https://<站點網址>/api/comments/<id>?slug=<文章slug>" -Method DELETE -Headers @{"x-admin-secret"="<secret>"}
+   ```
+   本機測試時網址是 `http://localhost:8888`（要透過 `netlify dev`，純 `astro dev`/`astro preview` 沒有這個路由）。
+
+**v1 已知取捨**：不接 Turnstile（流量低，先用 honeypot + 頻率限制）、送出即公開不審核、同 slug 併發寫入有極小機率互相覆蓋、文章改名會讓舊留言變孤兒（slug 字串當 key）。
+
+**本地測試**：純 `npm run dev`（`astro dev`）不會跑 functions，打 `/api/comments` 會 404。要測完整功能用 `npx netlify dev`。
+⚠️ **已知 quirk**：`netlify dev` 預設啟動 `astro dev`，但目前 `SearchModal.astro` 在 dev 模式下會因為 pagefind 索引只在 build 時產生而噴 vite 錯誤（不影響留言功能本身，但會洗版 log）。要避免這個噴錯，改用建置後的版本測試：
+```
+npm run build
+npx netlify dev --command "npm run preview" --target-port 4321
+```
+部署前記得在 Netlify Dashboard 設定環境變數 `COMMENT_ADMIN_SECRET`（本地 `.env` 裡的值僅供本機測試，正式環境要設不同的值）。
+
+---
+
+## 10. 設計原則
 
 **Rambling Quest 是一個人在城市裡散步時留下的地方。**
 
@@ -366,7 +413,7 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 
 ---
 
-## 10. 未來可重構建議
+## 11. 未來可重構建議
 
 ### 可以拆成元件（不急，但值得記）
 

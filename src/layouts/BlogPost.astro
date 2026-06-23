@@ -5,13 +5,14 @@ import FormattedDate from '../components/FormattedDate.astro';
 import SearchModal from '../components/SearchModal.astro';
 
 type Props = CollectionEntry<'blog'>['data'] & {
+	slug?: string;
 	prevPost?: CollectionEntry<'blog'> | null;
 	nextPost?: CollectionEntry<'blog'> | null;
 	headings?: { depth: number; slug: string; text: string }[];
 	hideNav?: boolean;
 };
 
-const { title, description, pubDate, updatedDate, heroImage, room, tags = [], prevPost, nextPost, headings = [], hideNav = false } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, room, tags = [], slug, prevPost, nextPost, headings = [], hideNav = false } = Astro.props;
 
 const tocHeadings = headings.filter(h => h.depth >= 2 && h.depth <= 3);
 const hasToc = tocHeadings.length > 0;
@@ -403,6 +404,124 @@ const roomLabel: Record<string, string> = {
 				background: rgba(124, 62, 14, 0.05);
 			}
 
+			/* ── Comments ── */
+			.comments {
+				margin-top: 2.5rem;
+				padding-top: 1.75rem;
+				border-top: 1px solid rgba(44, 31, 20, 0.15);
+			}
+			.comments__title {
+				font-size: 1.2rem;
+				font-weight: 600;
+				color: #1a0f08;
+				margin: 0 0 1.25rem;
+			}
+			.comments__list {
+				display: flex;
+				flex-direction: column;
+				gap: 1.25rem;
+				margin-bottom: 1.75rem;
+			}
+			.comments__loading,
+			.comments__empty {
+				color: rgba(44, 31, 20, 0.45);
+				font-size: 0.9rem;
+				font-style: italic;
+			}
+			.comment {
+				padding-bottom: 1.1rem;
+				border-bottom: 1px solid rgba(44, 31, 20, 0.1);
+			}
+			.comment:last-child {
+				border-bottom: none;
+				padding-bottom: 0;
+			}
+			.comment__head {
+				display: flex;
+				align-items: baseline;
+				gap: 0.6rem;
+				margin-bottom: 0.35rem;
+			}
+			.comment__name {
+				font-weight: 600;
+				color: #1a0f08;
+				font-size: 0.92rem;
+			}
+			.comment__date {
+				font-size: 0.78rem;
+				color: rgba(44, 31, 20, 0.4);
+			}
+			.comment__content {
+				color: #2c1f14;
+				font-size: 0.95rem;
+				line-height: 1.7;
+				white-space: pre-wrap;
+				word-break: break-word;
+			}
+			.comments__honeypot {
+				position: absolute;
+				left: -9999px;
+				width: 1px;
+				height: 1px;
+				overflow: hidden;
+			}
+			.comments__field {
+				margin-bottom: 0.9rem;
+				display: flex;
+				flex-direction: column;
+				gap: 0.4rem;
+			}
+			.comments__field label {
+				font-size: 0.82rem;
+				color: rgba(44, 31, 20, 0.55);
+			}
+			.comments__field input,
+			.comments__field textarea {
+				font-family: "Noto Serif TC", Georgia, serif;
+				font-size: 0.95rem;
+				color: #2c1f14;
+				background: rgba(255, 255, 255, 0.4);
+				border: 1px solid rgba(44, 31, 20, 0.25);
+				border-radius: 4px;
+				padding: 0.55rem 0.7rem;
+				resize: vertical;
+			}
+			.comments__field input:focus,
+			.comments__field textarea:focus {
+				outline: none;
+				border-color: #7c3e0e;
+			}
+			.comments__submit {
+				font-family: "Noto Serif TC", serif;
+				font-size: 0.9rem;
+				color: #f4e8c8;
+				background: #7c3e0e;
+				border: none;
+				border-radius: 4px;
+				padding: 0.55rem 1.4rem;
+				cursor: pointer;
+				transition: background 0.2s;
+			}
+			.comments__submit:hover {
+				background: #5e2e08;
+			}
+			.comments__submit:disabled {
+				opacity: 0.6;
+				cursor: not-allowed;
+			}
+			.comments__status {
+				margin: 0.6rem 0 0;
+				font-size: 0.85rem;
+				color: rgba(44, 31, 20, 0.55);
+				min-height: 1.2rem;
+			}
+			.comments__status[data-state="error"] {
+				color: #a02c0e;
+			}
+			.comments__status[data-state="success"] {
+				color: #3e6b1f;
+			}
+
 			/* ── Post navigation ── */
 			.post-nav {
 				margin-top: 2.5rem;
@@ -648,6 +767,31 @@ const roomLabel: Record<string, string> = {
 							)}
 						</div>
 
+						{slug && (
+							<section class="comments" id="comments" data-slug={slug}>
+								<h2 class="comments__title">留言</h2>
+								<div class="comments__list" id="comments-list" aria-live="polite">
+									<p class="comments__loading">載入留言中...</p>
+								</div>
+								<form class="comments__form" id="comments-form" novalidate>
+									<div class="comments__honeypot" aria-hidden="true">
+										<label for="comments-website">Website</label>
+										<input type="text" id="comments-website" name="website" tabindex="-1" autocomplete="off" />
+									</div>
+									<div class="comments__field">
+										<label for="comments-name">名字</label>
+										<input type="text" id="comments-name" name="name" maxlength="60" required />
+									</div>
+									<div class="comments__field">
+										<label for="comments-content">留言內容</label>
+										<textarea id="comments-content" name="content" rows="4" maxlength="2000" required></textarea>
+									</div>
+									<button type="submit" class="comments__submit">送出留言</button>
+									<p class="comments__status" id="comments-status" role="status"></p>
+								</form>
+							</section>
+						)}
+
 						{!hideNav && (
 							<footer class="post-nav">
 								<a href={room ? `/blog/room/${room}` : '/blog'} class="post-nav__back">
@@ -738,6 +882,98 @@ const roomLabel: Record<string, string> = {
 
 				window.addEventListener('scroll', updateActive, { passive: true });
 				updateActive();
+			})();
+		</script>
+
+		<script>
+			(function () {
+				type Comment = { id: string; name: string; content: string; createdAt: string };
+
+				const section = document.getElementById('comments');
+				if (!section) return;
+
+				const slug = section.dataset.slug as string;
+				const list = document.getElementById('comments-list') as HTMLElement;
+				const form = document.getElementById('comments-form') as HTMLFormElement;
+				const status = document.getElementById('comments-status') as HTMLElement;
+				if (!slug || !list || !form || !status) return;
+				const submitBtn = form.querySelector('.comments__submit') as HTMLButtonElement | null;
+
+				function escapeHtml(text: string): string {
+					const div = document.createElement('div');
+					div.textContent = text;
+					return div.innerHTML;
+				}
+
+				function formatDate(iso: string): string {
+					return new Date(iso).toLocaleDateString('zh-TW', { year: 'numeric', month: 'short', day: 'numeric' });
+				}
+
+				function renderComments(comments: Comment[]) {
+					if (!comments.length) {
+						list.innerHTML = '<p class="comments__empty">還沒有留言，留下第一則吧。</p>';
+						return;
+					}
+					list.innerHTML = comments.map((c: Comment) => `
+						<div class="comment">
+							<div class="comment__head">
+								<span class="comment__name">${escapeHtml(c.name)}</span>
+								<span class="comment__date">${formatDate(c.createdAt)}</span>
+							</div>
+							<div class="comment__content">${escapeHtml(c.content)}</div>
+						</div>
+					`).join('');
+				}
+
+				async function loadComments() {
+					try {
+						const res = await fetch(`/api/comments?slug=${encodeURIComponent(slug)}`);
+						const data = await res.json();
+						renderComments(data.comments ?? []);
+					} catch {
+						list.innerHTML = '<p class="comments__empty">留言載入失敗，請重新整理頁面。</p>';
+					}
+				}
+
+				form.addEventListener('submit', async (e) => {
+					e.preventDefault();
+					status.textContent = '';
+					status.removeAttribute('data-state');
+					if (submitBtn) submitBtn.disabled = true;
+
+					const name = (form.elements.namedItem('name') as HTMLInputElement).value;
+					const content = (form.elements.namedItem('content') as HTMLTextAreaElement).value;
+					const website = (form.elements.namedItem('website') as HTMLInputElement).value;
+
+					try {
+						const res = await fetch(`/api/comments?slug=${encodeURIComponent(slug)}`, {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ name, content, website }),
+						});
+						const data = await res.json();
+
+						if (res.status === 201) {
+							form.reset();
+							status.textContent = '留言已送出';
+							status.dataset.state = 'success';
+							await loadComments();
+						} else if (res.status === 429) {
+							status.textContent = data.error || '留言太頻繁，請稍後再試';
+							status.dataset.state = 'error';
+						} else {
+							status.textContent = data.error || '送出失敗，請確認內容後再試';
+							status.dataset.state = 'error';
+						}
+					} catch {
+						status.textContent = '網路錯誤，請稍後再試';
+						status.dataset.state = 'error';
+					} finally {
+						if (submitBtn) submitBtn.disabled = false;
+					}
+				});
+
+				loadComments();
 			})();
 		</script>
 
