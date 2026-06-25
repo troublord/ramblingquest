@@ -1,0 +1,15 @@
+# WordPress RSS feed → Astro RSS（必須放在 /tag/* 萬用規則之前）
+/feed/              /rss.xml  301
+/tag/*/feed/        /rss.xml  301
+/category/*/feed/   /rss.xml  301
+/*/feed/            /rss.xml  301
+
+# 舊 WordPress tag 路由 → 新 Astro tag 路由
+/tag/*  /blog/tag/:splat  301
+
+# 舊 WordPress category 路由 → blog 列表
+/category/*  /blog  301
+
+# 舊文章 URL → 新 Astro 路由（只對應新網站有的文章）
+/p5-音樂中最讓人破防的一首：days-when-my-mother-was-there-中文翻譯/  /blog/p5-days-when-my-mother-was-there  301
+/如何在-aws-ec2-綁定固定-ip（elastic-ip）｜完整配置教學/  /blog/aws-ec2-elastic-ip  301
