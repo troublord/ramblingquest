@@ -2,7 +2,7 @@
 title: '金塊操盤迷思｜矛斷在哪，明年補得起來嗎？'
 description: '金塊例行賽進攻聯盟第一，季後賽首輪卻被灰狼拆解——從 Murray 對位、Jokić 空間到陣容深度與薪資死局，談金塊明年到底還能怎麼操盤。'
 pubDate: '2026-06-25'
-heroImage: '/images/nuggets-regular-season-stats.webp'
+heroImage: '/images/nuggets-jokic-scuffle.webp'
 room: 'court'
 tags: ['NBA', '金塊', '休賽季', '薪資空間']
 ---
