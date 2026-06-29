@@ -957,7 +957,18 @@ const roomLabel: Record<string, string> = {
 							form.reset();
 							status.textContent = '留言已送出';
 							status.dataset.state = 'success';
-							await loadComments();
+							const emptyMsg = list.querySelector('.comments__empty');
+							if (emptyMsg) emptyMsg.remove();
+							const div = document.createElement('div');
+							div.className = 'comment';
+							div.innerHTML = `
+								<div class="comment__head">
+									<span class="comment__name">${escapeHtml(data.comment.name)}</span>
+									<span class="comment__date">${formatDate(data.comment.createdAt)}</span>
+								</div>
+								<div class="comment__content">${escapeHtml(data.comment.content)}</div>
+							`;
+							list.appendChild(div);
 						} else if (res.status === 429) {
 							status.textContent = data.error || '留言太頻繁，請稍後再試';
 							status.dataset.state = 'error';
