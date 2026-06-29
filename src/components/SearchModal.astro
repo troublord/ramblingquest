@@ -62,7 +62,8 @@
 
   async function initPagefind() {
     try {
-      pagefind = await import(/* @vite-ignore */ '/pagefind/pagefind.js');
+      const importFn = new Function('path', 'return import(path)');
+      pagefind = await importFn('/pagefind/pagefind.js');
       await pagefind.init();
     } catch {
       resultsEl.innerHTML = `<p class="search-hint">搜尋索引尚未產生<br><small>執行 <code>npm run build</code> 後可用</small></p>`;
