@@ -2,7 +2,7 @@
 
 > 這份文件給「未來的我」和「AI 助手」看。  
 > 目的：改任何功能或畫面之前，先看這裡，快速定位要動哪些檔案。  
-> 最後更新：2026-06-23
+> 最後更新：2026-06-29
 
 ---
 
@@ -27,7 +27,7 @@
 ```
 C:\ramblingquest\
 ├── astro.config.mjs          Astro 設定：site URL、整合（mdx、sitemap）、本地字體
-├── package.json              依賴：astro、@astrojs/mdx、@astrojs/rss、@astrojs/sitemap、sharp、@netlify/blobs；devDeps: pagefind、netlify-cli、@astrojs/check、typescript；scripts: dev/build/preview/optimize/optimize:clean
+├── package.json              依賴：astro、@astrojs/mdx、@astrojs/rss、@astrojs/sitemap、sharp、@netlify/blobs；devDeps: pagefind、netlify-cli、@astrojs/check、typescript；scripts: dev/dev:netlify/build/preview/optimize/optimize:clean
 ├── netlify.toml              Netlify build 設定：command/publish/functions 目錄（node_bundler esbuild）
 ├── tsconfig.json             TypeScript 設定
 ├── PROJECT_MAP.md            ← 本文件
@@ -35,8 +35,9 @@ C:\ramblingquest\
 │
 ├── netlify/
 │   └── functions/
-│       ├── comments.mts          `GET/POST /api/comments?slug=`：留言列表＋新增（honeypot/長度/連結數檢查＋同 IP 頻率限制），存於 Netlify Blobs
-│       └── comments-delete.mts   `DELETE /api/comments/:id?slug=`：密碼保護（header `x-admin-secret` 比對環境變數 `COMMENT_ADMIN_SECRET`）的手動清除 API
+│       ├── comments.mts          `GET/POST /api/comments?slug=`：留言列表＋新增（honeypot/長度/連結數檢查＋同 IP 頻率限制），存於 Netlify Blobs；POST 201 回傳新留言物件供前端直接注入 DOM
+│       ├── comments-delete.mts   `DELETE /api/comments/:id?slug=`：密碼保護（header `x-admin-secret` 比對環境變數 `COMMENT_ADMIN_SECRET`）的清除 API
+│       └── comments-list-all.mts `GET /api/comments-list-all`：密碼保護，回傳所有文章的留言（含 slug），供後台管理頁使用
 │
 ├── scripts/
 │   └── convert-webp.mjs      圖片壓縮工具：遞迴掃描 public/ 下所有子目錄的 PNG/JPG，輸出 WebP（quality 85），已有 .webp 則跳過
@@ -90,7 +91,8 @@ C:\ramblingquest\
     │   ├── Header.astro      其他頁面的 Navbar（非首頁用）
     │   ├── HeaderLink.astro  Header 裡的 active-state 連結
     │   ├── Footer.astro      其他頁面的 Footer（非首頁用）
-    │   └── FormattedDate.astro  日期格式化元件（en-us，Jul 08 2022）
+    │   ├── FormattedDate.astro  日期格式化元件（en-us，Jul 08 2022）
+    │   └── SearchModal.astro    全站搜尋 Modal（pagefind 驅動，keyboard shortcut Ctrl+K）
     │
     ├── layouts/
     │   ├── BlogPost.astro       文章頁 Layout（Header + prose + Footer）
@@ -99,6 +101,7 @@ C:\ramblingquest\
     ├── pages/                路由由此決定
     │   ├── index.astro       首頁 / （完整自訂設計，不用 Header/Footer 元件）
     │   ├── about.astro       關於頁 /about（使用 BlogPost layout）
+    │   ├── admin.astro       留言後台 /admin（密碼保護，列出全部留言＋依文章篩選＋刪除）
     │   ├── rss.xml.js        RSS feed /rss.xml
     │   └── blog/
     │       ├── index.astro             全部文章列表 /blog（第 1 頁），使用 ArchiveLayout
@@ -372,30 +375,16 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 
 **資料儲存**：兩個 Blobs store——`comments`（key 是文章 slug，value 是留言陣列）、`comment-rate-limits`（key 是 IP，value 是時間戳記陣列，手動修剪過期項目）。
 
-**如何刪除一則留言**：故意不做後台介面，刪留言要手動兩步——先 GET 列表找到 `id`，再帶密碼 DELETE。
+**如何刪除一則留言**：登入後台 `/admin`（密碼即 `COMMENT_ADMIN_SECRET`），可篩選文章、直接點刪除按鈕。刪除後 DOM 立即更新，不需 reload。
 
-1. 先查某篇文章目前的留言，找到要刪的那則的 `id`：
-   ```
-   curl "https://<站點網址>/api/comments?slug=<文章slug>"
-   ```
-2. 用該 `id` 呼叫 DELETE，header 帶 `x-admin-secret`（本機是 `.env` 的 `COMMENT_ADMIN_SECRET`；正式站是 Netlify Dashboard 設定的值）：
-   ```
-   curl -X DELETE "https://<站點網址>/api/comments/<id>?slug=<文章slug>" -H "x-admin-secret: <secret>"
-   ```
-   PowerShell 版本：
-   ```powershell
-   Invoke-WebRequest -Uri "https://<站點網址>/api/comments/<id>?slug=<文章slug>" -Method DELETE -Headers @{"x-admin-secret"="<secret>"}
-   ```
-   本機測試時網址是 `http://localhost:8888`（要透過 `netlify dev`，純 `astro dev`/`astro preview` 沒有這個路由）。
+若要用 API 手動操作：
+1. GET 留言列表找 `id`：`curl "https://<站點網址>/api/comments?slug=<文章slug>"`
+2. DELETE：`curl -X DELETE "https://<站點網址>/api/comments/<id>?slug=<文章slug>" -H "x-admin-secret: <secret>"`
 
 **v1 已知取捨**：不接 Turnstile（流量低，先用 honeypot + 頻率限制）、送出即公開不審核、同 slug 併發寫入有極小機率互相覆蓋、文章改名會讓舊留言變孤兒（slug 字串當 key）。
 
-**本地測試**：純 `npm run dev`（`astro dev`）不會跑 functions，打 `/api/comments` 會 404。要測完整功能用 `npx netlify dev`。
-⚠️ **已知 quirk**：`netlify dev` 預設啟動 `astro dev`，但目前 `SearchModal.astro` 在 dev 模式下會因為 pagefind 索引只在 build 時產生而噴 vite 錯誤（不影響留言功能本身，但會洗版 log）。要避免這個噴錯，改用建置後的版本測試：
-```
-npm run build
-npx netlify dev --command "npm run preview" --target-port 4321
-```
+**本地測試**：純 `npm run dev`（`astro dev`）不會跑 functions，打 `/api/comments` 會 404。要測完整功能（留言、搜尋、後台）統一用 `npm run dev:netlify`（port 8888）。啟動前先 `npm run build` 並將 `dist/pagefind/` 複製到 `public/pagefind/`，搜尋才能在 dev 模式下正常運作（`public/pagefind/` 已加入 `.gitignore`）。可直接執行 `/ramble` skill 自動完成上述流程。
+
 部署前記得在 Netlify Dashboard 設定環境變數 `COMMENT_ADMIN_SECRET`（本地 `.env` 裡的值僅供本機測試，正式環境要設不同的值）。
 
 ---
@@ -438,7 +427,7 @@ npx netlify dev --command "npm run preview" --target-port 4321
 | 功能 | 說明 |
 |---|---|
 | 文章頁各房間獨立排版 | 書房像書桌、吧台像菜單紙，目前統一用 `BlogPost.astro` |
-| 搜尋 | 目前尚未實作，未來考慮語意搜尋（參考專案筆記） |
+| ~~搜尋~~ | ✅ 已實作：pagefind 驅動全站搜尋，`SearchModal.astro` + Ctrl+K 快捷鍵 |
 | 文章系列（series） | 多篇文章串成系列，目前 schema 無此欄位 |
 | 深色/淺色模式切換 | 目前固定深色（首頁），其他頁面固定淺色 |
 | ~~標籤頁（tags）~~ | ✅ 已實作：schema 有 `tags` 欄位，`/blog/tag/[tag]` tag archive 頁、文章底部 tag chips，點擊連結到 tag 頁 |
