@@ -1,0 +1,217 @@
+---
+// Pure client-side admin page — no server data fetching
+---
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="robots" content="noindex,nofollow" />
+	<title>後台 — Rambling Quest</title>
+	<style>
+		*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+		body { font-family: system-ui, -apple-system, sans-serif; background: #f4f4f4; color: #111; padding: 2rem 1.5rem; }
+		h1 { font-size: 1.3rem; margin-bottom: 1.5rem; }
+		#login-section { max-width: 360px; }
+		#login-section label { display: block; margin-bottom: .4rem; font-size: .9rem; color: #444; }
+		#login-section input { width: 100%; padding: .5rem .7rem; border: 1px solid #bbb; border-radius: 4px; font-size: 1rem; }
+		#login-section button { margin-top: .6rem; padding: .5rem 1.2rem; background: #111; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: .95rem; }
+		#login-section button:hover { background: #333; }
+		#login-error { color: #b00; font-size: .85rem; margin-top: .4rem; min-height: 1.2em; }
+		#comments-section { display: none; max-width: 720px; }
+		#count-bar { display: flex; align-items: center; gap: .75rem; margin-bottom: 1rem; }
+		#count { font-size: .85rem; color: #666; }
+		#reload-btn { padding: .25rem .7rem; background: #fff; border: 1px solid #bbb; border-radius: 4px; cursor: pointer; font-size: .82rem; color: #444; }
+		#reload-btn:hover { background: #f0f0f0; }
+		#reload-btn:disabled { color: #aaa; cursor: not-allowed; }
+		.card { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 1rem; margin-bottom: .75rem; }
+		.card-meta { display: flex; flex-wrap: wrap; gap: .5rem 1.2rem; font-size: .8rem; margin-bottom: .5rem; }
+		.card-slug { font-weight: 600; color: #2337ff; text-decoration: none; }
+		.card-slug:hover { text-decoration: underline; }
+		.card-time { color: #999; }
+		.card-name { font-weight: 600; font-size: .9rem; margin-bottom: .3rem; }
+		.card-content { font-size: .9rem; line-height: 1.55; white-space: pre-wrap; word-break: break-word; color: #222; }
+		.delete-btn { margin-top: .75rem; padding: .3rem .8rem; background: #c00; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: .82rem; }
+		.delete-btn:hover:not(:disabled) { background: #900; }
+		.delete-btn:disabled { background: #aaa; cursor: not-allowed; }
+		#empty { color: #888; font-size: .9rem; }
+	</style>
+</head>
+<body>
+	<h1>留言後台</h1>
+
+	<div id="login-section">
+		<form id="login-form">
+			<label for="secret-input">管理密碼</label>
+			<input type="password" id="secret-input" autocomplete="current-password" required />
+			<button type="submit">進入</button>
+			<div id="login-error"></div>
+		</form>
+	</div>
+
+	<div id="comments-section">
+		<div id="count-bar">
+			<span id="count"></span>
+			<button id="reload-btn">重新載入</button>
+		</div>
+		<div id="comments-list"></div>
+		<p id="empty" style="display:none">目前沒有留言。</p>
+	</div>
+
+	<script>
+		(function () {
+			const SESSION_KEY = 'rq_admin_secret';
+			let adminSecret = '';
+
+			const loginSection = document.getElementById('login-section');
+			const loginForm = document.getElementById('login-form');
+			const secretInput = document.getElementById('secret-input');
+			const loginError = document.getElementById('login-error');
+			const commentsSection = document.getElementById('comments-section');
+			const countEl = document.getElementById('count');
+			const reloadBtn = document.getElementById('reload-btn');
+			const commentsList = document.getElementById('comments-list');
+			const emptyEl = document.getElementById('empty');
+
+			function escHtml(str) {
+				return str
+					.replace(/&/g, '&amp;')
+					.replace(/</g, '&lt;')
+					.replace(/>/g, '&gt;')
+					.replace(/"/g, '&quot;');
+			}
+
+			function updateCount() {
+				const n = commentsList.querySelectorAll('.card').length;
+				countEl.textContent = `共 ${n} 則留言`;
+				emptyEl.style.display = n === 0 ? '' : 'none';
+			}
+
+			async function handleDelete(e) {
+				const btn = e.currentTarget;
+				const { id, slug } = btn.dataset;
+				if (!confirm('確定要刪除這則留言？')) return;
+
+				btn.disabled = true;
+				btn.textContent = '刪除中…';
+
+				try {
+					const res = await fetch(`/api/comments/${id}?slug=${encodeURIComponent(slug)}`, {
+						method: 'DELETE',
+						headers: { 'x-admin-secret': adminSecret },
+					});
+					if (res.ok) {
+						btn.closest('.card').remove();
+						updateCount();
+					} else {
+						throw new Error();
+					}
+				} catch {
+					btn.disabled = false;
+					btn.textContent = '刪除';
+					alert('刪除失敗，請再試一次。');
+				}
+			}
+
+			function renderComments(comments) {
+				emptyEl.style.display = 'none';
+				if (comments.length === 0) {
+					countEl.textContent = '共 0 則留言';
+					commentsList.innerHTML = '';
+					emptyEl.style.display = '';
+					return;
+				}
+
+				countEl.textContent = `共 ${comments.length} 則留言`;
+
+				commentsList.innerHTML = comments
+					.map((c) => {
+						const time = new Date(c.createdAt).toLocaleString('zh-TW', {
+							timeZone: 'Asia/Taipei',
+						});
+						return `<div class="card" data-id="${escHtml(c.id)}">
+							<div class="card-meta">
+								<a class="card-slug" href="/blog/${escHtml(c.slug)}" target="_blank" rel="noopener">${escHtml(c.slug)}</a>
+								<span class="card-time">${escHtml(time)}</span>
+							</div>
+							<div class="card-name">${escHtml(c.name)}</div>
+							<div class="card-content">${escHtml(c.content)}</div>
+							<button class="delete-btn" data-id="${escHtml(c.id)}" data-slug="${escHtml(c.slug)}">刪除</button>
+						</div>`;
+					})
+					.join('');
+
+				commentsList.querySelectorAll('.delete-btn').forEach((btn) => {
+					btn.addEventListener('click', handleDelete);
+				});
+			}
+
+			async function fetchComments() {
+				reloadBtn.disabled = true;
+				reloadBtn.textContent = '載入中…';
+				try {
+					const res = await fetch('/api/comments-all', {
+						headers: { 'x-admin-secret': adminSecret },
+					});
+					if (res.status === 401) {
+						sessionStorage.removeItem(SESSION_KEY);
+						location.reload();
+						return;
+					}
+					if (!res.ok) throw new Error();
+					const { comments } = await res.json();
+					renderComments(comments);
+				} catch {
+					countEl.textContent = '載入失敗，請再試一次。';
+				} finally {
+					reloadBtn.disabled = false;
+					reloadBtn.textContent = '重新載入';
+				}
+			}
+
+			function showComments() {
+				loginSection.style.display = 'none';
+				commentsSection.style.display = 'block';
+				fetchComments();
+			}
+
+			reloadBtn.addEventListener('click', fetchComments);
+
+			loginForm.addEventListener('submit', async (e) => {
+				e.preventDefault();
+				loginError.textContent = '';
+				const pwd = secretInput.value.trim();
+				if (!pwd) return;
+
+				const res = await fetch('/api/comments-all', {
+					headers: { 'x-admin-secret': pwd },
+				});
+
+				if (res.status === 401) {
+					loginError.textContent = '密碼錯誤';
+					return;
+				}
+				if (!res.ok) {
+					loginError.textContent = '載入失敗，請再試一次。';
+					return;
+				}
+
+				adminSecret = pwd;
+				sessionStorage.setItem(SESSION_KEY, pwd);
+
+				const { comments } = await res.json();
+				loginSection.style.display = 'none';
+				commentsSection.style.display = 'block';
+				renderComments(comments);
+			});
+
+			// Auto-login if secret is in sessionStorage
+			const saved = sessionStorage.getItem(SESSION_KEY);
+			if (saved) {
+				adminSecret = saved;
+				showComments();
+			}
+		})();
+	</script>
+</body>
+</html>
