@@ -101,6 +101,34 @@ export default async (req: Request, context: Context) => {
 		recentTimestamps.push(comment.createdAt);
 		await rateLimitStore.setJSON(ip, { timestamps: recentTimestamps });
 
+		const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+		if (webhookUrl) {
+			fetch(webhookUrl, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					embeds: [
+						{
+							title: `💬 新留言 — ${slug}`,
+							url: `${url.origin}/blog/${slug}`,
+							color: 0xf6ad55,
+							fields: [
+								{ name: '留言者', value: comment.name, inline: true },
+								{
+									name: '時間',
+									value: new Date(comment.createdAt).toLocaleString('zh-TW', {
+										timeZone: 'Asia/Taipei',
+									}),
+									inline: true,
+								},
+								{ name: '內容', value: comment.content },
+							],
+						},
+					],
+				}),
+			}).catch(() => {});
+		}
+
 		return Response.json({ comment }, { status: 201 });
 	}
 
