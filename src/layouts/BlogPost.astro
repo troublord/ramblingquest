@@ -538,6 +538,21 @@ const roomLabel: Record<string, string> = {
 				letter-spacing: 0.01em;
 				margin: 0;
 			}
+			:global(.comment__reply-btn) {
+				margin-top: 0.6rem;
+				background: none;
+				border: none;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 10px;
+				letter-spacing: 0.12em;
+				color: rgba(44, 31, 20, 0.32);
+				cursor: pointer;
+				padding: 0;
+				transition: color 0.15s;
+			}
+			:global(.comment__reply-btn:hover) {
+				color: #a87f37;
+			}
 			.comments__honeypot {
 				position: absolute;
 				left: -9999px;
@@ -1108,6 +1123,7 @@ const roomLabel: Record<string, string> = {
 								<span class="comment__date">${formatDate(c.createdAt)}</span>
 							</div>
 							<p class="comment__content">${escapeHtml(c.content)}</p>
+							<button class="comment__reply-btn" data-name="${escapeHtml(c.name)}" type="button">↩ 回覆</button>
 						</article>
 					`).join('');
 				}
@@ -1143,7 +1159,9 @@ const roomLabel: Record<string, string> = {
 						const data = await res.json();
 
 						if (res.status === 201) {
+							localStorage.setItem('rq_comment_name', name);
 							form.reset();
+							(form.elements.namedItem('name') as HTMLInputElement).value = name;
 							status.innerHTML = '<span class="status-dot"></span>足跡留下了，謝謝你來過 ✦';
 							status.dataset.state = 'success';
 							const emptyMsg = list.querySelector('.comments__empty');
@@ -1156,6 +1174,7 @@ const roomLabel: Record<string, string> = {
 									<span class="comment__date">${formatDate(data.comment.createdAt)}</span>
 								</div>
 								<p class="comment__content">${escapeHtml(data.comment.content)}</p>
+								<button class="comment__reply-btn" data-name="${escapeHtml(data.comment.name)}" type="button">↩ 回覆</button>
 							`;
 							list.appendChild(article);
 							const countEl = document.getElementById('fp-count');
@@ -1177,6 +1196,22 @@ const roomLabel: Record<string, string> = {
 						if (submitBtn) submitBtn.disabled = false;
 					}
 				});
+
+				list.addEventListener('click', (e) => {
+					const btn = (e.target as HTMLElement).closest('.comment__reply-btn') as HTMLButtonElement | null;
+					if (!btn) return;
+					const name = btn.dataset.name ?? '';
+					const textarea = form.elements.namedItem('content') as HTMLTextAreaElement;
+					textarea.value = `回覆 @${name}：\n`;
+					form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+					textarea.focus();
+					textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+				});
+
+				const savedName = localStorage.getItem('rq_comment_name');
+				if (savedName) {
+					(form.elements.namedItem('name') as HTMLInputElement).value = savedName;
+				}
 
 				loadComments();
 			})();

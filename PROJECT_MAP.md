@@ -2,7 +2,7 @@
 
 > 這份文件給「未來的我」和「AI 助手」看。  
 > 目的：改任何功能或畫面之前，先看這裡，快速定位要動哪些檔案。  
-> 最後更新：2026-06-29
+> 最後更新：2026-06-30
 
 ---
 
@@ -35,9 +35,9 @@ C:\ramblingquest\
 │
 ├── netlify/
 │   └── functions/
-│       ├── comments.mts          `GET/POST /api/comments?slug=`：留言列表＋新增（honeypot/長度/連結數檢查＋同 IP 頻率限制），存於 Netlify Blobs；POST 201 回傳新留言物件供前端直接注入 DOM
+│       ├── comments.mts          `GET/POST /api/comments?slug=`：留言列表＋新增（honeypot/長度/連結數檢查＋同 IP 頻率限制），存於 Netlify Blobs；POST 201 回傳新留言物件供前端直接注入 DOM；POST 成功後若環境變數 `DISCORD_WEBHOOK_URL` 存在，非同步送 Discord embed 通知
 │       ├── comments-delete.mts   `DELETE /api/comments/:id?slug=`：密碼保護（header `x-admin-secret` 比對環境變數 `COMMENT_ADMIN_SECRET`）的清除 API
-│       └── comments-list-all.mts `GET /api/comments-list-all`：密碼保護，回傳所有文章的留言（含 slug），供後台管理頁使用
+│       └── comments-list-all.mts `GET /api/comments-all`：密碼保護，回傳所有文章的留言（含 slug），供後台管理頁使用
 │
 ├── scripts/
 │   └── convert-webp.mjs      圖片壓縮工具：遞迴掃描 public/ 下所有子目錄的 PNG/JPG，輸出 WebP（quality 85），已有 .webp 則跳過
@@ -366,20 +366,33 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 
 文章頁底部有暱稱＋留言、無需登入的留言區，仿照 suanming.com.tw 的開放感，用 Netlify Functions + Netlify Blobs 實作（不需要外部資料庫帳號）。
 
-**檔案**：`netlify/functions/comments.mts`（GET 列表／POST 新增）、`netlify/functions/comments-delete.mts`（DELETE，密碼保護）、`src/layouts/BlogPost.astro` 的 `.comments` 區塊（markup + scoped CSS + 獨立 `<script>` IIFE，緊接在 TOC script 之後）。
+**檔案**：`netlify/functions/comments.mts`（GET 列表／POST 新增）、`netlify/functions/comments-delete.mts`（DELETE，密碼保護）、`netlify/functions/comments-list-all.mts`（GET 全部，密碼保護）、`src/layouts/BlogPost.astro` 的 `.comments` 區塊（markup + scoped CSS + 獨立 `<script>` IIFE，緊接在 TOC script 之後）。
 
 **API**：
 - `GET /api/comments?slug=<slug>` → `{ comments: [...] }`，依 createdAt 由舊到新排序
-- `POST /api/comments?slug=<slug>`，body `{ name, content, website }`（`website` 是隱藏 honeypot 欄位）→ 成功 `201`；驗證失敗（缺欄位／超長／連結過多／honeypot 非空）`400`；同 IP 10 分鐘內超過 5 次 `429`
+- `POST /api/comments?slug=<slug>`，body `{ name, content, website }`（`website` 是隱藏 honeypot 欄位）→ 成功 `201`；驗證失敗（缺欄位／超長／連結過多／honeypot 非空）`400`；同 IP 10 分鐘內超過 5 次 `429`；成功後若環境變數 `DISCORD_WEBHOOK_URL` 存在，非同步送 embed 通知到 Discord
 - `DELETE /api/comments/:id?slug=<slug>`，header `x-admin-secret` 比對環境變數 `COMMENT_ADMIN_SECRET` → 成功 `200`；密碼錯誤 `401`；id 不存在 `404`
+- `GET /api/comments-all`，header `x-admin-secret` 比對 `COMMENT_ADMIN_SECRET` → `{ comments: [...] }`，依 createdAt 由新到舊排序，每筆含 `slug` 欄位；供 `/admin` 後台使用
+
+**Comment 資料型別**：`{ id: string, name: string, content: string, createdAt: string }`
 
 **資料儲存**：兩個 Blobs store——`comments`（key 是文章 slug，value 是留言陣列）、`comment-rate-limits`（key 是 IP，value 是時間戳記陣列，手動修剪過期項目）。
 
-**如何刪除一則留言**：登入後台 `/admin`（密碼即 `COMMENT_ADMIN_SECRET`），可篩選文章、直接點刪除按鈕。刪除後 DOM 立即更新，不需 reload。
+**前端留言區 UI**（`BlogPost.astro`）：
+- 標題：「留個足跡 / leave a footprint」；留言計數顯示「X 個足跡」（id: `fp-count`）
+- 留言卡片（`.comment`）：奶油色漸層背景（`#fdfaf2 → #f9f3e4`）、單像素框線、奇偶數微旋轉（-0.5deg / +0.55deg）、`::after` 偽元素做膠帶效果（amber 半透明矩形，角度錯開）
+- 字體：名字用 Klee One、日期用 JetBrains Mono、內容用 Noto Serif TC
+- 表單（`.comments__form`）：虛線框、`repeating-linear-gradient` 直線紋路、amber 系按鈕
+
+**如何刪除一則留言**：登入後台 `/admin`（密碼即 `COMMENT_ADMIN_SECRET`），直接點刪除按鈕。刪除後 DOM 立即更新，不需 reload。
 
 若要用 API 手動操作：
 1. GET 留言列表找 `id`：`curl "https://<站點網址>/api/comments?slug=<文章slug>"`
 2. DELETE：`curl -X DELETE "https://<站點網址>/api/comments/<id>?slug=<文章slug>" -H "x-admin-secret: <secret>"`
+
+**環境變數**：
+- `COMMENT_ADMIN_SECRET`（必填）：後台密碼與刪除 API 驗證
+- `DISCORD_WEBHOOK_URL`（選填）：新留言 Discord 通知
 
 **v1 已知取捨**：不接 Turnstile（流量低，先用 honeypot + 頻率限制）、送出即公開不審核、同 slug 併發寫入有極小機率互相覆蓋、文章改名會讓舊留言變孤兒（slug 字串當 key）。
 
