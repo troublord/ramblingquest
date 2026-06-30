@@ -30,7 +30,7 @@ const roomLabel: Record<string, string> = {
 		<BaseHead title={title} description={description} />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Noto+Serif+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+		<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Noto+Serif+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Klee+One:wght@400;600&display=swap" rel="stylesheet" />
 		<style>
 			:global(body) {
 				background-color: #3d1e08;
@@ -410,53 +410,133 @@ const roomLabel: Record<string, string> = {
 				padding-top: 1.75rem;
 				border-top: 1px solid rgba(44, 31, 20, 0.15);
 			}
-			.comments__title {
-				font-size: 1.2rem;
+			.fp-divider {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				margin-bottom: 1.5rem;
+			}
+			.fp-divider::before, .fp-divider::after {
+				content: "";
+				flex: 1;
+				height: 1px;
+				background-image: linear-gradient(90deg, #cbb98f 50%, transparent 50%);
+				background-size: 7px 1px;
+				background-repeat: repeat-x;
+				opacity: 0.7;
+			}
+			.fp-head {
+				display: flex;
+				align-items: baseline;
+				gap: 12px;
+				margin-bottom: 4px;
+			}
+			.fp-head h2 {
+				font-family: "Klee One", "Noto Serif TC", serif;
+				font-size: 1.3rem;
 				font-weight: 600;
 				color: #1a0f08;
-				margin: 0 0 1.25rem;
+				letter-spacing: 0.05em;
+				margin: 0;
+			}
+			.fp-en {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 11px;
+				color: rgba(44, 31, 20, 0.35);
+				letter-spacing: 0.2em;
+			}
+			.fp-count {
+				margin-left: auto;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 12px;
+				color: rgba(44, 31, 20, 0.35);
+				letter-spacing: 0.05em;
 			}
 			.comments__list {
 				display: flex;
 				flex-direction: column;
-				gap: 1.25rem;
-				margin-bottom: 1.75rem;
+				gap: 1.4rem;
+				margin-bottom: 2rem;
+				padding-top: 8px;
 			}
 			.comments__loading,
 			.comments__empty {
 				color: rgba(44, 31, 20, 0.45);
-				font-size: 0.9rem;
+				font-size: 0.875rem;
 				font-style: italic;
 			}
-			.comment {
-				padding-bottom: 1.1rem;
-				border-bottom: 1px solid rgba(44, 31, 20, 0.1);
+			:global(.comment) {
+				position: relative;
+				background: linear-gradient(180deg, #fdfaf2 0%, #f9f3e4 100%);
+				border: 1px solid rgba(44, 31, 20, 0.18);
+				border-radius: 2px;
+				padding: 1rem 1.2rem 1.1rem;
+				box-shadow:
+					0 1px 0 rgba(255, 255, 255, 0.55) inset,
+					0 6px 14px rgba(60, 40, 15, 0.10),
+					0 2px 4px rgba(60, 40, 15, 0.08);
+				overflow: visible;
 			}
-			.comment:last-child {
-				border-bottom: none;
-				padding-bottom: 0;
+			:global(.comment:nth-child(odd))  { transform: rotate(-0.5deg); }
+			:global(.comment:nth-child(even)) { transform: rotate(0.55deg); }
+			:global(.comment:nth-child(odd)::after) {
+				content: "";
+				position: absolute;
+				top: -7px;
+				left: 22px;
+				width: 38px;
+				height: 14px;
+				background: rgba(214, 196, 140, 0.45);
+				box-shadow: inset 0 0 0 1px rgba(255, 245, 210, 0.4);
+				transform: rotate(-4deg);
 			}
-			.comment__head {
+			:global(.comment:nth-child(even)::after) {
+				content: "";
+				position: absolute;
+				top: -7px;
+				right: 26px;
+				width: 34px;
+				height: 14px;
+				background: rgba(214, 196, 140, 0.40);
+				box-shadow: inset 0 0 0 1px rgba(255, 245, 210, 0.4);
+				transform: rotate(5deg);
+			}
+			:global(.comment__head) {
 				display: flex;
 				align-items: baseline;
-				gap: 0.6rem;
-				margin-bottom: 0.35rem;
+				gap: 12px;
+				margin-bottom: 7px;
 			}
-			.comment__name {
+			:global(.comment__name) {
+				font-family: "Klee One", "Noto Serif TC", serif;
 				font-weight: 600;
 				color: #1a0f08;
 				font-size: 0.92rem;
+				letter-spacing: 0.03em;
 			}
-			.comment__date {
-				font-size: 0.78rem;
-				color: rgba(44, 31, 20, 0.4);
+			:global(.comment__name::after) {
+				content: "";
+				display: block;
+				height: 2px;
+				width: 100%;
+				margin-top: 1px;
+				background: linear-gradient(90deg, rgba(198, 154, 78, 0.55), rgba(198, 154, 78, 0.05));
+				border-radius: 2px;
 			}
-			.comment__content {
-				color: #2c1f14;
-				font-size: 0.95rem;
-				line-height: 1.7;
+			:global(.comment__date) {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 10.5px;
+				color: rgba(44, 31, 20, 0.42);
+				letter-spacing: 0.05em;
+			}
+			:global(.comment__content) {
+				font-size: 0.875rem;
+				line-height: 1.8;
+				color: rgba(44, 31, 20, 0.75);
 				white-space: pre-wrap;
 				word-break: break-word;
+				letter-spacing: 0.01em;
+				margin: 0;
 			}
 			.comments__honeypot {
 				position: absolute;
@@ -465,61 +545,148 @@ const roomLabel: Record<string, string> = {
 				height: 1px;
 				overflow: hidden;
 			}
+			.comments__form {
+				position: relative;
+				background: linear-gradient(180deg, #f8f1de 0%, #f3e8cd 100%);
+				border: 1px dashed #d8c8a2;
+				border-radius: 2px;
+				padding: 1.375rem 1.5rem 1.25rem;
+				box-shadow:
+					0 1px 0 rgba(255, 255, 255, 0.6) inset,
+					0 8px 18px rgba(60, 40, 15, 0.10);
+			}
+			.comments__form::before {
+				content: "";
+				position: absolute;
+				inset: 0;
+				pointer-events: none;
+				border-radius: 2px;
+				background: repeating-linear-gradient(0deg, rgba(150, 120, 60, 0.02) 0 2px, transparent 2px 4px);
+				mix-blend-mode: multiply;
+			}
+			.comments__form-head {
+				display: flex;
+				align-items: center;
+				gap: 9px;
+				font-family: "Klee One", "Noto Serif TC", serif;
+				font-weight: 600;
+				font-size: 0.94rem;
+				color: #1a0f08;
+				letter-spacing: 0.04em;
+				margin-bottom: 1rem;
+			}
+			.comments__form-head svg { color: #a87f37; flex-shrink: 0; }
 			.comments__field {
-				margin-bottom: 0.9rem;
+				margin-bottom: 1rem;
 				display: flex;
 				flex-direction: column;
-				gap: 0.4rem;
+				gap: 0.3rem;
 			}
 			.comments__field label {
-				font-size: 0.82rem;
-				color: rgba(44, 31, 20, 0.55);
+				font-family: "JetBrains Mono", monospace;
+				font-size: 10px;
+				letter-spacing: 0.18em;
+				text-transform: uppercase;
+				color: rgba(44, 31, 20, 0.45);
 			}
-			.comments__field input,
+			.comments__field input {
+				font-family: "Noto Serif TC", Georgia, serif;
+				font-size: 1rem;
+				color: #1a0f08;
+				background: transparent;
+				border: none;
+				border-bottom: 1.5px solid #d8c8a2;
+				padding: 5px 2px 7px;
+				letter-spacing: 0.02em;
+				outline: none;
+				transition: border-color 0.2s;
+			}
+			.comments__field input::placeholder {
+				color: #b7a784;
+				font-size: 0.875rem;
+			}
+			.comments__field input:focus { border-color: #c69a4e; }
 			.comments__field textarea {
 				font-family: "Noto Serif TC", Georgia, serif;
-				font-size: 0.95rem;
-				color: #2c1f14;
-				background: rgba(255, 255, 255, 0.4);
-				border: 1px solid rgba(44, 31, 20, 0.25);
-				border-radius: 4px;
-				padding: 0.55rem 0.7rem;
+				font-size: 0.875rem;
+				color: rgba(44, 31, 20, 0.82);
+				background: rgba(255, 255, 255, 0.35);
+				border: 1px solid #e2d6b6;
+				border-radius: 2px;
+				padding: 7px 12px;
+				line-height: 1.75;
 				resize: vertical;
-			}
-			.comments__field input:focus,
-			.comments__field textarea:focus {
 				outline: none;
-				border-color: #7c3e0e;
+				transition: border-color 0.2s, box-shadow 0.2s;
+			}
+			.comments__field textarea::placeholder { color: #b7a784; }
+			.comments__field textarea:focus {
+				border-color: #c69a4e;
+				box-shadow: 0 0 0 3px rgba(198, 154, 78, 0.12);
 			}
 			.comments__submit {
+				border: 1px solid #a87f37;
+				background: linear-gradient(180deg, #f0d79b 0%, #e6c477 100%);
+				color: #5b4318;
 				font-family: "Noto Serif TC", serif;
+				font-weight: 600;
 				font-size: 0.9rem;
-				color: #f4e8c8;
-				background: #7c3e0e;
-				border: none;
-				border-radius: 4px;
-				padding: 0.55rem 1.4rem;
+				letter-spacing: 0.06em;
+				padding: 9px 22px;
+				border-radius: 2px;
 				cursor: pointer;
-				transition: background 0.2s;
+				box-shadow:
+					0 1px 0 rgba(255, 255, 255, 0.5) inset,
+					0 3px 8px rgba(120, 90, 30, 0.22);
+				transition: transform 0.15s ease, box-shadow 0.15s, background 0.2s;
 			}
 			.comments__submit:hover {
-				background: #5e2e08;
+				transform: translateY(-1.5px);
+				box-shadow:
+					0 1px 0 rgba(255, 255, 255, 0.5) inset,
+					0 6px 14px rgba(120, 90, 30, 0.3);
+				background: linear-gradient(180deg, #f3dca6 0%, #e9c980 100%);
 			}
+			.comments__submit:active { transform: translateY(0); }
 			.comments__submit:disabled {
-				opacity: 0.6;
-				cursor: not-allowed;
+				opacity: 0.55;
+				cursor: default;
+				transform: none;
+				box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset;
 			}
 			.comments__status {
 				margin: 0.6rem 0 0;
-				font-size: 0.85rem;
-				color: rgba(44, 31, 20, 0.55);
+				font-family: "JetBrains Mono", monospace;
+				font-size: 11.5px;
+				letter-spacing: 0.06em;
+				display: flex;
+				align-items: center;
+				gap: 7px;
 				min-height: 1.2rem;
+				color: rgba(44, 31, 20, 0.45);
 			}
-			.comments__status[data-state="error"] {
-				color: #a02c0e;
+			.comments__status[data-state="loading"] { color: #a87f37; }
+			.comments__status[data-state="error"]   { color: #b5644f; }
+			.comments__status[data-state="success"] { color: #3e6b1f; }
+			.status-dot {
+				display: none;
+				width: 6px;
+				height: 6px;
+				border-radius: 50%;
+				background: currentColor;
+				flex-shrink: 0;
 			}
-			.comments__status[data-state="success"] {
-				color: #3e6b1f;
+			.comments__status[data-state] .status-dot { display: block; }
+			.comments__status[data-state="loading"] .status-dot {
+				animation: fp-pulse 1s ease-in-out infinite;
+			}
+			@keyframes fp-pulse {
+				0%, 100% { opacity: 0.3; }
+				50%       { opacity: 1; }
+			}
+			@media (max-width: 640px) {
+				:global(.comment) { transform: none !important; }
+				.comments__submit { width: 100%; text-align: center; }
 			}
 
 			/* ── Post navigation ── */
@@ -769,25 +936,39 @@ const roomLabel: Record<string, string> = {
 
 						{slug && (
 							<section class="comments" id="comments" data-slug={slug}>
-								<h2 class="comments__title">留言</h2>
-								<div class="comments__list" id="comments-list" aria-live="polite">
-									<p class="comments__loading">載入留言中...</p>
+								<div class="fp-divider"></div>
+								<div class="fp-head">
+									<h2>留個足跡</h2>
+									<span class="fp-en">/ leave a footprint</span>
+									<span class="fp-count" id="fp-count"></span>
+								</div>
+		<div class="comments__list" id="comments-list" aria-live="polite">
+									<p class="comments__loading">正在翻找紙條……</p>
 								</div>
 								<form class="comments__form" id="comments-form" novalidate>
 									<div class="comments__honeypot" aria-hidden="true">
 										<label for="comments-website">Website</label>
 										<input type="text" id="comments-website" name="website" tabindex="-1" autocomplete="off" />
 									</div>
-									<div class="comments__field">
-										<label for="comments-name">名字</label>
-										<input type="text" id="comments-name" name="name" maxlength="60" required />
+									<div class="comments__form-head">
+										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+											<path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+											<path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18z"></path>
+											<path d="M2 2l7.586 7.586"></path>
+											<circle cx="11" cy="11" r="2"></circle>
+										</svg>
+										寫下你的紙條
 									</div>
 									<div class="comments__field">
-										<label for="comments-content">留言內容</label>
-										<textarea id="comments-content" name="content" rows="4" maxlength="2000" required></textarea>
+										<label for="comments-name">你的名字</label>
+										<input type="text" id="comments-name" name="name" maxlength="60" placeholder="怎麼稱呼你呢？" required />
 									</div>
-									<button type="submit" class="comments__submit">送出留言</button>
-									<p class="comments__status" id="comments-status" role="status"></p>
+									<div class="comments__field">
+										<label for="comments-content">想說的話</label>
+										<textarea id="comments-content" name="content" rows="3" maxlength="2000" placeholder="留下紙條" required></textarea>
+									</div>
+									<button type="submit" class="comments__submit">留下足跡 →</button>
+									<p class="comments__status" id="comments-status" role="status"><span class="status-dot"></span></p>
 								</form>
 							</section>
 						)}
@@ -906,22 +1087,28 @@ const roomLabel: Record<string, string> = {
 				}
 
 				function formatDate(iso: string): string {
-					return new Date(iso).toLocaleDateString('zh-TW', { year: 'numeric', month: 'short', day: 'numeric' });
+					const d = new Date(iso);
+					const y = d.getFullYear();
+					const mo = String(d.getMonth() + 1).padStart(2, '0');
+					const day = String(d.getDate()).padStart(2, '0');
+					return `${y} / ${mo} / ${day}`;
 				}
 
 				function renderComments(comments: Comment[]) {
+					const countEl = document.getElementById('fp-count');
+					if (countEl) countEl.textContent = comments.length ? `${comments.length} 個足跡` : '';
 					if (!comments.length) {
-						list.innerHTML = '<p class="comments__empty">還沒有留言，留下第一則吧。</p>';
+						list.innerHTML = '<p class="comments__empty">還沒有人留下足跡，你來第一個吧。</p>';
 						return;
 					}
 					list.innerHTML = comments.map((c: Comment) => `
-						<div class="comment">
+						<article class="comment">
 							<div class="comment__head">
 								<span class="comment__name">${escapeHtml(c.name)}</span>
 								<span class="comment__date">${formatDate(c.createdAt)}</span>
 							</div>
-							<div class="comment__content">${escapeHtml(c.content)}</div>
-						</div>
+							<p class="comment__content">${escapeHtml(c.content)}</p>
+						</article>
 					`).join('');
 				}
 
@@ -937,9 +1124,11 @@ const roomLabel: Record<string, string> = {
 
 				form.addEventListener('submit', async (e) => {
 					e.preventDefault();
-					status.textContent = '';
+					status.innerHTML = '<span class="status-dot"></span>';
 					status.removeAttribute('data-state');
 					if (submitBtn) submitBtn.disabled = true;
+					status.innerHTML = '<span class="status-dot"></span>正在把紙條貼上去……';
+					status.dataset.state = 'loading';
 
 					const name = (form.elements.namedItem('name') as HTMLInputElement).value;
 					const content = (form.elements.namedItem('content') as HTMLTextAreaElement).value;
@@ -955,29 +1144,34 @@ const roomLabel: Record<string, string> = {
 
 						if (res.status === 201) {
 							form.reset();
-							status.textContent = '留言已送出';
+							status.innerHTML = '<span class="status-dot"></span>足跡留下了，謝謝你來過 ✦';
 							status.dataset.state = 'success';
 							const emptyMsg = list.querySelector('.comments__empty');
 							if (emptyMsg) emptyMsg.remove();
-							const div = document.createElement('div');
-							div.className = 'comment';
-							div.innerHTML = `
+							const article = document.createElement('article');
+							article.className = 'comment';
+							article.innerHTML = `
 								<div class="comment__head">
 									<span class="comment__name">${escapeHtml(data.comment.name)}</span>
 									<span class="comment__date">${formatDate(data.comment.createdAt)}</span>
 								</div>
-								<div class="comment__content">${escapeHtml(data.comment.content)}</div>
+								<p class="comment__content">${escapeHtml(data.comment.content)}</p>
 							`;
-							list.appendChild(div);
+							list.appendChild(article);
+							const countEl = document.getElementById('fp-count');
+							if (countEl) {
+								const n = parseInt(countEl.textContent ?? '0') || 0;
+								countEl.textContent = `${n + 1} 個足跡`;
+							}
 						} else if (res.status === 429) {
-							status.textContent = data.error || '留言太頻繁，請稍後再試';
+							status.innerHTML = '<span class="status-dot"></span>' + (data.error || '留言太頻繁，請稍後再試');
 							status.dataset.state = 'error';
 						} else {
-							status.textContent = data.error || '送出失敗，請確認內容後再試';
+							status.innerHTML = '<span class="status-dot"></span>' + (data.error || '紙條沒貼上，再試一次？');
 							status.dataset.state = 'error';
 						}
 					} catch {
-						status.textContent = '網路錯誤，請稍後再試';
+						status.innerHTML = '<span class="status-dot"></span>網路錯誤，請稍後再試';
 						status.dataset.state = 'error';
 					} finally {
 						if (submitBtn) submitBtn.disabled = false;
