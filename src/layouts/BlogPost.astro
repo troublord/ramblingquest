@@ -1113,7 +1113,7 @@ const roomLabel: Record<string, string> = {
 					const countEl = document.getElementById('fp-count');
 					if (countEl) countEl.textContent = comments.length ? `${comments.length} 個足跡` : '';
 					if (!comments.length) {
-						list.innerHTML = '<p class="comments__empty">還沒有人留下足跡，你來第一個吧。</p>';
+						list.innerHTML = '<p class="comments__empty">還沒有人留下足跡，你來當第一個？</p>';
 						return;
 					}
 					list.innerHTML = comments.map((c: Comment) => `
