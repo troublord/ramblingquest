@@ -2,7 +2,7 @@
 
 > 這份文件給「未來的我」和「AI 助手」看。  
 > 目的：改任何功能或畫面之前，先看這裡，快速定位要動哪些檔案。  
-> 最後更新：2026-06-30
+> 最後更新：2026-07-02
 
 ---
 
@@ -14,8 +14,15 @@
 - **內容格式**：Markdown（`.md`）與 MDX（`.mdx`），透過 Astro Content Collections 管理
 - **樣式**：純 CSS（無 Tailwind、無 CSS-in-JS），分兩層：全域基礎樣式 + 首頁專屬樣式
 - **字體**：Google Fonts（Special Elite、Noto Serif TC、DotGothic16、JetBrains Mono）+ 本地 Atkinson（其他頁面）
-- **部署**：Netlify，push 自動觸發 rebuild
-- **域名**：ramblingquest.com（轉移中），目前預設網址 `gleaming-capybara-572b22.netlify.app`
+- **部署**：Netlify。**只有 `master` 分支的 push 會觸發 production build**；`dev` 分支 push 不會觸發 Netlify
+- **域名**：ramblingquest.com（已正式上線，DNS 指向 Netlify），`gleaming-capybara-572b22.netlify.app` 僅為備用網址
+- **GitHub**：https://github.com/troublord/ramblingquest
+
+### Git 工作流
+
+日常開發（功能修改、文章新增）一律推到 `dev`，不推 `master`。流程：`dev` 開發 → commit → push dev → 本地/Netlify 預覽確認 → 確認 ok → `git checkout master` → `git merge dev` → `git push` → Netlify 自動部署上線。
+
+commit 後不主動 push，除非明確要求；只有明確說「上線」「merge master」「推到 master」時才 merge master。
 
 **目前主要目標**：設計 v1 完成（首頁、Archive 頁、文章頁、PostCard 元件）。v2 方向：各房間獨立文章頁排版、搜尋、標籤頁。
 最後更新：2026-06-10
@@ -226,7 +233,7 @@ C:\ramblingquest\
 | 全站基礎字體（其他頁面） | `src/styles/global.css` `body { font-family }` |
 | 全站 accent 藍色（其他頁面） | `src/styles/global.css` `--accent: #2337ff` |
 | 網站 title / description（SEO） | `src/consts.ts` |
-| 網站 URL（sitemap/RSS） | `astro.config.mjs` `site:` 欄位（目前是 `https://example.com`，**需要更新**） |
+| 網站 URL（sitemap/RSS） | `astro.config.mjs` `site:` 欄位（已設為 `https://ramblingquest.com`） |
 
 ---
 
@@ -354,7 +361,7 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 | 修改網站主色調（首頁） | `homepage.css` `:root` 區塊，或各 `<li style="--accent: ...">` | 每個招牌有獨立 `--accent`，`--halo` 控制燈光暖色 |
 | 修改字體（其他頁面） | `src/styles/global.css` `body { font-family }` 或 `astro.config.mjs` 的 fonts 設定 | 本地字體 Atkinson 在 `src/assets/fonts/` |
 | 修改字體（首頁） | `homepage.css` `body { font-family }` | Google Fonts 連結在 `index.astro` `<head>` |
-| 更新網站 URL（Sitemap/RSS） | `astro.config.mjs` `site:` 欄位 | 目前是 `https://example.com`，部署前必須改 |
+| 更新網站 URL（Sitemap/RSS） | `astro.config.mjs` `site:` 欄位 | 已設為 `https://ramblingquest.com` |
 | 修改 SEO 標題/描述 | `src/consts.ts` | `SITE_TITLE`、`SITE_DESCRIPTION` |
 | 給文章加 tags | 文章 frontmatter `tags: ['tag1', 'tag2']` | tags 是 optional，新文章由 AI 自動補；點擊後連到 `/blog/tag/[tag]` |
 | 修改文章底部 tag 樣式 | `src/layouts/BlogPost.astro` `.post-tag`、`.post-tags__label` | muted amber 小方框，hover 轉棕色 |
@@ -445,6 +452,6 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 | 深色/淺色模式切換 | 目前固定深色（首頁），其他頁面固定淺色 |
 | ~~標籤頁（tags）~~ | ✅ 已實作：schema 有 `tags` 欄位，`/blog/tag/[tag]` tag archive 頁、文章底部 tag chips，點擊連結到 tag 頁 |
 | 關於頁改寫 | 目前是 Lorem ipsum 佔位內容 |
-| 域名接上 Netlify | ramblingquest.com 轉移中，接好後更新 `astro.config.mjs` 的 `site:` |
+| ~~域名接上 Netlify~~ | ✅ 已完成：ramblingquest.com 已上線，DNS 指向 Netlify |
 | `Header.astro` 社群連結換成自己的 | 目前指向 Astro 官方 Mastodon/Twitter/GitHub |
-| RSS feed 修正 | `rss.xml.js` 的 `site` 目前沿用 `astro.config.mjs`，等域名確定後自動修正 |
+| ~~RSS feed 修正~~ | ✅ 已完成：`rss.xml.js` 的 `site` 沿用 `astro.config.mjs`，現已正確指向 `ramblingquest.com` |
