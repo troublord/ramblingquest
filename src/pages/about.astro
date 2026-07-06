@@ -80,7 +80,81 @@ import Layout from "../layouts/BlogPost.astro";
   <p>會看到我在想什麼，做什麼，讀什麼，可能會看到我搞砸了什麼。</p>
 
   <p>歡迎進來坐。</p>
+
+  <hr />
+
+  <h2>聯絡我</h2>
+
+  <p>有話想說、發現我哪裡寫錯了，或單純想打個招呼，都可以留言給我。</p>
+
+  <form id="contact-form" class="contact-form" novalidate>
+    <p class="contact-honeypot" aria-hidden="true">
+      <label for="contact-website">Website</label>
+      <input type="text" id="contact-website" name="website" tabindex="-1" autocomplete="off" />
+    </p>
+    <p>
+      <label for="contact-name">名字</label>
+      <input type="text" id="contact-name" name="name" maxlength="60" required />
+    </p>
+    <p>
+      <label for="contact-email">Email</label>
+      <input type="email" id="contact-email" name="email" maxlength="254" required />
+    </p>
+    <p>
+      <label for="contact-message">訊息</label>
+      <textarea id="contact-message" name="message" rows="5" maxlength="2000" required></textarea>
+    </p>
+    <button type="submit">送出</button>
+    <p class="contact-status" id="contact-status" role="status"></p>
+  </form>
 </Layout>
+
+<script>
+  (function () {
+    const form = document.getElementById('contact-form') as HTMLFormElement;
+    const status = document.getElementById('contact-status') as HTMLElement;
+    if (!form || !status) return;
+    const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      status.textContent = '';
+      status.removeAttribute('data-state');
+      if (submitBtn) submitBtn.disabled = true;
+
+      const name = (form.elements.namedItem('name') as HTMLInputElement).value;
+      const email = (form.elements.namedItem('email') as HTMLInputElement).value;
+      const message = (form.elements.namedItem('message') as HTMLTextAreaElement).value;
+      const website = (form.elements.namedItem('website') as HTMLInputElement).value;
+
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, message, website }),
+        });
+        const data = await res.json();
+
+        if (res.status === 200) {
+          form.reset();
+          status.textContent = '訊息送出了，謝謝你 ✦';
+          status.dataset.state = 'success';
+        } else if (res.status === 429) {
+          status.textContent = data.error || '送太多次了，請稍後再試';
+          status.dataset.state = 'error';
+        } else {
+          status.textContent = data.error || '送出失敗，請再試一次';
+          status.dataset.state = 'error';
+        }
+      } catch {
+        status.textContent = '網路錯誤，請稍後再試';
+        status.dataset.state = 'error';
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    });
+  })();
+</script>
 
 <style>
   .redacted-bar {
@@ -88,5 +162,63 @@ import Layout from "../layouts/BlogPost.astro";
     color: transparent;
     border-radius: 2px;
     padding: 0 0.3em;
+  }
+
+  .contact-honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .contact-status {
+    margin-top: 0.6rem;
+    font-size: 0.9rem;
+    min-height: 1.2rem;
+  }
+  .contact-status[data-state="error"] { color: #b5644f; }
+  .contact-status[data-state="success"] { color: #3e6b1f; }
+
+  .contact-form {
+    max-width: 480px;
+  }
+
+  .contact-form label {
+    display: block;
+    font-size: 0.9rem;
+    color: rgb(var(--gray-dark));
+    margin-bottom: 0.3rem;
+  }
+
+  .contact-form input,
+  .contact-form textarea {
+    width: 100%;
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid rgb(var(--gray-light));
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  .contact-form input:focus,
+  .contact-form textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .contact-form button {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.6rem 1.4rem;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  .contact-form button:hover {
+    background-color: var(--accent-dark);
   }
 </style>

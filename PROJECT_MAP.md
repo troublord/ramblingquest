@@ -44,7 +44,8 @@ C:\ramblingquest\
 │   └── functions/
 │       ├── comments.mts          `GET/POST /api/comments?slug=`：留言列表＋新增（honeypot/長度/連結數檢查＋同 IP 頻率限制），存於 Netlify Blobs；POST 201 回傳新留言物件供前端直接注入 DOM；POST 成功後若環境變數 `DISCORD_WEBHOOK_URL` 存在，非同步送 Discord embed 通知
 │       ├── comments-delete.mts   `DELETE /api/comments/:id?slug=`：密碼保護（header `x-admin-secret` 比對環境變數 `COMMENT_ADMIN_SECRET`）的清除 API
-│       └── comments-list-all.mts `GET /api/comments-all`：密碼保護，回傳所有文章的留言（含 slug），供後台管理頁使用
+│       ├── comments-list-all.mts `GET /api/comments-all`：密碼保護，回傳所有文章的留言（含 slug），供後台管理頁使用
+│       └── contact.mts           `POST /api/contact`：About 頁聯絡表單，驗證＋限流＋Discord 通知，不存檔、無 admin 頁
 │
 ├── scripts/
 │   └── convert-webp.mjs      圖片壓縮工具：遞迴掃描 public/ 下所有子目錄的 PNG/JPG，輸出 WebP（quality 85），已有 .webp 則跳過
@@ -406,6 +407,22 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 **本地測試**：純 `npm run dev`（`astro dev`）不會跑 functions，打 `/api/comments` 會 404。要測完整功能（留言、搜尋、後台）統一用 `npm run dev:netlify`（port 8888）。啟動前先 `npm run build` 並將 `dist/pagefind/` 複製到 `public/pagefind/`，搜尋才能在 dev 模式下正常運作（`public/pagefind/` 已加入 `.gitignore`）。可直接執行 `/ramble` skill 自動完成上述流程。
 
 部署前記得在 Netlify Dashboard 設定環境變數 `COMMENT_ADMIN_SECRET`（本地 `.env` 裡的值僅供本機測試，正式環境要設不同的值）。
+
+---
+
+## 10. 聯絡表單（Netlify Function，不存檔）
+
+`about.astro` 底部的聯絡表單，寫法比照留言系統但更陽春：只驗證、限流、送 Discord 通知，**不寫入 Netlify Blobs、沒有 admin 檢視頁**（原本用 Netlify 原生 Forms 功能做過一版，後來評估必要性不高，改成跟留言系統同一套 Functions 模式，統一收資料管道）。
+
+**檔案**：`netlify/functions/contact.mts`（POST 專用）、`src/pages/about.astro` 的表單 markup + scoped CSS + 獨立 `<script>`（fetch 提交、頁面內顯示成功/失敗訊息）。
+
+**API**：`POST /api/contact`，body `{ name, email, message, website }`（`website` 是隱藏 honeypot 欄位，跟留言系統同名但是不同 endpoint）→ 成功 `200 { success: true }`；驗證失敗（缺欄位／超長／email 格式錯／honeypot 非空）`400`；同 IP 10 分鐘內超過 5 次 `429`；非 POST `405`。驗證通過後若環境變數 `DISCORD_WEBHOOK_URL` 存在，非同步送 Discord embed 通知（跟留言共用同一個 webhook URL）。
+
+**跟留言系統的刻意差異**：rate limit 用獨立的 `contact-rate-limits` Blobs store（不共用 `comment-rate-limits`，避免兩個功能互相牽動）；沒有 `countLinks`/連結數檢查（訊息不會公開顯示，沒有留言區的洗版風險）；成功回傳 `200` 而非 `201`（沒有建立可回傳的資源）。
+
+**環境變數**：沿用 `DISCORD_WEBHOOK_URL`（選填），不需要新的密鑰。
+
+**本地測試**：跟留言系統一樣，必須用 `npm run dev:netlify`（port 8888），純 `astro dev` 會 404。
 
 ---
 
