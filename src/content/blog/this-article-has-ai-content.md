@@ -62,7 +62,7 @@ tags: ["AI", "寫作"]
 用 AI 寫文章的人，你很棒！ 繼續保持！ 
 我會為了超越 AI 而努力的！等我。
 
-![](/images/hokkaido-shrine.webp)
+![2026 年元旦的北海道神社](/images/hokkaido-shrine.webp)
 
 2026年1/1日，北海道神社
 

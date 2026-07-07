@@ -57,4 +57,4 @@ tags: ['職場', '人際']
 
 也許從此時此刻做起？
 
-![](/images/busan-peace-beach.webp)
+![釜山和平海灘，空曠的沙灘與海浪](/images/busan-peace-beach.webp)

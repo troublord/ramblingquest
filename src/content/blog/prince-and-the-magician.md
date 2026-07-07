@@ -101,7 +101,7 @@ tags: ['翻譯', '文學']
 
 <figure>
 
-![](/images/prince-island.webp)
+![雲霧籠罩下的島嶼與山巒，平靜的水面](/images/prince-island.webp)
 
 <figcaption>
 
