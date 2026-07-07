@@ -2,7 +2,7 @@
 
 > 這份文件給「未來的我」和「AI 助手」看。  
 > 目的：改任何功能或畫面之前，先看這裡，快速定位要動哪些檔案。  
-> 最後更新：2026-07-02
+> 最後更新：2026-07-07
 
 ---
 
@@ -53,6 +53,7 @@ C:\ramblingquest\
 │                             npm run optimize:clean  — 轉換，刪除原始 PNG/JPG（--clean flag）
 │
 ├── public/                   靜態資源，直接對應網站根路徑
+│   ├── robots.txt                  爬蟲規則：允許全站，Disallow /admin、/api/，宣告 Sitemap: sitemap-index.xml
 │   ├── favicon.ico / .svg          網站圖標
 │   ├── feet-pixel.png              favicon 用（PNG，不轉 WebP，瀏覽器相容性限制）
 │   ├── feet-pixel.webp             feet-pixel WebP 版
@@ -67,7 +68,7 @@ C:\ramblingquest\
 │   ├── desktop.webp                桌面場景圖（備用）
 │   ├── room-wall.webp              首頁 wall scene 背景
 │   ├── room-side-by-window.webp    房間窗邊場景圖（備用）
-│   ├── default-card-photo.webp     PostCard fallback 圖（無 heroImage 時使用）
+│   ├── default-card-photo.webp     無 heroImage 時的 fallback 圖：PostCard 卡片縮圖 + BaseHead 的 og:image/twitter:image
 │   ├── feet-golden-blue.webp       腳圖變體（金藍色）
 │   ├── feet-light.webp             腳圖變體（淺色）
 │   ├── feet-white.webp             腳圖變體（白色）
@@ -92,7 +93,7 @@ C:\ramblingquest\
     │
     ├── assets/               需要 Astro 處理（最佳化）的靜態資源
     │   ├── fonts/            本地字體（Atkinson，供其他頁面用）
-    │   └── blog-placeholder-*.jpg  範本文章佔位圖
+    │   └── blog-placeholder-*.jpg  Astro 範本殘留佔位圖，目前無任何檔案引用（BaseHead 的 OG fallback 已改用 public/default-card-photo.webp）
     │
     ├── components/           可重用元件
     │   ├── BaseHead.astro    <head> 內容（meta、SEO、字體）
@@ -162,7 +163,7 @@ C:\ramblingquest\
 
 | 元件 | 檔案 | 用途 | 使用於 |
 |---|---|---|---|
-| `BaseHead` | `src/components/BaseHead.astro` | `<head>` 的所有內容：charset、viewport、SEO meta、OG、字體、global.css | 所有頁面（含首頁） |
+| `BaseHead` | `src/components/BaseHead.astro` | `<head>` 的所有內容：charset、viewport、SEO meta、OG、字體、global.css。`image` prop 是純字串路徑（非 `ImageMetadata`），未傳時 fallback 為 `FALLBACK_IMAGE = '/default-card-photo.webp'`；`BlogPost.astro` 會傳入文章的 `heroImage` | 所有頁面（含首頁） |
 | `Header` | `src/components/Header.astro` | 其他頁面的 Navbar（白底，含 Home/Blog/About 連結） | `/about`、`/blog/[slug]` |
 | `HeaderLink` | `src/components/HeaderLink.astro` | Header 裡有 active 狀態的導覽連結 | `Header.astro` |
 | `Footer` | `src/components/Footer.astro` | 其他頁面的 Footer（灰色漸層，含社群連結） | `/about`、`/blog/[slug]` |
@@ -364,6 +365,9 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 | 修改字體（首頁） | `homepage.css` `body { font-family }` | Google Fonts 連結在 `index.astro` `<head>` |
 | 更新網站 URL（Sitemap/RSS） | `astro.config.mjs` `site:` 欄位 | 已設為 `https://ramblingquest.com` |
 | 修改 SEO 標題/描述 | `src/consts.ts` | `SITE_TITLE`、`SITE_DESCRIPTION` |
+| 修改 Archive 頁（/blog、房間頁、標籤頁）title/description | `src/layouts/ArchiveLayout.astro` `pageTitle`/`pageDescription` | 依 `currentRoom`/`currentTag`/`totalPosts`/`counts` 動態組字串，避免多頁共用同一句造成重複內容；分頁 `currentPage > 1` 時 title 會加註「（第 N 頁）」 |
+| 修改文章分享圖（OG/Twitter） fallback | `src/components/BaseHead.astro` `FALLBACK_IMAGE` | 目前是 `/default-card-photo.webp`；有 `heroImage` 的文章會透過 `BlogPost.astro` 傳入自己的圖 |
+| 修改爬蟲規則/擋爬蟲路徑 | `public/robots.txt` | 純文字檔，`public/` 下的檔案直接對應網站根路徑，改完不需要額外設定 |
 | 給文章加 tags | 文章 frontmatter `tags: ['tag1', 'tag2']` | tags 是 optional，新文章由 AI 自動補；點擊後連到 `/blog/tag/[tag]` |
 | 修改文章底部 tag 樣式 | `src/layouts/BlogPost.astro` `.post-tag`、`.post-tags__label` | muted amber 小方框，hover 轉棕色 |
 | 修改 tag archive 頁樣式 | `src/layouts/ArchiveLayout.astro` `.ar-tag-back` | tag 頁顯示「標籤 / #tag」標題，返回連結取代 room filter tabs |
