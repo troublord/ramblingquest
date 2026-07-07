@@ -46,12 +46,18 @@ const pageTitle = currentTag
   : currentRoom === 'all'
     ? `全部文章 · ${SITE_TITLE}`
     : `${roomLabel[currentRoom]} · ${SITE_TITLE}`;
+
+const pageDescription = currentTag
+  ? `標籤 #${currentTag} 相關文章列表。`
+  : currentRoom === 'all'
+    ? `目前收錄 ${totalPosts} 篇文章，紀錄深夜裡的胡思亂想。`
+    : `${roomLabel[currentRoom]}的文章列表，共 ${counts[currentRoom]} 篇。`;
 ---
 
 <!doctype html>
 <html lang="zh-Hant">
   <head>
-    <BaseHead title={pageTitle} description="把夜裡的低語，一篇篇收好。" />
+    <BaseHead title={pageTitle} description={pageDescription} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Noto+Serif+TC:wght@400;500;600;700&family=DotGothic16&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
