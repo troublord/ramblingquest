@@ -393,6 +393,58 @@ const jsonLd = slug
 				color: #2c1f14;
 			}
 
+			/* ── Paper checklist (tech-stack style lists) ── */
+			.prose :global(.paper-list) {
+				position: relative;
+				background: linear-gradient(180deg, #fdfaf2 0%, #f6efdd 100%);
+				border: 1px solid rgba(44, 31, 20, 0.18);
+				border-radius: 2px;
+				padding: 1.1rem 1.4rem 1.2rem;
+				margin: 1.5rem 0;
+				box-shadow:
+					0 1px 0 rgba(255, 255, 255, 0.55) inset,
+					0 6px 14px rgba(60, 40, 15, 0.10),
+					0 2px 4px rgba(60, 40, 15, 0.08);
+			}
+			.prose :global(.paper-list:nth-of-type(odd)) {
+				transform: rotate(-0.4deg);
+			}
+			.prose :global(.paper-list:nth-of-type(even)) {
+				transform: rotate(0.35deg);
+			}
+			.prose :global(.paper-list::after) {
+				content: "";
+				position: absolute;
+				top: -8px;
+				left: 28px;
+				width: 40px;
+				height: 15px;
+				background: rgba(214, 196, 140, 0.45);
+				box-shadow: inset 0 0 0 1px rgba(255, 245, 210, 0.4);
+				transform: rotate(-4deg);
+			}
+			.prose :global(.paper-list__title) {
+				font-family: "Special Elite", "Courier New", monospace;
+				font-size: 1rem;
+				letter-spacing: 0.02em;
+				color: #7c3e0e;
+				margin: 0 0 0.7rem;
+			}
+			.prose :global(.paper-list ul) {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.82rem;
+				line-height: 1.7;
+				color: #2c1f14;
+				padding-left: 1.1rem;
+				margin: 0;
+			}
+			.prose :global(.paper-list li) {
+				margin-bottom: 0.55rem;
+			}
+			.prose :global(.paper-list li::marker) {
+				color: #c9a26a;
+			}
+
 			/* ── Post tags ── */
 			.post-tags {
 				display: flex;

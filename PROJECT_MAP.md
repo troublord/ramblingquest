@@ -289,6 +289,28 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 - 若不需要封面圖，省略此欄位即可，PostCard 會 fallback 到 `default-card-photo.webp`
 - Markdown 內文的圖片：放進 `public/images/` 後用 `![alt](/images/filename.webp)` 引用
 
+### 文章內文可重用元件：paper-list（紙上清單卡）
+
+需要在文章內文放「清單感覺像釘在紙上的便條」時使用，而不是一般 `-` bullet list。視覺仿照留言卡片（`.comment`）的紙張＋膠帶語言：奶油色漸層背景、單像素邊框、輕微旋轉、頂部一小塊膠帶裝飾；標題用 Special Elite 打字機字體，清單文字用 JetBrains Mono。
+
+**CSS 定義位置**：`src/layouts/BlogPost.astro` 的 `<style>` 區塊，`.prose :global(.paper-list)` 系列規則（約第 396–446 行，`/* ── Paper checklist ── */` 註解之後）。因為文章內文是透過 `<slot />` 插入、不在 BlogPost.astro 自己的 template 裡，所有相關規則都要包在 `:global()` 裡才會生效（跟 `.prose ul`／`.prose li` 等既有規則同一套模式）。
+
+**用法**：文章 `.md` 檔案裡直接寫原生 HTML（不要用 Markdown 的 `-` bullet，因為 HTML block 內部不保證會被當成 Markdown 解析），格式如下：
+
+```html
+<div class="paper-list">
+<h4 class="paper-list__title">分類標題</h4>
+<ul>
+<li>清單項目一</li>
+<li>清單項目二</li>
+</ul>
+</div>
+```
+
+同一頁面連續放多個 `.paper-list` 區塊會用 `:nth-of-type(odd/even)` 自動交替輕微旋轉方向，視覺上更像隨手貼的紙條，不需要額外處理。
+
+首次使用：`rebuilding-ramblingquest.md` 的「新的 Rambling Quest」段落，把框架/語言、畫面設計、部署/網域、功能四組技術清單各包成一張 paper-list 卡片。
+
 ---
 
 ## 7. 首頁設計結構
@@ -371,6 +393,7 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 | 給文章加 tags | 文章 frontmatter `tags: ['tag1', 'tag2']` | tags 是 optional，新文章由 AI 自動補；點擊後連到 `/blog/tag/[tag]` |
 | 修改文章底部 tag 樣式 | `src/layouts/BlogPost.astro` `.post-tag`、`.post-tags__label` | muted amber 小方框，hover 轉棕色 |
 | 修改 tag archive 頁樣式 | `src/layouts/ArchiveLayout.astro` `.ar-tag-back` | tag 頁顯示「標籤 / #tag」標題，返回連結取代 room filter tabs |
+| 文章內文要放「紙上清單卡」而非一般 bullet list | 直接在文章 `.md` 用 `<div class="paper-list">` HTML，樣式定義在 `src/layouts/BlogPost.astro` | 參考第 6 節「文章內文可重用元件：paper-list」，多個區塊會自動交替旋轉方向 |
 
 ---
 
