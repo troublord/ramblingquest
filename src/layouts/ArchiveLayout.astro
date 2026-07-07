@@ -41,11 +41,13 @@ const roomEn: Record<RoomKey, string> = {
   court: 'court · body',
 };
 
+const pageSuffix = pagination.currentPage > 1 ? `（第 ${pagination.currentPage} 頁）` : '';
+
 const pageTitle = currentTag
-  ? `#${currentTag} · ${SITE_TITLE}`
+  ? `#${currentTag}${pageSuffix} · ${SITE_TITLE}`
   : currentRoom === 'all'
-    ? `全部文章 · ${SITE_TITLE}`
-    : `${roomLabel[currentRoom]} · ${SITE_TITLE}`;
+    ? `全部文章${pageSuffix} · ${SITE_TITLE}`
+    : `${roomLabel[currentRoom]}${pageSuffix} · ${SITE_TITLE}`;
 
 const pageDescription = currentTag
   ? `標籤 #${currentTag} 相關文章列表。`
