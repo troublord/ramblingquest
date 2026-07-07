@@ -1,0 +1,80 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <BaseHead title={`迷路了嗎？ · ${SITE_TITLE}`} description="404 - 這個頁面不存在。" image="/street-eyes-meet.webp" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+      .nf-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        background: #050b18 url('/street-eyes-meet.webp') center / cover no-repeat;
+      }
+      .nf-page::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(5, 11, 24, 0.15) 0%, rgba(5, 11, 24, 0.55) 65%, rgba(5, 11, 24, 0.88) 100%);
+      }
+      .nf-content {
+        position: relative;
+        z-index: 1;
+        max-width: 560px;
+        padding: 0 24px;
+        text-align: center;
+        color: #f3ede1;
+      }
+      .nf-kicker {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.8rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: rgba(243, 237, 225, 0.55);
+        margin-bottom: 1.75rem;
+      }
+      .nf-lines p {
+        font-family: 'Klee One', cursive;
+        font-size: 1.25rem;
+        line-height: 2;
+        margin: 0;
+      }
+      .nf-back {
+        display: inline-block;
+        margin-top: 2.5rem;
+        font-family: 'Klee One', cursive;
+        font-size: 1rem;
+        color: #f3ede1;
+        border: 1px solid rgba(243, 237, 225, 0.4);
+        padding: 0.6rem 1.6rem;
+        border-radius: 999px;
+        text-decoration: none;
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .nf-back:hover {
+        background: rgba(243, 237, 225, 0.1);
+        border-color: rgba(243, 237, 225, 0.7);
+      }
+    </style>
+  </head>
+  <body data-pagefind-ignore="all">
+    <main class="nf-page">
+      <div class="nf-content">
+        <p class="nf-kicker">404 · 此頁面不存在</p>
+        <div class="nf-lines">
+          <p>在那一瞬間，對上眼，</p>
+          <p>忐忑的情緒在跳動。</p>
+        </div>
+        <a class="nf-back" href="/">回到城市入口</a>
+      </div>
+    </main>
+  </body>
+</html>
