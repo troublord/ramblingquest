@@ -32,7 +32,7 @@ export default async (req: Request, context: Context) => {
 
 	// Honeypot field is hidden from real users via CSS; bots that fill every field trip it.
 	if (website) {
-		return Response.json({ error: 'Invalid submission' }, { status: 400 });
+		return Response.json({ error: '請手動輸入' }, { status: 400 });
 	}
 	if (!name?.trim() || !email?.trim() || !message?.trim()) {
 		return Response.json({ error: 'Missing name, email, or message' }, { status: 400 });
@@ -77,28 +77,32 @@ export default async (req: Request, context: Context) => {
 
 	const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
 	if (webhookUrl) {
-		fetch(webhookUrl, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				embeds: [
-					{
-						title: '✉️ 新聯絡表單訊息',
-						color: 0x4a90d9,
-						fields: [
-							{ name: '名字', value: trimmedName, inline: true },
-							{ name: 'Email', value: trimmedEmail, inline: true },
-							{
-								name: '時間',
-								value: new Date(submittedAt).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' }),
-								inline: true,
-							},
-							{ name: '訊息', value: trimmedMessage },
-						],
-					},
-				],
-			}),
-		}).catch(() => {});
+		// waitUntil keeps this fetch alive after the response is returned; a bare
+		// un-awaited fetch can get cut off when Netlify freezes the container.
+		context.waitUntil(
+			fetch(webhookUrl, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					embeds: [
+						{
+							title: '✉️ 新聯絡表單訊息',
+							color: 0x4a90d9,
+							fields: [
+								{ name: '名字', value: trimmedName, inline: true },
+								{ name: 'Email', value: trimmedEmail, inline: true },
+								{
+									name: '時間',
+									value: new Date(submittedAt).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' }),
+									inline: true,
+								},
+								{ name: '訊息', value: trimmedMessage },
+							],
+						},
+					],
+				}),
+			}).catch(() => {}),
+		);
 	}
 
 	return Response.json({ success: true }, { status: 200 });
