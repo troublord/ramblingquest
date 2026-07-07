@@ -23,11 +23,33 @@ const roomLabel: Record<string, string> = {
 	workshop: '工坊',
 	court: '場邊',
 };
+
+// 只有真正的文章頁（由 [...slug].astro 傳入 slug）才產生 BlogPosting structured data，about.astro 等其他用 BlogPost layout 的頁面不需要
+const jsonLd = slug
+	? {
+			'@context': 'https://schema.org',
+			'@type': 'BlogPosting',
+			headline: title,
+			description,
+			image: new URL(heroImage ?? '/default-card-photo.webp', Astro.url).toString(),
+			datePublished: pubDate.toISOString(),
+			dateModified: (updatedDate ?? pubDate).toISOString(),
+			author: {
+				'@type': 'Person',
+				name: '毓文',
+			},
+			mainEntityOfPage: {
+				'@type': 'WebPage',
+				'@id': new URL(Astro.url.pathname, Astro.site).toString(),
+			},
+		}
+	: null;
 ---
 
 <html lang="zh-Hant">
 	<head>
 		<BaseHead title={title} description={description} image={heroImage} />
+		{jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Noto+Serif+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Klee+One:wght@400;600&display=swap" rel="stylesheet" />
