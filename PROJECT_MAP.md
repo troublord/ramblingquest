@@ -476,3 +476,26 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 | ~~域名接上 Netlify~~ | ✅ 已完成：ramblingquest.com 已上線，DNS 指向 Netlify |
 | `Header.astro` 社群連結換成自己的 | 目前指向 Astro 官方 Mastodon/Twitter/GitHub |
 | ~~RSS feed 修正~~ | ✅ 已完成：`rss.xml.js` 的 `site` 沿用 `astro.config.mjs`，現已正確指向 `ramblingquest.com` |
+
+---
+
+## 12. SEO 注意事項
+
+2026-07 做過一輪全站 SEO 健檢並修正，記錄下來避免以後改動時重蹈覆轍。
+
+### 已完成的基礎設施（不要誤以為還沒做）
+
+- `public/robots.txt`：Allow 全站，`Disallow: /admin`、`Disallow: /api/`，宣告 `Sitemap: sitemap-index.xml`
+- `astro.config.mjs` 的 `sitemap()` 帶 `filter: (page) => !page.includes('/admin')`，排除後台頁
+- `src/pages/404.astro`：自訂 404 頁，全螢幕背景圖（`street-eyes-meet.webp`）+ 置中文案，不套用 `BlogPost` layout
+- `BaseHead.astro` 的 `image` prop 是**字串路徑**（不是 `ImageMetadata`），未傳時 fallback 為 `FALLBACK_IMAGE = '/default-card-photo.webp'`；`BlogPost.astro` 會把文章的 `heroImage` 傳進去，讓分享到 Line/FB/Twitter 顯示文章自己的封面圖
+- `ArchiveLayout.astro` 的 `pageTitle`/`pageDescription` 依 `currentRoom`/`currentTag`/`totalPosts`/`counts` 動態產生；分頁 `currentPage > 1` 時 title 會加註「（第 N 頁）」
+- `admin.astro` 的 `<html lang>` 已統一為 `zh-Hant`，且本身已有 `<meta name="robots" content="noindex,nofollow">`
+
+### 以後改動時要遵守的規則
+
+- **新增任何「列表類頁面」**（像 Archive 系列的房間頁、標籤頁、未來可能的分類頁）：title/description 一定要依內容動態產生，不能所有分頁/篩選結果共用同一句固定字串——會被搜尋引擎判定為大量頁面內容重複
+- **新增獨立頁面**（不套用 `BlogPost`/`ArchiveLayout` 既有 layout，像 `404.astro` 那樣自己刻）：記得 `<html lang="zh-Hant">` 要跟全站一致
+- **新增後台/內部/功能性頁面或 API**：同步加進 `robots.txt` 的 `Disallow`，若會產生靜態頁面也要確認有沒有被 sitemap `filter` 排除
+- **要換文章分享的 fallback 圖**：改 `BaseHead.astro` 的 `FALLBACK_IMAGE` 常數即可，不要直接改 `image` prop 的型別（它就是設計成純字串路徑）
+- **新增文章內文圖片**：一定要寫描述性 `alt` text（`![描述文字](/images/xxx.webp)`），不要留空
