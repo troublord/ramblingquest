@@ -491,6 +491,7 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 - `BaseHead.astro` 的 `image` prop 是**字串路徑**（不是 `ImageMetadata`），未傳時 fallback 為 `FALLBACK_IMAGE = '/default-card-photo.webp'`；`BlogPost.astro` 會把文章的 `heroImage` 傳進去，讓分享到 Line/FB/Twitter 顯示文章自己的封面圖
 - `ArchiveLayout.astro` 的 `pageTitle`/`pageDescription` 依 `currentRoom`/`currentTag`/`totalPosts`/`counts` 動態產生；分頁 `currentPage > 1` 時 title 會加註「（第 N 頁）」
 - `admin.astro` 的 `<html lang>` 已統一為 `zh-Hant`，且本身已有 `<meta name="robots" content="noindex,nofollow">`
+- `BlogPost.astro` 依 `slug` prop 是否存在，產生 `BlogPosting` JSON-LD structured data（`about.astro` 等無 `slug` 的頁面不會產生）；因為寫在共用 layout，新文章會自動套用，不用逐篇手動加
 
 ### 以後改動時要遵守的規則
 
