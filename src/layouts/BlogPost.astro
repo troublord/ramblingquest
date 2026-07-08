@@ -356,6 +356,9 @@ const jsonLd = slug
 				display: block;
 				margin: 1.75rem auto;
 			}
+			.prose :global(img.inline-img) {
+				max-width: var(--img-w, 60%);
+			}
 			.prose :global(hr) {
 				border: none;
 				border-top: 1px solid rgba(44, 31, 20, 0.15);

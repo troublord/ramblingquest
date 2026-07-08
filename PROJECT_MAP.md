@@ -2,7 +2,7 @@
 
 > 這份文件給「未來的我」和「AI 助手」看。  
 > 目的：改任何功能或畫面之前，先看這裡，快速定位要動哪些檔案。  
-> 最後更新：2026-07-07
+> 最後更新：2026-07-08
 
 ---
 
@@ -85,7 +85,9 @@ C:\ramblingquest\
 │       ├── ec2-elastic-relate.webp
 │       ├── ec2-elastic-relate2.webp
 │       ├── ec2-elasticIp-list.webp
-│       └── ec2-incase-didnseewebp.webp
+│       ├── ec2-incase-didnseewebp.webp
+│       ├── ec2-sidebar.webp
+│       └── tiger-sleep-at-work.webp
 │
 └── src/
     ├── consts.ts             全域常數：SITE_TITLE、SITE_DESCRIPTION
@@ -310,6 +312,22 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 同一頁面連續放多個 `.paper-list` 區塊會用 `:nth-of-type(odd/even)` 自動交替輕微旋轉方向，視覺上更像隨手貼的紙條，不需要額外處理。
 
 首次使用：`rebuilding-ramblingquest.md` 的「新的 Rambling Quest」段落，把框架/語言、畫面設計、部署/網域、功能四組技術清單各包成一張 paper-list 卡片。
+
+### 文章內文可重用元件：inline-img（縮小版插圖）
+
+需要在文章內文放「不是主圖等級、只是輔助說明用的小插圖」時使用，讓它比預設的滿版圖片小一點，不搶正文的注意力。
+
+**CSS 定義位置**：`src/layouts/BlogPost.astro` 的 `<style>` 區塊，緊接在 `.prose :global(img)` 規則之後的 `.prose :global(img.inline-img)`（約第 353–360 行）。規則本身只有 `max-width: var(--img-w, 60%)`，沒設定的話預設縮到 60%；其餘（`border-radius`、置中 `margin`）沿用上面 `.prose :global(img)` 的共用規則。
+
+**用法**：文章 `.md` 檔案裡不用 Markdown 的 `![alt](src)` 語法，改寫原生 `<img>` HTML，透過行內 `style` 的 CSS 變數 `--img-w` 指定寬度百分比（每張圖可以自訂不同數值，不綁死固定尺寸）：
+
+```html
+<img src="/images/filename.webp" alt="描述文字" class="inline-img" style="--img-w: 50%;" />
+```
+
+不寫 `style` 就吃預設值 60%。這個做法刻意不做成 `.img-50`／`.img-30` 這種固定尺寸 class，避免每次新尺寸需求都要回來加一條 CSS 規則。
+
+首次使用：`ask-the-same-question-as-many-times.md`，「一群好同事真的能營造出一種和樂的工作環境」段落後插入的老虎插圖，`--img-w: 50%`。
 
 ---
 

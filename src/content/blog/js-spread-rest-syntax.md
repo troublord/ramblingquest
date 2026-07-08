@@ -7,8 +7,8 @@ room: 'workshop'
 tags: ['JavaScript', 'TypeScript', '前端', 'Spread', 'Rest']
 ---
 
-這篇要說明 JS/TS 的 ... 語法，在不同場合看到有不一樣的功能
-(就像是你朋友小王出現在你家床上，跟出現在熱炒店門口是不同功能。)
+這篇要說明 JS/TS 的 ... 語法，在不同場合看到有不一樣的功能。
+（就像是你朋友小王出現在你家床上，跟出現在熱炒店門口是不同功能。）
 
 主要有兩種用法：Spread Syntax、Rest Syntax。
 
@@ -18,9 +18,9 @@ tags: ['JavaScript', 'TypeScript', '前端', 'Spread', 'Rest']
 
 顧名思義，就是把原本包在一起的資料展開。
 
-至於「展開」什麼？ 這個根據它出現的位置不同而有差異。
+至於「展開」什麼？這個根據它出現的位置不同而有差異。
 
-1. 在函式呼叫或陣列中：此時 … 展開的是 **iterable 。例如陣列、字串**  
+1. 在函式呼叫或陣列中：此時 … 展開的是 **iterable，例如陣列、字串**  
     `const arr = [1, 2, 3]; console.log(...arr); // 等同於 console.log(1, 2, 3)`  
     
 
@@ -103,23 +103,23 @@ theme: prevSettings.theme === "light" ? "dark" : "light"
 
 保留原本的大部分屬性，只覆蓋需要更新的欄位。
 
-如果你還是有點混亂，那可以只記得這個就好
+如果你還是有點混亂，那可以只記得這個就好：
 
-「把原本包在一起的資料(像是陣列或者物件)展開，方便複製、合併或傳遞。」
+「把原本包在一起的資料（像是陣列或者物件）展開，方便複製、合併或傳遞。」
 
----
+* * *
 
 ## Rest Syntax：把剩下的資料收集起來
 
-請記得將Spread Syntax 與 Rest Syntax 分開理解，兩者長相一樣，但用途很不一樣。
+請記得將 Spread Syntax 與 Rest Syntax 分開理解，兩者長相一樣，但用途很不一樣。
 
-Rest Syntax是什麼？
+Rest Syntax 是什麼？
 
 如果說 Spread 是把資料展開，那 Rest 就是把資料收集起來，透過 Rest Syntax **把「剩下的值」收集成一個陣列**（或物件）。
 
 使用時重點會放在「收集剩餘資料」。
 
-Rest syntax 常見的出現場景主要有三種：
+Rest Syntax 常見的出現場景主要有三種：
 
 **1\. 函式參數（rest parameters）**
 
@@ -168,7 +168,7 @@ const { a, ...rest } = { a: 1, b: 2, c: 3 };
 
 - 拆分設定物件
 
-有發現嗎？不論是哪一種出現場景，核心概念都一樣
+有發現嗎？不論是哪一種出現場景，核心概念都一樣：
 
 就是「把剩下的資料收集起來」。
 
@@ -215,7 +215,7 @@ logAction("DELETE_POST", 12345, "admin")
 
 - **Rest（收集）** → 把資料「收起來」
 
-References：
+參考資料：
 
 [Spread syntax - MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
 
