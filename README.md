@@ -12,7 +12,7 @@
 
 | 工具 | 版本需求 | 說明 |
 |---|---|---|
-| Node.js | v18 以上 | 建議用 v22 |
+| Node.js | v22.12 以上 | `package.json` engines 已鎖定此版本 |
 | npm | v9 以上 | Node 附帶 |
 | Git | 任意版本 | 版本控制 |
 | Netlify CLI | 任意版本 | 測試留言等 Functions 必要 |
@@ -112,7 +112,8 @@ gh auth login
 | `npm run preview` | 本地預覽正式版本 |
 | `npm run optimize` | 轉換 public/ 下所有 PNG/JPG → WebP，已有 .webp 則跳過 |
 | `npm run optimize:clean` | 同上，轉換後自動刪除原始 PNG/JPG |
-| `npx netlify dev` | 啟動含 Functions 的本地環境（測試留言系統必要，port 8888） |
+| `npm run dev:netlify` | 啟動含 Functions 的本地環境（測試留言、聯絡表單必要，port 8888） |
+| `npm run gen` | 產生一篇亂數內容的測試文章到 `src/content/blog/`，方便測試列表/分頁/房間顯示 |
 
 ---
 
@@ -121,7 +122,7 @@ gh auth login
 ```
 C:\ramblingquest\
 ├── netlify/
-│   └── functions/        Netlify Functions（留言系統 API）
+│   └── functions/        Netlify Functions（留言系統、聯絡表單 API）
 ├── public/               靜態資源（favicon、背景圖、文章圖片）
 │   └── images/           文章封面圖與內文圖片（一律 WebP）
 ├── src/
@@ -136,6 +137,8 @@ C:\ramblingquest\
 ├── src/consts.ts         網站標題、描述等全域設定
 └── tsconfig.json         TypeScript 設定
 ```
+
+`src/pages/404.astro` 是自訂 404 頁面（全螢幕背景圖 + 文案），`src/pages/admin.astro` 是密碼保護的留言管理後台（見下方「刪除留言」）。
 
 ---
 
@@ -195,19 +198,26 @@ tags: ['標籤一', '標籤二']
 純 `npm run dev` 不會跑 Functions，打 `/api/comments` 會 404。需改用：
 
 ```bash
-npx netlify dev
+npm run dev:netlify
 ```
 
 瀏覽器開啟 `http://localhost:8888`。
 
-或建置後測試（可避免 pagefind dev 錯誤）：
+若要連搜尋功能一起測（見下方「搜尋功能」），要先建置一次並把 `dist/pagefind/` 複製到 `public/pagefind/`，否則搜尋在 dev 模式下打不開：
 
 ```bash
 npm run build
-npx netlify dev --command "npm run preview" --target-port 4321
+# 複製 dist/pagefind/ 到 public/pagefind/
+npm run dev:netlify
 ```
 
+也可以直接執行 `/ramble` skill，會自動完成上述整套流程並開瀏覽器預覽。
+
 ### 刪除留言
+
+最簡單的方式是登入後台 `/admin`（密碼即 `COMMENT_ADMIN_SECRET`），列表顯示所有文章的留言，直接點刪除即可，DOM 立即更新不需重整。
+
+若要用 API 手動操作：
 
 1. 查詢某篇文章的留言，找到要刪的 `id`：
 
@@ -220,6 +230,26 @@ curl "https://ramblingquest.com/api/comments?slug=文章slug"
 ```powershell
 Invoke-WebRequest -Uri "https://ramblingquest.com/api/comments/<id>?slug=文章slug" -Method DELETE -Headers @{"x-admin-secret"="<COMMENT_ADMIN_SECRET>"}
 ```
+
+---
+
+## 聯絡表單
+
+`/about` 頁底部有聯絡表單，寫法比照留言系統但更陽春：只做驗證、頻率限制、送 Discord 通知，**不寫入資料庫、沒有後台檢視頁**（訊息只會出現在 Discord 通知裡）。
+
+- **API**：`POST /api/contact`（`netlify/functions/contact.mts`）
+- **環境變數**：沿用留言系統的 `DISCORD_WEBHOOK_URL`，不需要額外設定
+- **本地測試**：跟留言系統一樣，需用 `npm run dev:netlify`，純 `npm run dev` 會 404
+
+---
+
+## 搜尋功能
+
+全站搜尋由 [pagefind](https://pagefind.app/) 驅動，`npm run build` 時會自動產生索引（`astro build && pagefind --site dist`）。
+
+- **入口**：右上角搜尋圖示，或按 `Ctrl+K`（`src/components/SearchModal.astro`）
+- **本地測試**：純 `npm run dev` 搜尋不會動（索引還沒產生），需先 `npm run build` 並把 `dist/pagefind/` 複製到 `public/pagefind/`，再跑 `npm run dev` 或 `npm run dev:netlify`
+- 正式部署時 Netlify 直接跑 `npm run build`，索引會自動產生，不需要手動處理
 
 ---
 
