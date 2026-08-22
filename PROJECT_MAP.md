@@ -1,8 +1,9 @@
 # PROJECT_MAP — Rambling Quest
 
 > 這份文件給「未來的我」和「AI 助手」看。  
-> 目的：改任何功能或畫面之前，先看這裡，快速定位要動哪些檔案。  
-> 最後更新：2026-07-08
+> 目的：改任何功能或畫面之前，先看這裡，快速定位要動哪些檔案（架構地圖 + 查詢表）。  
+> 設計哲學（幾乎不變動）在 [DESIGN.md](DESIGN.md)；未來 TODO（常常變動）在 [TODO.md](TODO.md)。  
+> 最後更新：2026-08-20
 
 ---
 
@@ -24,8 +25,14 @@
 
 commit 後不主動 push，除非明確要求；只有明確說「上線」「merge master」「推到 master」時才 merge master。
 
+### AI 助手工作規則
+
+1. **修改後立即更新 PROJECT_MAP.md**：新增或修改任何可重用元件、CSS class、樣式模式、重要檔案，**在同一個 turn 就要同步更新**，不要做完就結束、等用戶事後提醒才補；一次性、不會重複使用的內容（純調整某篇文章措辭、改一次性圖片路徑）則不需要記錄，避免文件膨脹。
+2. **新文章補 tags**：建立或協助編寫新文章時，根據文章內容自動推薦並補上 `tags` 欄位（參考現有 tag 慣例：技術教學用工具/技術名稱、個人文章用主題/情感關鍵字），不需等用戶要求。
+3. **新文章 SEO 基本檢查**：建立或協助編寫新文章時，順手檢查：內文圖片一定要有描述性 alt text（不能留空）；建議補 `heroImage`（沒有的話分享出去會用預設 fallback 圖，不是不行，但有圖比較好）；`description` 要言之有物，不是隨便湊字數充數。
+
 **目前主要目標**：設計 v1 完成（首頁、Archive 頁、文章頁、PostCard 元件）。v2 方向：各房間獨立文章頁排版、搜尋、標籤頁。
-最後更新：2026-06-10
+最後更新：2026-08-20
 
 ---
 
@@ -171,19 +178,19 @@ C:\ramblingquest\
 | `Footer` | `src/components/Footer.astro` | 其他頁面的 Footer（灰色漸層，含社群連結） | `/about`、`/blog/[slug]` |
 | `FormattedDate` | `src/components/FormattedDate.astro` | 日期格式化（Jul 08, 2022）輸出 `<time>` 元素 | `BlogPost.astro` |
 | `PostCard` | `src/components/PostCard.astro` | 文章卡片（拍立得風格：heroImage、圖釘、日期戳 + 房間徽章並排於縮圖左上角、標題、虛線分隔、摘要）。無 heroImage 時 fallback 為 `/default-card-photo.webp` | `ArchiveLayout.astro`、`index.astro` |
-| `HomeFooter` | `src/components/HomeFooter.astro` | 首頁暗色主題 Footer（腳圖、標語、GitHub 連結、版權）。樣式來自 `homepage.css` | `index.astro`、`ArchiveLayout.astro` |
+| `HomeFooter` | `src/components/HomeFooter.astro` | 首頁暗色主題 Footer（腳圖、標語、GitHub/LinkedIn/Email 連結、版權）。樣式來自 `homepage.css` | `index.astro`、`ArchiveLayout.astro` |
 
-### 首頁區塊（目前寫在 `index.astro`，尚未拆成元件）
+### 首頁區塊（大部分仍直接寫在 `index.astro`，Footer 已拆成元件）
 
-首頁的所有視覺區塊都直接寫在 `src/pages/index.astro`，未來可以考慮拆成以下元件：
+首頁的視覺區塊大多直接寫在 `src/pages/index.astro`，未來可以考慮拆成以下元件；Footer 已經拆出：
 
-| 區塊 | 目前位置 | 建議未來元件名稱 |
+| 區塊 | 目前位置 | 備註 |
 |---|---|---|
-| Navbar（燈籠 + 品牌 + 導覽連結） | `index.astro` 第 37–52 行 | `HomeNav.astro` |
-| Hero（城市背景 + 中央標題） | `index.astro` 第 55–72 行 | `Hero.astro` |
-| 四個入口招牌 | `index.astro` 第 72–131 行 | `RoomSigns.astro` |
-| 最新文章紙卡 | `index.astro` 第 141–194 行 | `LatestNotes.astro` |
-| 首頁 Footer | `index.astro` 第 197–218 行 | `HomeFooter.astro` |
+| Navbar（品牌 LOGO + 導覽連結 + 搜尋 + 手機漢堡選單） | `index.astro`（`.rq-nav` 區塊） | 與 `BlogPost.astro` 的 Navbar 幾乎重複，未來可考慮抽成共用元件（建議命名 `HomeNav.astro`） |
+| Hero（城市背景 + 中央標題） | `index.astro`（`.rq-hero` 內的 `.rq-city`/`.rq-city__sheen`/`.rq-entry`） | 建議未來元件名稱：`Hero.astro` |
+| 四個入口招牌 | `index.astro`（`.rq-signs`） | 建議未來元件名稱：`RoomSigns.astro` |
+| 最新文章相片牆 | `index.astro`（`.rq-wall-wrap`，卡片用 `PostCard` 元件） | 建議未來元件名稱：`LatestWall.astro`；舊版「紙卡」設計已被取代，見第 7 節 |
+| 首頁 Footer | `src/components/HomeFooter.astro` | ✅ 已拆成元件，`index.astro` 只呼叫 `<HomeFooter />` |
 
 ---
 
@@ -211,24 +218,21 @@ C:\ramblingquest\
 
 | 想改的東西 | 去哪裡改 |
 |---|---|
-| 首頁背景城市圖 | `public/city-street.png`（替換檔案）或 `homepage.css` 第 35–36 行（`[data-bg]` selector） |
-| 切換天際線/街道背景 | `index.astro` 第 34 行 `data-bg="street"` 改為 `data-bg="skyline"` |
-| Navbar 燈籠 LOGO 樣式 | `homepage.css` `.rq-lamp` 系列 class（約第 100–125 行） |
-| Navbar 品牌文字、副標題 | `index.astro` 第 44–47 行 |
-| Navbar 連結文字/路徑 | `index.astro` 第 50–52 行 |
+| 首頁背景城市圖 | `public/city-street.webp`（替換檔案）或 `homepage.css` `[data-bg]` selector（約第 35–36 行） |
+| 切換天際線/街道背景 | `index.astro` `<body>` 標籤的 `data-bg` 屬性，`street` 改為 `skyline` |
+| Navbar LOGO 圖片 | `public/feet-golden-blue.webp`（替換檔案）；LOGO 已改用 `<img>`，舊版純 CSS 合成的 `.rq-lamp` 系列 class 還留在 `homepage.css` 裡，但目前沒有任何模板在用，是閒置樣式 |
+| Navbar 品牌文字、副標題 | `index.astro` 的 `.rq-brand__text` 區塊 |
+| Navbar 連結文字/路徑 | `index.astro` 的 `.rq-nav__links` 內兩個 `<a>` |
 | Navbar 連結 hover 底線顏色 | `homepage.css` `.rq-nav__links a::after` |
-| Hero 標題文字（Rambling Quest） | `index.astro` 第 66 行 `.rq-title` |
-| Hero 副標語（白天像書房...） | `index.astro` 第 67–70 行 `.rq-tagline` |
-| Hero 時間標記（tonight · 22:47） | `index.astro` 第 63 行 |
-| 四個入口招牌名稱/描述文字 | `index.astro` 第 75–131 行（每個 `rq-sign-card` 區塊） |
+| Hero 標題文字（Rambling Quest） | `index.astro` `.rq-title` |
+| Hero 副標語（無限期收留值得品味的瞬間） | `index.astro` `.rq-tagline` |
+| 四個入口招牌名稱/描述文字 | `index.astro`，每個 `.rq-sign-card` 區塊 |
 | 四個招牌顏色（`--accent`） | `index.astro` 各 `<li>` 的 `style="--accent: ..."` |
 | 招牌霓虹閃爍（吧台/工坊） | `homepage.css` `@keyframes rq-flicker` + `[data-flicker]` selector |
-| 最新文章數量（目前 5 篇） | `index.astro` 第 12 行 `.slice(0, 5)` |
-| 最新文章區標題（最近留下的紙條） | `index.astro` 第 152 行 |
-| 最新文章卡片樣式 | `homepage.css` `.rq-note` 及子 class |
-| 紙卡顏色（奶油色紙） | `index.astro` 第 34 行 `data-paper="cream"`，可改為 `manila`/`kraft`/`onion` |
-| Footer 文字（夜深了...） | `index.astro` 第 205 行 |
-| Footer 社群連結（RSS/GitHub/Email） | `index.astro` 第 208–212 行 |
+| 最新文章顯示數量（目前 6 篇） | `index.astro` `.slice(0, 6)` |
+| 最新文章區標題（最新文章 / recent） | `index.astro` 的 `.rq-wall__title` |
+| 最新文章卡片樣式 | `src/components/PostCard.astro` 的 `<style>` 區塊（`.post-card` 及子 class） |
+| Footer 文字、LOGO、社群連結 | `src/components/HomeFooter.astro`（GitHub / LinkedIn / Email 複製按鈕；目前沒有 RSS 連結） |
 | 其他頁面 Navbar（/blog、/about） | `src/components/Header.astro` |
 | 其他頁面 Footer | `src/components/Footer.astro` |
 | 文章頁正文排版（prose 區） | `src/layouts/BlogPost.astro` 的 `<style>` 區塊，`.prose` class |
@@ -267,7 +271,7 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 - `workshop`（工坊）— 技術、架站、side project
 - `court`（場邊）— 籃球、身體、觀察
 
-首頁紙卡的分類點顏色與 label 根據此欄位自動對應。
+首頁相片牆卡片、Archive 卡片的房間徽章顏色與 label 根據此欄位自動對應。
 
 ### 新增一篇文章的步驟
 
@@ -282,7 +286,7 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
    ---
    ```
 3. 在 frontmatter 下方寫 Markdown 內文
-4. 存檔後，文章自動出現在 `/blog/article-slug`，首頁紙卡依 pubDate 排序後自動更新
+4. 存檔後，文章自動出現在 `/blog/article-slug`，首頁相片牆依 pubDate 排序後自動更新
 
 ### 封面圖（heroImage）
 
@@ -295,7 +299,7 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 
 需要在文章內文放「清單感覺像釘在紙上的便條」時使用，而不是一般 `-` bullet list。視覺仿照留言卡片（`.comment`）的紙張＋膠帶語言：奶油色漸層背景、單像素邊框、輕微旋轉、頂部一小塊膠帶裝飾；標題用 Special Elite 打字機字體，清單文字用 JetBrains Mono。
 
-**CSS 定義位置**：`src/layouts/BlogPost.astro` 的 `<style>` 區塊，`.prose :global(.paper-list)` 系列規則（約第 396–446 行，`/* ── Paper checklist ── */` 註解之後）。因為文章內文是透過 `<slot />` 插入、不在 BlogPost.astro 自己的 template 裡，所有相關規則都要包在 `:global()` 裡才會生效（跟 `.prose ul`／`.prose li` 等既有規則同一套模式）。
+**CSS 定義位置**：`src/layouts/BlogPost.astro` 的 `<style>` 區塊，找 `/* ── Paper checklist ── */` 註解，`.prose :global(.paper-list)` 系列規則就緊接在後面。因為文章內文是透過 `<slot />` 插入、不在 BlogPost.astro 自己的 template 裡，所有相關規則都要包在 `:global()` 裡才會生效（跟 `.prose ul`／`.prose li` 等既有規則同一套模式）。
 
 **用法**：文章 `.md` 檔案裡直接寫原生 HTML（不要用 Markdown 的 `-` bullet，因為 HTML block 內部不保證會被當成 Markdown 解析），格式如下：
 
@@ -317,7 +321,7 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 
 需要在文章內文放「不是主圖等級、只是輔助說明用的小插圖」時使用，讓它比預設的滿版圖片小一點，不搶正文的注意力。
 
-**CSS 定義位置**：`src/layouts/BlogPost.astro` 的 `<style>` 區塊，緊接在 `.prose :global(img)` 規則之後的 `.prose :global(img.inline-img)`（約第 353–360 行）。規則本身只有 `max-width: var(--img-w, 60%)`，沒設定的話預設縮到 60%；其餘（`border-radius`、置中 `margin`）沿用上面 `.prose :global(img)` 的共用規則。
+**CSS 定義位置**：`src/layouts/BlogPost.astro` 的 `<style>` 區塊，`.prose :global(img.inline-img)` 規則緊接在 `.prose :global(img)` 規則之後。規則本身只有 `max-width: var(--img-w, 60%)`，沒設定的話預設縮到 60%；其餘（`border-radius`、置中 `margin`）沿用上面 `.prose :global(img)` 的共用規則。
 
 **用法**：文章 `.md` 檔案裡不用 Markdown 的 `![alt](src)` 語法，改寫原生 `<img>` HTML，透過行內 `style` 的 CSS 變數 `--img-w` 指定寬度百分比（每張圖可以自訂不同數值，不綁死固定尺寸）：
 
@@ -337,46 +341,46 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 
 ### 各區塊說明
 
-**Navbar** （`index.astro` 第 37–52 行）
-- CSS class：`.rq-nav`、`.rq-brand`、`.rq-lamp`、`.rq-nav__links`
+**Navbar** （`index.astro` 的 `.rq-nav` 區塊）
+- CSS class：`.rq-nav`、`.rq-brand`、`.rq-nav__links`
 - 絕對定位，疊在 Hero 上方，漸層淡出背景
-- 燈籠 icon 由三個 `<span>` 用純 CSS 合成（`rq-lamp__post / __head / __glow`）
-- 修改連結：直接改 `index.astro` 第 50–52 行的 `<a href>` 和文字
+- 品牌 LOGO 是 `<img src="/feet-golden-blue.webp">`；舊版純 CSS 合成的燈籠 icon（`.rq-lamp` / `.rq-lamp__post` / `__head` / `__glow`）已不再被任何模板使用，但 class 定義還留在 `homepage.css` 裡（閒置樣式，`BlogPost.astro` 的 `<style>` 裡也有同一份複本）
+- 含搜尋按鈕（`.rq-search-btn`，開啟 `<SearchModal />`）與手機版漢堡選單（`.rq-nav__burger`，768px 以下顯示，切換 `.rq-nav--open`）
+- 修改連結：直接改 `.rq-nav__links` 內的 `<a href>` 和文字
 
-**Hero — 城市背景** （`index.astro` 第 55–58 行）
+**Hero — 城市背景** （`index.astro` 的 `.rq-hero` 開頭部分）
 - `<section class="rq-hero">`：`height: 100vh`，`max-height: 1080px`
-- `.rq-city`：城市背景圖，用 CSS `background-image` 載入（非 `<img>`），由 `data-bg` 屬性切換街道/天際線
-- `.rq-city__sheen`：三層漸層遮罩（Nav 後方、標題後方、底部融入紙卡）
-- 背景圖換掉：替換 `public/city-street.png` 或 `public/city-skyline.png`
+- `.rq-city`：城市背景圖，用 CSS `background-image` 載入（非 `<img>`），由 `<body>` 標籤的 `data-bg` 屬性切換街道/天際線
+- `.rq-city__sheen`：三層漸層遮罩（Nav 後方、標題後方、底部融入下方相片牆 section）
+- 背景圖換掉：替換 `public/city-street.webp` 或 `public/city-skyline.webp`
 
-**Hero — 中央標題** （`index.astro` 第 60–72 行）
+**Hero — 中央標題** （`index.astro` 的 `.rq-entry` 區塊）
 - `.rq-entry`：絕對定位，置中，距頂 16%
-- `.rq-entry__kicker`：`tonight · 22:47` 加兩側橫線（`.rq-tick`）
 - `.rq-title`：Special Elite 字體，56px，淡奶油色文字加微光 text-shadow
 - `.rq-tagline`：中文副標語
+- 注意：舊版曾有 `tonight · 22:47` 時間標記（`.rq-entry__kicker` + `.rq-tick`），目前模板已移除這段文案，但兩個 class 定義還留在 `homepage.css` 裡（閒置樣式）
 
-**四個入口招牌** （`index.astro` 第 72–131 行）
+**四個入口招牌** （`index.astro` 的 `.rq-signs` 區塊）
 - 外層：`.rq-signs`，CSS Grid 4 欄，底部對齊，`bottom: 8%`
 - 每個招牌：`.rq-sign-card`，用 `data-room="study/bar/workshop/court"` 區分
 - 各招牌顏色由 `style="--accent: H S% L%"` CSS 變數控制
 - `.rq-sign-card__board`：燈箱本體（有 `--neon`/`--screen`/`--flood` 三種背景變體）
-- `.rq-sign-card__cjk`：DotGothic16 霓虹字，neon glow text-shadow
-- `.rq-sign-card__plate`：下方描述板，backdrop-blur 效果
+- `.rq-sign-card__cjk` / `.rq-sign-card__en`：DotGothic16 霓虹中文字 + 英文小標
 - `.rq-sign-card__bracket` + `.rq-sign-card__bulb`：掛架 + 燈泡（純 CSS）
 - 閃爍動畫：吧台（5s）、工坊（7.3s），由 `data-flicker="on"` 控制開關
+- 注意：`homepage.css` 裡還定義了 `.rq-sign-card__plate`/`.rq-sign-card__hint`（下方描述板），但目前模板沒有渲染這兩個元素，是閒置樣式
 
-**最新文章紙卡** （`index.astro` 第 141–194 行）
-- `.rq-paper-wrap`：深夜背景 section，上下 padding 90px/80px
-- `.rq-paper`：紙卡本體，奶油色，微旋轉（-0.25deg），`box-shadow` 立體感
-- `.rq-tape`：三個膠帶（純 CSS 漸層 + mix-blend-mode）
-- `.rq-pin`：右上角紅色圖釘（純 CSS 圓形漸層）
-- `.rq-notes`：文章列表，flex column
-- 每篇文章（`.rq-note`）：Grid 三欄（日期 96px / 內容 1fr / 箭頭 28px）
-- 動態資料來源：`getCollection('blog')` 排序後取前 5 篇
+**最新文章相片牆** （`index.astro` 的 `.rq-wall-wrap` section，`id="latest"`）
+- 舊版「紙卡」設計（`.rq-paper-wrap`/`.rq-paper`/`.rq-tape`/`.rq-pin`/`.rq-notes`/`.rq-note`）已完全移除，`homepage.css` 裡也找不到這些 class 了，改用相片牆呈現
+- `.rq-wall-wrap`：暗色房間背景 section（`room-side-by-window.webp`），上下 padding 110px/140px
+- `.rq-wall__cards`：CSS Grid 3 欄，每篇文章用共用元件 `PostCard.astro` 渲染（拍立得風格：heroImage、圖釘、日期戳+房間徽章、標題、虛線分隔、摘要）
+- 動態資料來源：`getCollection('blog')` 排序後取前 6 篇（`.slice(0, 6)`）
 
-**Footer** （`index.astro` 第 197–218 行）
-- `.rq-foot`：CSS Grid 四欄（燈籠 / 文字 / 連結 / 版權）
+**Footer** （`src/components/HomeFooter.astro`，已拆成獨立元件）
+- `.rq-foot`：CSS Grid 四欄（LOGO 圖片 / 文字 / 連結 / 版權）
 - 頂部有金色漸層橫線（`::before` pseudo-element）
+- 連結：GitHub、LinkedIn、Email（點擊複製到剪貼簿），目前沒有 RSS 連結
+- 也用於 `ArchiveLayout.astro`
 
 ---
 
@@ -386,19 +390,19 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 |---|---|---|
 | 加新圖片到 public/ | 雙擊 `optimize-images.bat`（或 `npm run optimize:clean`） | 自動轉 WebP 並刪原檔；只轉不刪用 `npm run optimize`；引用時用 `.webp` 副檔名 |
 | 修改首頁背景城市圖 | 替換 `public/city-street.webp` 或 `public/city-skyline.webp` | 圖片尺寸建議 2560px 寬以上；CSS 用 `cover` 填滿；替換後跑 `npm run optimize` |
-| 切換背景（街道/天際線） | `index.astro` 第 34 行 `data-bg` 屬性 | 改為 `street` 或 `skyline` |
-| 修改 Hero 文案（標題/副標語） | `index.astro` 第 63–70 行 | 修改 `.rq-entry__kicker`、`.rq-title`、`.rq-tagline` 內文 |
-| 修改四個入口名稱或連結 | `index.astro` 第 75–131 行，每個 `rq-sign-card` 區塊 | 修改 `.rq-sign-card__cjk`（中文）、`.rq-sign-card__en`（英文）、`<a href>` |
-| 修改最新文章顯示數量 | `index.astro` 第 12 行 `.slice(0, 5)` | 改數字即可 |
-| 修改 Navbar 連結（首頁） | `index.astro` 第 50–52 行 | 改 `<a href>` 路徑和文字 |
+| 切換背景（街道/天際線） | `index.astro` `<body>` 標籤的 `data-bg` 屬性 | 改為 `street` 或 `skyline` |
+| 修改 Hero 文案（標題/副標語） | `index.astro` 的 `.rq-entry` 區塊 | 修改 `.rq-title`、`.rq-tagline` 內文（舊版的 `.rq-entry__kicker` 時間標記已移除） |
+| 修改四個入口名稱或連結 | `index.astro`，每個 `.rq-sign-card` 區塊 | 修改 `.rq-sign-card__cjk`（中文）、`.rq-sign-card__en`（英文）、`<a href>` |
+| 修改最新文章顯示數量 | `index.astro` 的 `.slice(0, 6)` | 改數字即可 |
+| 修改 Navbar 連結（首頁） | `index.astro` 的 `.rq-nav__links` | 改 `<a href>` 路徑和文字 |
 | 修改 Navbar 連結（其他頁） | `src/components/Header.astro` | 同時確認 `HeaderLink.astro` active 邏輯 |
-| 修改首頁 Footer | `index.astro` 第 205–218 行 | RSS/GitHub/Email 連結都在這裡 |
+| 修改首頁 Footer | `src/components/HomeFooter.astro` | GitHub/LinkedIn/Email 連結都在這裡；目前沒有 RSS 連結 |
 | 修改其他頁面 Footer | `src/components/Footer.astro` | 目前社群連結指向 Astro 官方，需要換成自己的 |
 | 新增一篇文章 | `src/content/blog/新文章.md` | 參考第 6 節「新增步驟」 |
 | 修改文章頁樣式 | `src/layouts/BlogPost.astro` 的 `<style>` | `.prose` class 控制正文寬度與排版 |
 | 調整／關閉文章頁 TOC 目錄 | `src/layouts/BlogPost.astro` | CSS：`.toc-btn`、`.toc-panel`；JS：頁尾 `<script>`；透明度：`rgba(5,11,24,0.52)`；`scroll-margin-top: 84px` 控制跳轉偏移 |
 | 修改文章列表頁（/blog）樣式 | `src/layouts/ArchiveLayout.astro` 的 `<style>` 區塊 | 3 欄卡牌格局，含 sky section、房間 filter tab、分頁；`blog/index.astro` 只是資料層，樣式全在 ArchiveLayout |
-| 新增分類或房間 | `src/content.config.ts` + `index.astro` roomLabel/roomType + `homepage.css` | 新增 `z.enum` 選項、首頁 label 對應表、`rq-note__cat[data-room="新房間"]` 顏色 |
+| 新增分類或房間 | `src/content.config.ts`（`room` 的 `z.enum`）+ `src/components/PostCard.astro`（`roomLabel`/`roomToCat` 對應表 + `.post-card__badge` 顏色）+ `src/layouts/BlogPost.astro`（`roomLabel`、`.room-badge[data-room]` 顏色）+ `src/layouts/ArchiveLayout.astro`（`roomLabel`）+ `index.astro`（`.rq-sign-card` 招牌） | 房間中文名稱的 `roomLabel` 對應表分散定義在 `PostCard.astro`、`BlogPost.astro`、`ArchiveLayout.astro` 三處，新增房間時三邊都要改 |
 | 修改網站主色調（其他頁面） | `src/styles/global.css` `--accent` 變數 | 首頁色彩走 `--accent` CSS 變數（每個招牌獨立設定，不受此影響） |
 | 修改網站主色調（首頁） | `homepage.css` `:root` 區塊，或各 `<li style="--accent: ...">` | 每個招牌有獨立 `--accent`，`--halo` 控制燈光暖色 |
 | 修改字體（其他頁面） | `src/styles/global.css` `body { font-family }` 或 `astro.config.mjs` 的 fonts 設定 | 本地字體 Atkinson 在 `src/assets/fonts/` |
@@ -471,56 +475,7 @@ tags: ['教學', '工具']     # 選填，預設 []，建立文章時由 AI 根�
 
 ---
 
-## 10. 設計原則
-
-**Rambling Quest 是一個人在城市裡散步時留下的地方。**
-
-- **城市是主視覺**：首頁的靈魂是深夜像素城市圖。Hero 不是 banner，是整個場景的背景。任何覆蓋層都要輕，不能讓城市消失。
-- **四個入口是招牌，不是卡片**：書房/吧台/工坊/場邊是城市裡的店面招牌，懸掛著，有燈光，有閃爍。不應該變成普通 card 或 button。
-- **首頁不是 SaaS landing page**：不要加英雄 CTA button、不要有「立即訂閱」、不要讓節奏變快。漫步感比轉換率重要。
-- **文章頁像桌上攤開的紙**：閱讀區（`.prose`）窄（720px），字體舒適，行高寬鬆，沒有干擾元素。v2 再根據房間給不同排版。
-- **深色不等於 Cyberpunk**：整體色調是深夜城市，不是霓虹爆炸。暖色（amber）只用於燈光點綴，主色是深藍灰（`--night-deep: #050b18`）。
-- **不要太商業、太模板、太亮**：任何新增元素都問一次：「這東西放在深夜酒館門口合理嗎？」
-
----
-
-## 11. 未來可重構建議
-
-### 可以拆成元件（不急，但值得記）
-
-- `index.astro` 的 Navbar、Hero、RoomSigns、LatestNotes、HomeFooter 都可以拆出來，讓 `index.astro` 只剩骨架
-- `BlogPost.astro` 文章頁目前樣式是 scoped CSS，未來若各房間要不同排版，可以拆成 `StudyPost.astro`、`BarPost.astro` 等
-
-### 樣式可以集中管理的地方
-
-- 首頁的設計 token（顏色、字體、間距）全部在 `homepage.css` `:root`，目前已集中，維持現狀即可
-- 其他頁面的 token 在 `global.css` `:root`，但 `BlogPost.astro` 和 `blog/index.astro` 各有自己的 scoped `<style>`，未來可以統一成一個 `article.css`
-
-### 命名一致性
-
-- 目前 Header/Footer 元件是「其他頁面用的」，但首頁的 nav/footer 直接寫在 `index.astro` 裡，沒有元件。未來如果拆出來，建議命名為 `HomeNav.astro` 和 `HomeFooter.astro` 以區別
-
-### 資料可以改成 config 的地方
-
-- 四個房間的設定（名稱、顏色、描述、路徑）目前散落在 `index.astro` HTML 中，可以整理成 `src/consts.ts` 裡的 `ROOMS` 陣列，讓 `index.astro` 用 `.map()` 渲染
-
-### 尚未實作的功能（未來 v2）
-
-| 功能 | 說明 |
-|---|---|
-| 文章頁各房間獨立排版 | 書房像書桌、吧台像菜單紙，目前統一用 `BlogPost.astro` |
-| ~~搜尋~~ | ✅ 已實作：pagefind 驅動全站搜尋，`SearchModal.astro` + Ctrl+K 快捷鍵 |
-| 文章系列（series） | 多篇文章串成系列，目前 schema 無此欄位 |
-| 深色/淺色模式切換 | 目前固定深色（首頁），其他頁面固定淺色 |
-| ~~標籤頁（tags）~~ | ✅ 已實作：schema 有 `tags` 欄位，`/blog/tag/[tag]` tag archive 頁、文章底部 tag chips，點擊連結到 tag 頁 |
-| 關於頁改寫 | 目前是 Lorem ipsum 佔位內容 |
-| ~~域名接上 Netlify~~ | ✅ 已完成：ramblingquest.com 已上線，DNS 指向 Netlify |
-| `Header.astro` 社群連結換成自己的 | 目前指向 Astro 官方 Mastodon/Twitter/GitHub |
-| ~~RSS feed 修正~~ | ✅ 已完成：`rss.xml.js` 的 `site` 沿用 `astro.config.mjs`，現已正確指向 `ramblingquest.com` |
-
----
-
-## 12. SEO 注意事項
+## 11. SEO 注意事項
 
 2026-07 做過一輪全站 SEO 健檢並修正，記錄下來避免以後改動時重蹈覆轍。
 
