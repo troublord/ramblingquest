@@ -2,8 +2,8 @@
 
 > 這份文件給「未來的我」和「AI 助手」看。  
 > 目的：改任何功能或畫面之前，先看這裡，快速定位要動哪些檔案（架構地圖 + 查詢表）。  
-> 設計哲學（幾乎不變動）在 [DESIGN.md](DESIGN.md)；未來 TODO（常常變動）在 [TODO.md](TODO.md)。  
-> 最後更新：2026-08-20
+> 設計哲學（幾乎不變動）在 [DESIGN.md](DESIGN.md)；未來 TODO（常常變動）在 [TODO.md](TODO.md)；改動前該做多少驗證在 [Verification.md](Verification.md)。  
+> 最後更新：2026-08-31
 
 ---
 
@@ -41,7 +41,12 @@ commit 後不主動 push，除非明確要求；只有明確說「上線」「me
 ```
 C:\ramblingquest\
 ├── astro.config.mjs          Astro 設定：site URL、整合（mdx、sitemap）、本地字體
-├── package.json              依賴：astro、@astrojs/mdx、@astrojs/rss、@astrojs/sitemap、sharp、@netlify/blobs；devDeps: pagefind、netlify-cli、@astrojs/check、typescript；scripts: dev/dev:netlify/build/preview/optimize/optimize:clean
+├── package.json              依賴：astro、@astrojs/mdx、@astrojs/rss、@astrojs/sitemap、sharp、@netlify/blobs；devDeps: pagefind、netlify-cli、@astrojs/check、typescript、vitest；scripts: dev/dev:netlify/build/preview/optimize/optimize:clean/test
+├── Verification.md           驗證流程文件：風險分級、機械化驗證方式、測試覆蓋範圍、部署前後最低證據；可用 `/verify` skill 觸發
+├── .claude/
+│   └── skills/
+│       └── verify/
+│           └── SKILL.md      `/verify` skill：讀 Verification.md 判斷這次改動的風險等級，跑對應的機械化檢查（build/type check/test），高風險改動額外提示手動 API 驗證步驟；規則以 Verification.md 為準，這個 skill 只負責觸發跟執行
 ├── netlify.toml              Netlify build 設定：command/publish/functions 目錄（node_bundler esbuild）
 ├── tsconfig.json             TypeScript 設定
 ├── PROJECT_MAP.md            ← 本文件
@@ -49,10 +54,13 @@ C:\ramblingquest\
 │
 ├── netlify/
 │   └── functions/
-│       ├── comments.mts          `GET/POST /api/comments?slug=`：留言列表＋新增（honeypot/長度/連結數檢查＋同 IP 頻率限制），存於 Netlify Blobs；POST 201 回傳新留言物件供前端直接注入 DOM；POST 成功後若環境變數 `DISCORD_WEBHOOK_URL` 存在，非同步送 Discord embed 通知
+│       ├── comments.mts          `GET/POST /api/comments?slug=`：留言列表＋新增（honeypot/長度/連結數檢查＋同 IP 頻率限制，限流邏輯呼叫 `_shared/rate-limit.ts`），存於 Netlify Blobs；POST 201 回傳新留言物件供前端直接注入 DOM；POST 成功後若環境變數 `DISCORD_WEBHOOK_URL` 存在，非同步送 Discord embed 通知
 │       ├── comments-delete.mts   `DELETE /api/comments/:id?slug=`：密碼保護（header `x-admin-secret` 比對環境變數 `COMMENT_ADMIN_SECRET`）的清除 API
 │       ├── comments-list-all.mts `GET /api/comments-all`：密碼保護，回傳所有文章的留言（含 slug），供後台管理頁使用
-│       └── contact.mts           `POST /api/contact`：About 頁聯絡表單，驗證＋限流＋Discord 通知，不存檔、無 admin 頁
+│       ├── contact.mts           `POST /api/contact`：About 頁聯絡表單，驗證＋限流（同樣呼叫 `_shared/rate-limit.ts`）＋Discord 通知，不存檔、無 admin 頁
+│       └── _shared/
+│           ├── rate-limit.ts       `checkRateLimit()`：`comments.mts`／`contact.mts` 共用的 IP 頻率限制純函式（時間窗過濾＋門檻判斷＋`retryAfterSeconds` 計算）。放在底線開頭的子目錄，不會被 Netlify 當成獨立 function 部署，純粹是共用模組
+│           └── rate-limit.test.ts  vitest 單元測試，覆蓋邊界值（剛好等於時間窗、空陣列、`retryAfterSeconds` 計算）；`npm run test` 執行
 │
 ├── scripts/
 │   └── convert-webp.mjs      圖片壓縮工具：遞迴掃描 public/ 下所有子目錄的 PNG/JPG，輸出 WebP（quality 85），已有 .webp 則跳過

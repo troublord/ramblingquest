@@ -1,12 +1,11 @@
 import type { Config, Context } from '@netlify/functions';
 import { getStore } from '@netlify/blobs';
+import { checkRateLimit } from './_shared/rate-limit.ts';
 
 export const config: Config = {
 	path: '/api/contact',
 };
 
-const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
-const RATE_LIMIT_MAX = 5;
 const MAX_NAME_LENGTH = 60;
 const MAX_EMAIL_LENGTH = 254;
 const MAX_MESSAGE_LENGTH = 2000;
@@ -54,15 +53,14 @@ export default async (req: Request, context: Context) => {
 	const rateLimitStore = getStore({ name: 'contact-rate-limits' });
 	const existing = (await rateLimitStore.get(ip, { type: 'json' })) as { timestamps: string[] } | null;
 	const now = Date.now();
-	const recentTimestamps = (existing?.timestamps ?? []).filter(
-		(ts) => now - new Date(ts).getTime() < RATE_LIMIT_WINDOW_MS,
-	);
+	const rateLimitResult = checkRateLimit(existing?.timestamps ?? [], now);
 
-	if (recentTimestamps.length >= RATE_LIMIT_MAX) {
-		const oldest = new Date(recentTimestamps[0]).getTime();
-		const retryAfterSeconds = Math.ceil((oldest + RATE_LIMIT_WINDOW_MS - now) / 1000);
+	if (rateLimitResult.limited) {
 		return Response.json(
-			{ error: 'Too many messages, please wait before sending again', retryAfterSeconds },
+			{
+				error: 'Too many messages, please wait before sending again',
+				retryAfterSeconds: rateLimitResult.retryAfterSeconds,
+			},
 			{ status: 429 },
 		);
 	}
@@ -72,8 +70,8 @@ export default async (req: Request, context: Context) => {
 	const trimmedMessage = message.trim().slice(0, MAX_MESSAGE_LENGTH);
 	const submittedAt = new Date().toISOString();
 
-	recentTimestamps.push(submittedAt);
-	await rateLimitStore.setJSON(ip, { timestamps: recentTimestamps });
+	rateLimitResult.recentTimestamps.push(submittedAt);
+	await rateLimitStore.setJSON(ip, { timestamps: rateLimitResult.recentTimestamps });
 
 	const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
 	if (webhookUrl) {

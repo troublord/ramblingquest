@@ -13,7 +13,8 @@
     "astro": "astro",
     "optimize": "node scripts/convert-webp.mjs",
     "optimize:clean": "node scripts/convert-webp.mjs --clean",
-    "gen": "node scripts/gen-article.mjs"
+    "gen": "node scripts/gen-article.mjs",
+    "test": "vitest run"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.6",
@@ -27,6 +28,7 @@
     "@astrojs/check": "^0.9.9",
     "netlify-cli": "^26.1.0",
     "pagefind": "^1.5.2",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "4.1.11"
   }
 }

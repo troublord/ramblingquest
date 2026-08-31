@@ -1,5 +1,6 @@
 import type { Config, Context } from '@netlify/functions';
 import { getStore } from '@netlify/blobs';
+import { checkRateLimit } from './_shared/rate-limit.ts';
 
 export const config: Config = {
 	path: '/api/comments',
@@ -12,8 +13,6 @@ type Comment = {
 	createdAt: string;
 };
 
-const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
-const RATE_LIMIT_MAX = 5;
 const MAX_NAME_LENGTH = 60;
 const MAX_CONTENT_LENGTH = 2000;
 const MAX_LINKS = 2;
@@ -72,15 +71,14 @@ export default async (req: Request, context: Context) => {
 		const rateLimitStore = getStore({ name: 'comment-rate-limits' });
 		const existing = (await rateLimitStore.get(ip, { type: 'json' })) as { timestamps: string[] } | null;
 		const now = Date.now();
-		const recentTimestamps = (existing?.timestamps ?? []).filter(
-			(ts) => now - new Date(ts).getTime() < RATE_LIMIT_WINDOW_MS,
-		);
+		const rateLimitResult = checkRateLimit(existing?.timestamps ?? [], now);
 
-		if (recentTimestamps.length >= RATE_LIMIT_MAX) {
-			const oldest = new Date(recentTimestamps[0]).getTime();
-			const retryAfterSeconds = Math.ceil((oldest + RATE_LIMIT_WINDOW_MS - now) / 1000);
+		if (rateLimitResult.limited) {
 			return Response.json(
-				{ error: 'Too many comments, please wait before posting again', retryAfterSeconds },
+				{
+					error: 'Too many comments, please wait before posting again',
+					retryAfterSeconds: rateLimitResult.retryAfterSeconds,
+				},
 				{ status: 429 },
 			);
 		}
@@ -98,8 +96,8 @@ export default async (req: Request, context: Context) => {
 		existingComments.push(comment);
 		await commentsStore.setJSON(slug, existingComments);
 
-		recentTimestamps.push(comment.createdAt);
-		await rateLimitStore.setJSON(ip, { timestamps: recentTimestamps });
+		rateLimitResult.recentTimestamps.push(comment.createdAt);
+		await rateLimitStore.setJSON(ip, { timestamps: rateLimitResult.recentTimestamps });
 
 		const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
 		if (webhookUrl) {
