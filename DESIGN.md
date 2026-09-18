@@ -1,7 +1,7 @@
 # DESIGN — Rambling Quest 設計哲學
 
 > 這份文件記錄 Rambling Quest 的設計原則與品味判斷，是給「未來的我」和「AI 助手」看的準則，
-> 用來在做視覺/文案決定時當作依據。內容幾乎不變動；架構與檔案對照表在 [PROJECT_MAP.md](PROJECT_MAP.md)，
+> 用來在做視覺/文案決定時當作依據。內容幾乎不變動；架構、Routing 在 [CLAUDE.md](CLAUDE.md)，
 > 未來 TODO 在 [TODO.md](TODO.md)。
 > 最後更新：2026-08-20
 

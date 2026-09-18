@@ -1,9 +1,15 @@
 # TODO — Rambling Quest 未來可重構建議
 
 > 這份文件追蹤還沒做、值得做的重構與功能。repo 目前沒有其他 issue/TODO 追蹤機制，
-> 就先集中記在這裡；架構與檔案對照表在 [PROJECT_MAP.md](PROJECT_MAP.md)，
+> 就先集中記在這裡；架構、Routing 在 [CLAUDE.md](CLAUDE.md)，
 > 設計哲學在 [DESIGN.md](DESIGN.md)。這份文件預期會常常變動，做完的項目打勾或加註 ✅ 即可，不用急著刪除歷史紀錄。
-> 最後更新：2026-08-20
+> 最後更新：2026-09-18
+
+---
+
+## 目前現況
+
+設計 v1 完成（首頁、Archive 頁、文章頁、PostCard 元件）。v2 方向：各房間獨立文章頁排版（搜尋、標籤頁已實作，見下方表格）。
 
 ---
 
@@ -44,5 +50,5 @@
 | ~~標籤頁（tags）~~ | ✅ 已實作：schema 有 `tags` 欄位，`/blog/tag/[tag]` tag archive 頁、文章底部 tag chips，點擊連結到 tag 頁 |
 | 關於頁改寫 | 目前是 Lorem ipsum 佔位內容 |
 | ~~域名接上 Netlify~~ | ✅ 已完成：ramblingquest.com 已上線，DNS 指向 Netlify |
-| `Header.astro` 社群連結換成自己的 | 目前指向 Astro 官方 Mastodon/Twitter/GitHub |
+| `Header.astro`／`Footer.astro` 社群連結換成自己的 | 目前指向 Astro 官方 Mastodon/Twitter/GitHub |
 | ~~RSS feed 修正~~ | ✅ 已完成：`rss.xml.js` 的 `site` 沿用 `astro.config.mjs`，現已正確指向 `ramblingquest.com` |
