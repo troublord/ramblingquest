@@ -1172,10 +1172,19 @@ const jsonLd = slug
 				if (!slug || !list || !form || !status) return;
 				const submitBtn = form.querySelector('.comments__submit') as HTMLButtonElement | null;
 
+				// Used in both text and quoted-attribute contexts (data-name), so quotes must be escaped too.
 				function escapeHtml(text: string): string {
-					const div = document.createElement('div');
-					div.textContent = text;
-					return div.innerHTML;
+					return text
+						.replace(/&/g, '&amp;')
+						.replace(/</g, '&lt;')
+						.replace(/>/g, '&gt;')
+						.replace(/"/g, '&quot;')
+						.replace(/'/g, '&#39;');
+				}
+
+				function setStatus(text: string) {
+					status.innerHTML = '<span class="status-dot"></span>';
+					status.append(text);
 				}
 
 				function formatDate(iso: string): string {
@@ -1260,10 +1269,10 @@ const jsonLd = slug
 								countEl.textContent = `${n + 1} 個足跡`;
 							}
 						} else if (res.status === 429) {
-							status.innerHTML = '<span class="status-dot"></span>' + (data.error || '留言太頻繁，請稍後再試');
+							setStatus(data.error || '留言太頻繁，請稍後再試');
 							status.dataset.state = 'error';
 						} else {
-							status.innerHTML = '<span class="status-dot"></span>' + (data.error || '紙條沒貼上，再試一次？');
+							setStatus(data.error || '紙條沒貼上，再試一次？');
 							status.dataset.state = 'error';
 						}
 					} catch {

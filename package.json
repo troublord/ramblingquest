@@ -7,13 +7,14 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "dev:netlify": "netlify dev",
-    "build": "astro build && pagefind --site dist",
+    "dev:netlify": "node scripts/gen-post-slugs.mjs && netlify dev",
+    "build": "node scripts/gen-post-slugs.mjs && astro build && pagefind --site dist",
     "preview": "astro preview",
     "astro": "astro",
     "optimize": "node scripts/convert-webp.mjs",
     "optimize:clean": "node scripts/convert-webp.mjs --clean",
-    "gen": "node scripts/gen-article.mjs"
+    "gen": "node scripts/gen-article.mjs",
+    "test": "node scripts/gen-post-slugs.mjs && vitest run"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.6",
@@ -25,8 +26,10 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
+    "github-slugger": "^2.0.0",
     "netlify-cli": "^26.1.0",
     "pagefind": "^1.5.2",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "4.1.11"
   }
 }

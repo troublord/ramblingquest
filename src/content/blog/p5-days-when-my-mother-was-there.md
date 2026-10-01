@@ -14,11 +14,13 @@ tags: ['翻譯', '遊戲']
 
 ---
 
-<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+<div style="position: relative; width: min(900px, 94vw); margin: 1.5rem 0 1.5rem 50%; transform: translateX(-50%); padding-bottom: 56.25%; height: 0; overflow: hidden;">
   <iframe
     src="https://www.youtube.com/embed/OfS75Ekqzs4"
     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
     frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin"
     allowfullscreen
     title="Days When My Mother Was There - J-MUSIC Ensemble">
   </iframe>

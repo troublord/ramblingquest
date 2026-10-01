@@ -1,5 +1,7 @@
 import type { Config, Context } from '@netlify/functions';
 import { getStore } from '@netlify/blobs';
+import { updateJSON } from './_shared/atomic-json.ts';
+import { isAdminRequest } from './_shared/admin-auth.ts';
 
 export const config: Config = {
 	path: '/api/comments/:id',
@@ -17,8 +19,7 @@ export default async (req: Request, context: Context) => {
 		return Response.json({ error: 'Method not allowed' }, { status: 405 });
 	}
 
-	const secret = req.headers.get('x-admin-secret');
-	if (!secret || secret !== process.env.COMMENT_ADMIN_SECRET) {
+	if (!isAdminRequest(req)) {
 		return Response.json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
@@ -30,16 +31,21 @@ export default async (req: Request, context: Context) => {
 		return Response.json({ error: 'Missing slug or id' }, { status: 400 });
 	}
 
+	// Conditional write, so a comment posted concurrently isn't lost and a stale reader
+	// can't write the deleted comment back.
 	const commentsStore = getStore({ name: 'comments' });
-	const comments = ((await commentsStore.get(slug, { type: 'json' })) as Comment[] | null) ?? [];
+	const removed = await updateJSON<Comment[], 'deleted' | 'missing'>(commentsStore, slug, (current) => {
+		const comments = current ?? [];
+		if (!comments.some((c) => c.id === id)) return { skip: 'missing' };
+		return { write: comments.filter((c) => c.id !== id), value: 'deleted' };
+	});
 
-	const index = comments.findIndex((c) => c.id === id);
-	if (index === -1) {
+	if (removed.status === 'skipped') {
 		return Response.json({ error: 'Comment not found' }, { status: 404 });
 	}
-
-	comments.splice(index, 1);
-	await commentsStore.setJSON(slug, comments);
+	if (removed.status === 'conflict') {
+		return Response.json({ error: 'Busy, please try again' }, { status: 503 });
+	}
 
 	return Response.json({ deleted: true, id });
 };
