@@ -1,5 +1,6 @@
 import type { Config } from '@netlify/functions';
 import { getStore } from '@netlify/blobs';
+import { isAdminRequest } from './_shared/admin-auth.ts';
 
 export const config: Config = {
 	path: '/api/comments-all',
@@ -17,8 +18,7 @@ export default async (req: Request) => {
 		return Response.json({ error: 'Method not allowed' }, { status: 405 });
 	}
 
-	const secret = req.headers.get('x-admin-secret');
-	if (!secret || secret !== process.env.COMMENT_ADMIN_SECRET) {
+	if (!isAdminRequest(req)) {
 		return Response.json({ error: 'Unauthorized' }, { status: 401 });
 	}
 

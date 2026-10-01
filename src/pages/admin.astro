@@ -96,7 +96,7 @@
 				btn.textContent = '刪除中…';
 
 				try {
-					const res = await fetch(`/api/comments/${id}?slug=${encodeURIComponent(slug)}`, {
+					const res = await fetch(`/api/comments/${encodeURIComponent(id)}?slug=${encodeURIComponent(slug)}`, {
 						method: 'DELETE',
 						headers: { 'x-admin-secret': adminSecret },
 					});

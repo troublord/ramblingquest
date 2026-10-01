@@ -1,6 +1,9 @@
 import type { Config, Context } from '@netlify/functions';
 import { getStore } from '@netlify/blobs';
-import { checkRateLimit } from './_shared/rate-limit.ts';
+import { checkRateLimit, type RateLimitResult } from './_shared/rate-limit.ts';
+import { updateJSON } from './_shared/atomic-json.ts';
+import { getClientIp, rateLimitKey } from './_shared/client-ip.ts';
+import { postWebhook, splitIntoFields } from './_shared/discord.ts';
 
 export const config: Config = {
 	path: '/api/contact',
@@ -11,19 +14,18 @@ const MAX_EMAIL_LENGTH = 254;
 const MAX_MESSAGE_LENGTH = 2000;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-function getClientIp(req: Request, context: Context): string {
-	return context.ip ?? req.headers.get('x-nf-client-connection-ip') ?? 'unknown';
-}
-
 export default async (req: Request, context: Context) => {
 	if (req.method !== 'POST') {
 		return Response.json({ error: 'Method not allowed' }, { status: 405 });
 	}
 
-	let body: { name?: string; email?: string; message?: string; website?: string };
+	let body: { name?: unknown; email?: unknown; message?: unknown; website?: unknown } | null;
 	try {
 		body = await req.json();
 	} catch {
+		return Response.json({ error: 'Invalid JSON body' }, { status: 400 });
+	}
+	if (typeof body !== 'object' || body === null) {
 		return Response.json({ error: 'Invalid JSON body' }, { status: 400 });
 	}
 
@@ -33,7 +35,14 @@ export default async (req: Request, context: Context) => {
 	if (website) {
 		return Response.json({ error: '請手動輸入' }, { status: 400 });
 	}
-	if (!name?.trim() || !email?.trim() || !message?.trim()) {
+	if (
+		typeof name !== 'string' ||
+		typeof email !== 'string' ||
+		typeof message !== 'string' ||
+		!name.trim() ||
+		!email.trim() ||
+		!message.trim()
+	) {
 		return Response.json({ error: 'Missing name, email, or message' }, { status: 400 });
 	}
 	if (name.length > MAX_NAME_LENGTH) {
@@ -49,17 +58,26 @@ export default async (req: Request, context: Context) => {
 		return Response.json({ error: 'Message too long' }, { status: 400 });
 	}
 
-	const ip = getClientIp(req, context);
-	const rateLimitStore = getStore({ name: 'contact-rate-limits' });
-	const existing = (await rateLimitStore.get(ip, { type: 'json' })) as { timestamps: string[] } | null;
 	const now = Date.now();
-	const rateLimitResult = checkRateLimit(existing?.timestamps ?? [], now);
+	const submittedAt = new Date(now).toISOString();
+	const rateLimitStore = getStore({ name: 'contact-rate-limits' });
+	const reservation = await updateJSON<{ timestamps: string[] }, RateLimitResult>(
+		rateLimitStore,
+		rateLimitKey(getClientIp(req, context)),
+		(current) => {
+			const result = checkRateLimit(current?.timestamps ?? [], now);
+			if (result.limited) return { skip: result };
+			return { write: { timestamps: [...result.recentTimestamps, submittedAt] }, value: result };
+		},
+	);
 
-	if (rateLimitResult.limited) {
+	if (reservation.status !== 'written') {
 		return Response.json(
 			{
 				error: 'Too many messages, please wait before sending again',
-				retryAfterSeconds: rateLimitResult.retryAfterSeconds,
+				...(reservation.status === 'skipped' && reservation.value.limited
+					? { retryAfterSeconds: reservation.value.retryAfterSeconds }
+					: {}),
 			},
 			{ status: 429 },
 		);
@@ -68,20 +86,15 @@ export default async (req: Request, context: Context) => {
 	const trimmedName = name.trim().slice(0, MAX_NAME_LENGTH);
 	const trimmedEmail = email.trim().slice(0, MAX_EMAIL_LENGTH);
 	const trimmedMessage = message.trim().slice(0, MAX_MESSAGE_LENGTH);
-	const submittedAt = new Date().toISOString();
-
-	rateLimitResult.recentTimestamps.push(submittedAt);
-	await rateLimitStore.setJSON(ip, { timestamps: rateLimitResult.recentTimestamps });
 
 	const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
 	if (webhookUrl) {
 		// waitUntil keeps this fetch alive after the response is returned; a bare
 		// un-awaited fetch can get cut off when Netlify freezes the container.
 		context.waitUntil(
-			fetch(webhookUrl, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
+			postWebhook(
+				webhookUrl,
+				{
 					embeds: [
 						{
 							title: '✉️ 新聯絡表單訊息',
@@ -94,12 +107,14 @@ export default async (req: Request, context: Context) => {
 									value: new Date(submittedAt).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei' }),
 									inline: true,
 								},
-								{ name: '訊息', value: trimmedMessage },
+								// The webhook is the only copy of the message, so split instead of truncating.
+								...splitIntoFields('訊息', trimmedMessage),
 							],
 						},
 					],
-				}),
-			}).catch(() => {}),
+				},
+				'contact',
+			),
 		);
 	}
 
