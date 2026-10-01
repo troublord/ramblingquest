@@ -34,7 +34,7 @@ export default async (req: Request, context: Context) => {
 	const slug = url.searchParams.get('slug');
 
 	if (!slug) {
-		return Response.json({ error: 'Missing slug' }, { status: 400 });
+		return Response.json({ error: '缺少文章資訊' }, { status: 400 });
 	}
 
 	const commentsStore = getStore({ name: 'comments' });
@@ -47,17 +47,17 @@ export default async (req: Request, context: Context) => {
 	if (req.method === 'POST') {
 		// Only published posts get a comment key; anything else would create unbounded junk keys.
 		if (!knownSlugs.has(slug)) {
-			return Response.json({ error: 'Unknown post' }, { status: 404 });
+			return Response.json({ error: '找不到這篇文章' }, { status: 404 });
 		}
 
 		let body: { name?: unknown; content?: unknown; website?: unknown } | null;
 		try {
 			body = await req.json();
 		} catch {
-			return Response.json({ error: 'Invalid JSON body' }, { status: 400 });
+			return Response.json({ error: '送出的資料格式不正確' }, { status: 400 });
 		}
 		if (typeof body !== 'object' || body === null) {
-			return Response.json({ error: 'Invalid JSON body' }, { status: 400 });
+			return Response.json({ error: '送出的資料格式不正確' }, { status: 400 });
 		}
 
 		const { name, content, website } = body;
@@ -67,16 +67,16 @@ export default async (req: Request, context: Context) => {
 			return Response.json({ error: '請手動輸入' }, { status: 400 });
 		}
 		if (typeof name !== 'string' || typeof content !== 'string' || !name.trim() || !content.trim()) {
-			return Response.json({ error: 'Missing name or content' }, { status: 400 });
+			return Response.json({ error: '名字和內容都要填喔' }, { status: 400 });
 		}
 		if (name.length > MAX_NAME_LENGTH) {
-			return Response.json({ error: 'Name too long' }, { status: 400 });
+			return Response.json({ error: '名字太長了（最多 60 字）' }, { status: 400 });
 		}
 		if (content.length > MAX_CONTENT_LENGTH) {
-			return Response.json({ error: 'Content too long' }, { status: 400 });
+			return Response.json({ error: '內容太長了（最多 2000 字）' }, { status: 400 });
 		}
 		if (countLinks(content) > MAX_LINKS) {
-			return Response.json({ error: 'Too many links' }, { status: 400 });
+			return Response.json({ error: '連結太多了（最多 2 個）' }, { status: 400 });
 		}
 
 		// Reserve the rate-limit slot before any side effect. The conditional write means
@@ -97,7 +97,7 @@ export default async (req: Request, context: Context) => {
 		if (reservation.status !== 'written') {
 			return Response.json(
 				{
-					error: 'Too many comments, please wait before posting again',
+					error: '留言太頻繁，請稍後再試',
 					...(reservation.status === 'skipped' && reservation.value.limited
 						? { retryAfterSeconds: reservation.value.retryAfterSeconds }
 						: {}),
@@ -122,10 +122,10 @@ export default async (req: Request, context: Context) => {
 		});
 
 		if (appended.status === 'skipped') {
-			return Response.json({ error: 'This post is not accepting more comments' }, { status: 409 });
+			return Response.json({ error: '這篇文章的留言已經滿了' }, { status: 409 });
 		}
 		if (appended.status === 'conflict') {
-			return Response.json({ error: 'Busy, please try again' }, { status: 503 });
+			return Response.json({ error: '現在有點忙，請再試一次' }, { status: 503 });
 		}
 
 		const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
@@ -164,5 +164,5 @@ export default async (req: Request, context: Context) => {
 		return Response.json({ comment }, { status: 201 });
 	}
 
-	return Response.json({ error: 'Method not allowed' }, { status: 405 });
+	return Response.json({ error: '不支援這個請求方法' }, { status: 405 });
 };

@@ -16,17 +16,17 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default async (req: Request, context: Context) => {
 	if (req.method !== 'POST') {
-		return Response.json({ error: 'Method not allowed' }, { status: 405 });
+		return Response.json({ error: '不支援這個請求方法' }, { status: 405 });
 	}
 
 	let body: { name?: unknown; email?: unknown; message?: unknown; website?: unknown } | null;
 	try {
 		body = await req.json();
 	} catch {
-		return Response.json({ error: 'Invalid JSON body' }, { status: 400 });
+		return Response.json({ error: '送出的資料格式不正確' }, { status: 400 });
 	}
 	if (typeof body !== 'object' || body === null) {
-		return Response.json({ error: 'Invalid JSON body' }, { status: 400 });
+		return Response.json({ error: '送出的資料格式不正確' }, { status: 400 });
 	}
 
 	const { name, email, message, website } = body;
@@ -43,19 +43,19 @@ export default async (req: Request, context: Context) => {
 		!email.trim() ||
 		!message.trim()
 	) {
-		return Response.json({ error: 'Missing name, email, or message' }, { status: 400 });
+		return Response.json({ error: '名字、Email 和訊息都要填喔' }, { status: 400 });
 	}
 	if (name.length > MAX_NAME_LENGTH) {
-		return Response.json({ error: 'Name too long' }, { status: 400 });
+		return Response.json({ error: '名字太長了（最多 60 字）' }, { status: 400 });
 	}
 	if (email.length > MAX_EMAIL_LENGTH) {
-		return Response.json({ error: 'Email too long' }, { status: 400 });
+		return Response.json({ error: 'Email 太長了' }, { status: 400 });
 	}
 	if (!EMAIL_RE.test(email.trim())) {
-		return Response.json({ error: 'Invalid email address' }, { status: 400 });
+		return Response.json({ error: 'Email 格式不正確' }, { status: 400 });
 	}
 	if (message.length > MAX_MESSAGE_LENGTH) {
-		return Response.json({ error: 'Message too long' }, { status: 400 });
+		return Response.json({ error: '訊息太長了（最多 2000 字）' }, { status: 400 });
 	}
 
 	const now = Date.now();
@@ -74,7 +74,7 @@ export default async (req: Request, context: Context) => {
 	if (reservation.status !== 'written') {
 		return Response.json(
 			{
-				error: 'Too many messages, please wait before sending again',
+				error: '送太多次了，請稍後再試',
 				...(reservation.status === 'skipped' && reservation.value.limited
 					? { retryAfterSeconds: reservation.value.retryAfterSeconds }
 					: {}),
