@@ -8,7 +8,7 @@
 /tag/*  /blog/tag/:splat  301
 
 # 舊 WordPress category 路由 → blog 列表
-/category/*  /blog  301
+/category/*  /blog/  301
 
 # 舊文章 URL → 新 Astro 路由（只對應新網站有的文章）
 /p5-音樂中最讓人破防的一首：days-when-my-mother-was-there-中文翻譯/  /blog/p5-days-when-my-mother-was-there/  301
