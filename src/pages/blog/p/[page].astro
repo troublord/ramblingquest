@@ -26,8 +26,8 @@ export async function getStaticPaths() {
         totalPosts: allPosts.length,
         currentPage: page,
         lastPage,
-        prevUrl: page === 2 ? '/blog' : `/blog/p/${page - 1}`,
-        nextUrl: page < lastPage ? `/blog/p/${page + 1}` : undefined,
+        prevUrl: page === 2 ? '/blog/' : `/blog/p/${page - 1}/`,
+        nextUrl: page < lastPage ? `/blog/p/${page + 1}/` : undefined,
       },
     });
   }

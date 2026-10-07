@@ -6,7 +6,7 @@ room: 'workshop'
 tags: ['LeetCode', 'Java', '演算法', '字串']
 ---
 
-[上一篇](/blog/leetcode-14-brute-force)貼了我第一次解這題時的硬幹版本。
+[上一篇](/blog/leetcode-14-brute-force/)貼了我第一次解這題時的硬幹版本。
 
 ## 能過
 

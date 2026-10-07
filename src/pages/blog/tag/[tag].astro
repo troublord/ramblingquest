@@ -25,7 +25,7 @@ export async function getStaticPaths() {
         counts,
         totalPosts: allPosts.length,
         lastPage,
-        nextUrl: tagPosts.length > PAGE_SIZE ? `/blog/tag/${tag}/p/2` : undefined,
+        nextUrl: tagPosts.length > PAGE_SIZE ? `/blog/tag/${tag}/p/2/` : undefined,
       },
     };
   });

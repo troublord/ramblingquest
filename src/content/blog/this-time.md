@@ -121,4 +121,4 @@ tags: ["文學", "改寫", "寓言"]
 
 _改寫自 John Fowles《The Magus》_
 
-延伸閱讀：[〈王子與巫師〉](/blog/prince-and-the-magician)
+延伸閱讀：[〈王子與巫師〉](/blog/prince-and-the-magician/)

@@ -92,4 +92,4 @@ public String longestCommonPrefix(String[] strs) {
 
 3. 當陣列跑完，或者最小字串被砍完，答案就出來了
 
-這個版本可以 AC，但有幾個比較關鍵的問題，[下一篇](/blog/leetcode-14-char-by-char)繼續說。
+這個版本可以 AC，但有幾個比較關鍵的問題，[下一篇](/blog/leetcode-14-char-by-char/)繼續說。

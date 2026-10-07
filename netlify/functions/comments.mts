@@ -139,7 +139,7 @@ export default async (req: Request, context: Context) => {
 						embeds: [
 							{
 								title: truncate(`💬 新留言 — ${slug}`, EMBED_TITLE_MAX),
-								url: `${url.origin}/blog/${encodeURIComponent(slug)}`,
+								url: `${url.origin}/blog/${encodeURIComponent(slug)}/`,
 								color: 0xf6ad55,
 								fields: [
 									{ name: '留言者', value: comment.name, inline: true },
