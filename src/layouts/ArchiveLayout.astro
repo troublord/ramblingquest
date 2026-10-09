@@ -1,10 +1,10 @@
 ---
-import type { CollectionEntry } from 'astro:content';
+import { type CollectionEntry, getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import HomeFooter from '../components/HomeFooter.astro';
 import PostCard from '../components/PostCard.astro';
 import SearchModal from '../components/SearchModal.astro';
-import { SITE_TITLE } from '../consts';
+import { MIN_INDEXED_TAG_POSTS, SITE_TITLE } from '../consts';
 import '../styles/homepage.css';
 
 type RoomKey = 'all' | 'study' | 'bar' | 'workshop' | 'court';
@@ -41,6 +41,12 @@ const roomEn: Record<RoomKey, string> = {
   court: 'court · body',
 };
 
+// 文章太少的 tag 頁不給索引，sitemap 端的排除在 astro.config.mjs
+const tagPostCount = currentTag
+  ? (await getCollection('blog')).filter(p => (p.data.tags ?? []).includes(currentTag)).length
+  : 0;
+const noindex = Boolean(currentTag) && tagPostCount < MIN_INDEXED_TAG_POSTS;
+
 const pageSuffix = pagination.currentPage > 1 ? `（第 ${pagination.currentPage} 頁）` : '';
 
 const pageTitle = currentTag
@@ -59,7 +65,7 @@ const pageDescription = currentTag
 <!doctype html>
 <html lang="zh-Hant">
   <head>
-    <BaseHead title={pageTitle} description={pageDescription} />
+    <BaseHead title={pageTitle} description={pageDescription} noindex={noindex} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Noto+Serif+TC:wght@400;500;600;700&family=DotGothic16&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -316,8 +322,8 @@ const pageDescription = currentTag
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             </button>
           </li>
-          <li><a href="/blog" style="color:var(--text);">全部文章 <span class="rq-mono">/ archive</span></a></li>
-          <li><a href="/about">關於這裡 <span class="rq-mono">/ about</span></a></li>
+          <li><a href="/blog/" style="color:var(--text);">全部文章 <span class="rq-mono">/ archive</span></a></li>
+          <li><a href="/about/">關於這裡 <span class="rq-mono">/ about</span></a></li>
         </ul>
       </nav>
 
@@ -333,23 +339,23 @@ const pageDescription = currentTag
 
           {currentTag ? (
             <div class="ar-tag-back">
-              <a href="/blog">← 全部文章</a>
+              <a href="/blog/">← 全部文章</a>
             </div>
           ) : (
             <div class="ar-filters">
-              <a class={`ar-filter${currentRoom === 'all' ? ' is-active' : ''}`} href="/blog" data-cat="all">
+              <a class={`ar-filter${currentRoom === 'all' ? ' is-active' : ''}`} href="/blog/" data-cat="all">
                 <span class="fz">全部<span class="cnt">{totalPosts}</span></span>
               </a>
-              <a class={`ar-filter${currentRoom === 'study' ? ' is-active' : ''}`} href="/blog/room/study" data-cat="study">
+              <a class={`ar-filter${currentRoom === 'study' ? ' is-active' : ''}`} href="/blog/room/study/" data-cat="study">
                 <span class="fz">書房<span class="cnt">{counts.study}</span></span>
               </a>
-              <a class={`ar-filter${currentRoom === 'bar' ? ' is-active' : ''}`} href="/blog/room/bar" data-cat="bar">
+              <a class={`ar-filter${currentRoom === 'bar' ? ' is-active' : ''}`} href="/blog/room/bar/" data-cat="bar">
                 <span class="fz">吧台<span class="cnt">{counts.bar}</span></span>
               </a>
-              <a class={`ar-filter${currentRoom === 'workshop' ? ' is-active' : ''}`} href="/blog/room/workshop" data-cat="shop">
+              <a class={`ar-filter${currentRoom === 'workshop' ? ' is-active' : ''}`} href="/blog/room/workshop/" data-cat="shop">
                 <span class="fz">工坊<span class="cnt">{counts.workshop}</span></span>
               </a>
-              <a class={`ar-filter${currentRoom === 'court' ? ' is-active' : ''}`} href="/blog/room/court" data-cat="court">
+              <a class={`ar-filter${currentRoom === 'court' ? ' is-active' : ''}`} href="/blog/room/court/" data-cat="court">
                 <span class="fz">場邊<span class="cnt">{counts.court}</span></span>
               </a>
             </div>

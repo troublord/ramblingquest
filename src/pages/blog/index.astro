@@ -23,7 +23,7 @@ const lastPage = Math.max(1, Math.ceil(allPosts.length / PAGE_SIZE));
   totalPosts={allPosts.length}
   pagination={{
     prevUrl: undefined,
-    nextUrl: allPosts.length > PAGE_SIZE ? '/blog/p/2' : undefined,
+    nextUrl: allPosts.length > PAGE_SIZE ? '/blog/p/2/' : undefined,
     currentPage: 1,
     lastPage,
   }}
