@@ -30,3 +30,6 @@ deno.lock
 
 # jetbrains setting folder
 .idea/
+
+# desktop shortcut icon (machine-local)
+scripts/ramblingquest-icon.ico

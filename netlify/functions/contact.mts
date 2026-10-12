@@ -9,7 +9,6 @@ export const config: Config = {
 	path: '/api/contact',
 };
 
-const MAX_NAME_LENGTH = 60;
 const MAX_EMAIL_LENGTH = 254;
 const MAX_MESSAGE_LENGTH = 2000;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -19,7 +18,7 @@ export default async (req: Request, context: Context) => {
 		return Response.json({ error: '不支援這個請求方法' }, { status: 405 });
 	}
 
-	let body: { name?: unknown; email?: unknown; message?: unknown; website?: unknown } | null;
+	let body: { email?: unknown; message?: unknown; website?: unknown } | null;
 	try {
 		body = await req.json();
 	} catch {
@@ -29,24 +28,19 @@ export default async (req: Request, context: Context) => {
 		return Response.json({ error: '送出的資料格式不正確' }, { status: 400 });
 	}
 
-	const { name, email, message, website } = body;
+	const { email, message, website } = body;
 
 	// Honeypot field is hidden from real users via CSS; bots that fill every field trip it.
 	if (website) {
 		return Response.json({ error: '請手動輸入' }, { status: 400 });
 	}
 	if (
-		typeof name !== 'string' ||
 		typeof email !== 'string' ||
 		typeof message !== 'string' ||
-		!name.trim() ||
 		!email.trim() ||
 		!message.trim()
 	) {
-		return Response.json({ error: '名字、Email 和訊息都要填喔' }, { status: 400 });
-	}
-	if (name.length > MAX_NAME_LENGTH) {
-		return Response.json({ error: '名字太長了（最多 60 字）' }, { status: 400 });
+		return Response.json({ error: 'Email 和訊息都要填喔' }, { status: 400 });
 	}
 	if (email.length > MAX_EMAIL_LENGTH) {
 		return Response.json({ error: 'Email 太長了' }, { status: 400 });
@@ -83,7 +77,6 @@ export default async (req: Request, context: Context) => {
 		);
 	}
 
-	const trimmedName = name.trim().slice(0, MAX_NAME_LENGTH);
 	const trimmedEmail = email.trim().slice(0, MAX_EMAIL_LENGTH);
 	const trimmedMessage = message.trim().slice(0, MAX_MESSAGE_LENGTH);
 
@@ -100,7 +93,6 @@ export default async (req: Request, context: Context) => {
 							title: '✉️ 新聯絡表單訊息',
 							color: 0x4a90d9,
 							fields: [
-								{ name: '名字', value: trimmedName, inline: true },
 								{ name: 'Email', value: trimmedEmail, inline: true },
 								{
 									name: '時間',
