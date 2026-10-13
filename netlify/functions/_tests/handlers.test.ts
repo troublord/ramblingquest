@@ -98,7 +98,7 @@ describe('POST /api/contact', () => {
 			contact(
 				new Request('https://example.test/api/contact', {
 					method: 'POST',
-					body: JSON.stringify({ name: 'dummy', email: 'a@b.cd', message: 'hi' }),
+					body: JSON.stringify({ email: 'a@b.cd', message: 'hi' }),
 				}),
 				context('198.51.100.7'),
 			);

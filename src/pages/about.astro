@@ -1,85 +1,28 @@
 ---
 import Layout from "../layouts/BlogPost.astro";
+import { Image } from "astro:assets";
+import portrait from "../assets/about-portrait.jpg";
 ---
 
 <Layout
   title="關於這裡"
-  description="工程師毓文的個人空間。技術筆記、碎念、打球觀察，還有一些說不清楚但還是說了的話。"
+  description="Winson，軟體工程師，寫手。還在長：咖啡師、籃球分析師、健身教練、老師。"
   pubDate={new Date("2026-06-05")}
   hideNav={true}
 >
-  <p>一邊漫無目的的晃來晃去，一邊解生命這道宏大的任務</p>
+  <Image
+    src={portrait}
+    alt="Winson 在雪地港口的自拍"
+    widths={[760, 1520]}
+    sizes="(max-width: 820px) 100vw, 760px"
+    format="webp"
+    loading="eager"
+    class="about-portrait"
+  />
 
-  <hr />
+  <p><strong>Winson</strong>  軟體工程師，寫手</p>
 
-  <div style="display: flex; gap: 2rem; align-items: flex-start;">
-    <div style="flex: 1;">
-      <h2>我是誰</h2>
-
-      <p>毓文。高雄人，軟體工程師，有膽量瘋狂換工作，沒勇氣主動開話題。</p>
-
-      <p>住在城市的修行家，修身修心修水電(開玩笑的不修水電)</p>
-
-      <p>因為大聲起來像野獸，平常會刻意壓低音量。</p>
-
-      <p>正在練習先做再想，先動再說。</p>
-
-      <p>猴子腦受害者，永遠不去聽專場的甜約翰支持者、Mac Ayres 的頭號聽眾。</p>
-
-      <p>濃縮咖啡機操作手、閱讀清單永遠比人生進度快半拍之男、幽默捕捉者與刪減紀律實踐家。</p>
-
-      <p>常駐愚蠢狀態，正在找法師 Debuff</p>
-
-      <p>硬舉 160 公斤，深蹲 120 公斤，握推<span class="redacted-bar">懂看你餒</span></p>
-
-      <p>喜歡遊戲，喜劇，偶爾看看小說。</p>
-
-      <p>直男，但我覺得自己是變異直男，怎麼說？</p>
-
-      <p>不告訴你</p>
-    </div>
-    <img
-      src="https://i.ibb.co/wNFMBs6k/LINE-ALBUM-2026-01-01-260104-35.jpg"
-      alt="毓文"
-      style="width: 220px; flex-shrink: 0; border-radius: 4px; object-fit: cover;"
-    />
-  </div>
-
-  <hr />
-
-  <h2>這裡有什麼</h2>
-
-  <p>這個空間分成四個房間：</p>
-
-  <p><strong>書房</strong> — 閱讀、書摘、長一點的文章。</p>
-
-  <p><strong>吧台</strong> — 碎念、情緒、一時起意的感想。</p>
-
-  <p><strong>工坊</strong> — 技術筆記、工程問題、Side Project 的過程記錄。</p>
-
-  <p><strong>場邊</strong> — 籃球、運動、以及其他跟真實世界比較近的事情。</p>
-
-  <hr />
-
-  <h2>這網站怎麼弄的</h2>
-
-  <p>框架用 Astro，是一個以靜態網站生成（SSG）為主的框架。寫起來很像一般的 HTML 跟元件，但 build 出來是一整組純靜態頁面，沒有後端在跑，載入快，也好維護。</p>
-
-  <p>文章都用 Markdown（.md / .mdx）寫，存檔就是一篇新文章，不用登入任何後台。</p>
-
-  <p>留言區是自己刻的，沒有套現成的留言服務。有新留言時我會收到 Discord 通知，所以不用擔心沒人看到。</p>
-
-  <p>整個網站放在 Netlify 上，部署也在那邊處理。程式碼推到 GitHub 的 master 分支後，Netlify 會自動 build 並上線，不用手動部署。</p>
-
-  <p>設計上想要的是「深夜城市裡散步」的感覺：城市是主視覺，四個房間（書房、吧台、工坊、場邊）是招牌，不是卡片。</p>
-
-  <hr />
-
-  <p>你在這裡不會看到成功學或是任何「讓你進步 5%」的內容。</p>
-
-  <p>會看到我在想什麼，做什麼，讀什麼，可能會看到我搞砸了什麼。</p>
-
-  <p>歡迎進來坐。</p>
+  <p>還在長：咖啡師、籃球分析師、健身教練、老師</p>
 
   <hr />
 
@@ -91,10 +34,6 @@ import Layout from "../layouts/BlogPost.astro";
     <p class="contact-honeypot" aria-hidden="true">
       <label for="contact-website">Website</label>
       <input type="text" id="contact-website" name="website" tabindex="-1" autocomplete="off" />
-    </p>
-    <p>
-      <label for="contact-name">名字</label>
-      <input type="text" id="contact-name" name="name" maxlength="60" required />
     </p>
     <p>
       <label for="contact-email">Email</label>
@@ -122,7 +61,6 @@ import Layout from "../layouts/BlogPost.astro";
       status.removeAttribute('data-state');
       if (submitBtn) submitBtn.disabled = true;
 
-      const name = (form.elements.namedItem('name') as HTMLInputElement).value;
       const email = (form.elements.namedItem('email') as HTMLInputElement).value;
       const message = (form.elements.namedItem('message') as HTMLTextAreaElement).value;
       const website = (form.elements.namedItem('website') as HTMLInputElement).value;
@@ -131,7 +69,7 @@ import Layout from "../layouts/BlogPost.astro";
         const res = await fetch('/api/contact', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, message, website }),
+          body: JSON.stringify({ email, message, website }),
         });
         const data = await res.json();
 
@@ -157,11 +95,11 @@ import Layout from "../layouts/BlogPost.astro";
 </script>
 
 <style>
-  .redacted-bar {
-    background-color: #1a0f08;
-    color: transparent;
-    border-radius: 2px;
-    padding: 0 0.3em;
+  .about-portrait {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
   }
 
   .contact-honeypot {

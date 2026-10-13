@@ -53,7 +53,7 @@ curl -X DELETE "https://<站點>/api/comments/<id>?slug=<slug>" -H "x-admin-secr
 
 比照留言系統但更陽春：只驗證、限流、送 Discord 通知，**不寫入 Blobs、沒有 admin 頁**（原本用過 Netlify 原生 Forms，評估必要性不高後改成跟留言系統同一套 Functions 模式）。
 
-- `POST /api/contact`，body `{ name, email, message, website }`（`website` honeypot，跟留言系統同名但不同 endpoint）→ 成功 `200 { success: true }`；honeypot 非空/缺欄位或非字串/name>60字/email>254字或格式錯/message>2000字 → `400`；同 IP 超過限流門檻 → `429`；非 POST → `405`
+- `POST /api/contact`，body `{ email, message, website }`（`website` honeypot，跟留言系統同名但不同 endpoint；不收名字）→ 成功 `200 { success: true }`；honeypot 非空/缺欄位或非字串/email>254字或格式錯/message>2000字 → `400`；同 IP 超過限流門檻 → `429`；非 POST → `405`
 
 **跟留言系統的刻意差異**：沒有連結數檢查（訊息不公開顯示，沒有洗版風險）；成功回傳 `200` 而非 `201`（沒有建立可回傳的資源）。
 
