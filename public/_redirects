@@ -11,5 +11,13 @@
 /category/*  /blog/  301
 
 # 舊文章 URL → 新 Astro 路由（只對應新網站有的文章）
-/p5-音樂中最讓人破防的一首：days-when-my-mother-was-there-中文翻譯/  /blog/p5-days-when-my-mother-was-there/  301
-/如何在-aws-ec2-綁定固定-ip（elastic-ip）｜完整配置教學/  /blog/aws-ec2-elastic-ip/  301
+# 中文路徑必須寫成大寫 percent-encoded，Netlify 正式環境才比對得到；原文寫在上一行註解
+# （netlify dev 本機模擬行為相反：原文有效、編碼無效，驗證請用 draft deploy）
+# /p5-音樂中最讓人破防的一首：days-when-my-mother-was-there-中文翻譯/
+/p5-%E9%9F%B3%E6%A8%82%E4%B8%AD%E6%9C%80%E8%AE%93%E4%BA%BA%E7%A0%B4%E9%98%B2%E7%9A%84%E4%B8%80%E9%A6%96%EF%BC%9Adays-when-my-mother-was-there-%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AD%AF/  /blog/p5-days-when-my-mother-was-there/  301
+# /如何在-aws-ec2-綁定固定-ip（elastic-ip）｜完整配置教學/
+/%E5%A6%82%E4%BD%95%E5%9C%A8-aws-ec2-%E7%B6%81%E5%AE%9A%E5%9B%BA%E5%AE%9A-ip%EF%BC%88elastic-ip%EF%BC%89%EF%BD%9C%E5%AE%8C%E6%95%B4%E9%85%8D%E7%BD%AE%E6%95%99%E5%AD%B8/  /blog/aws-ec2-elastic-ip/  301
+# /讓-nifi-支援-ad-驗證：ldap-整合教學/
+/%E8%AE%93-nifi-%E6%94%AF%E6%8F%B4-ad-%E9%A9%97%E8%AD%89%EF%BC%9Aldap-%E6%95%B4%E5%90%88%E6%95%99%E5%AD%B8/  /blog/nifi-ldap-ad-auth-config/  301
+# /〈王子與巫師〉-作者施的巫術之中，不存在事/
+/%E3%80%88%E7%8E%8B%E5%AD%90%E8%88%87%E5%B7%AB%E5%B8%AB%E3%80%89-%E4%BD%9C%E8%80%85%E6%96%BD%E7%9A%84%E5%B7%AB%E8%A1%93%E4%B9%8B%E4%B8%AD%EF%BC%8C%E4%B8%8D%E5%AD%98%E5%9C%A8%E4%BA%8B/  /blog/prince-and-the-magician/  301
