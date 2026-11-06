@@ -10,6 +10,7 @@
 4. `git checkout master`
 5. `git merge dev`
 6. `git push`（推 `master`，觸發 Netlify production build）
+7. 通知中控：`ssh tokyo "bash -lc 'castle leamas sync --after-deploy'"`。中控會在背景等 Netlify build，分幾次讀 RSS，把新文章記進「利馬斯的手記」的文章頁並用 Telegram 知會（TheCastle D160）。沒有新文章也可以跑，不會重複記。ssh 失敗不影響上線，跟使用者說一聲就好；下次上線時會一起補上。
 
 commit 後不主動 push，除非明確要求；步驟 2 一樣要等明確要求才做。
 
