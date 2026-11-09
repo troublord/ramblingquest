@@ -1,6 +1,6 @@
 ---
 title: '從今日報到 Castle：我怎麼讓 AI 融入生活'
-description: '一場暖身小聚的開場後，我開始讓 AI 融入生活：隔天做出今日報，後來它長成了 Castle。'
+description: '一場暖身小聚的開場後，我開始讓 AI 融入生活：隔天做出今日報，後來它又長成了 Castle。'
 pubDate: '2026-11-09'
 room: 'workshop'
 heroImage: '/images/castle-unlock-hero.webp'
