@@ -1,9 +1,9 @@
 ---
-title: '從一場暖身小聚，到一座城堡'
-description: 'AI 玩到覺得空虛時，我去台北聽了一場暖身小聚。講者的開場讓我隔天做出今日報，後來它長成了 Castle。'
+title: '從今日報到 Castle：我怎麼讓 AI 融入生活'
+description: 'AI 玩到空虛時，一場暖身小聚的開場讓我開始讓 AI 融入生活：隔天做出今日報，後來它長成了 Castle。'
 pubDate: '2026-11-09'
 room: 'workshop'
-heroImage: '/images/castle-play-to-learn.webp'
+heroImage: '/images/castle-unlock-hero.webp'
 tags: ['AI', '心得', '自動化']
 ---
 
