@@ -3,7 +3,7 @@ title: '我的 AI 中控系統：四個讓我回不去的功能'
 description: '說一句話就改好行事曆、傳一句話就記好帳、早上有人先幫我看過一遍、做過的事自己會被記下來。'
 pubDate: '2026-11-12'
 room: 'workshop'
-heroImage: '/images/castle-features-today-brief.webp'
+heroImage: '/images/my-ai-control-center-hero.webp'
 tags: ['AI', '自動化', 'Claude Code']
 ---
 
