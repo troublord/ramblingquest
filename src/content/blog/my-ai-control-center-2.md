@@ -1,7 +1,7 @@
 ---
 title: '我的 AI 中控系統（二）：讓 AI 認識我的知識庫，和三個小幫手'
 description: 'library 是我的 LLM Wiki，接上中控之後手機也能查、丟進來就會被整理；再加上研究報告、YouTube 摘要、搜尋週報三個小幫手。'
-pubDate: '2026-11-12'
+pubDate: '2026-11-12T12:00:00+08:00'
 room: 'workshop'
 heroImage: '/images/my-ai-control-center-2-hero.webp'
 tags: ['AI', 'LLM Wiki', '個人知識庫', '自動化']
