@@ -3,6 +3,7 @@ title: '想換工作的躁動'
 description: '剝奪感、溫水煮青蛙的焦慮，等我冷靜兩天後才發現我忽略的地方'
 pubDate: '2026-10-30'
 room: 'bar'
+heroImage: '/images/restless-to-change-jobs-hero.webp'
 tags: ['職涯', '軟體工程師', '自我成長']
 ---
 
